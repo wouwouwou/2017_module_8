@@ -1,8 +1,8 @@
-package block1.cc.test;
+package pp.block1.cc.test;
 
 import org.junit.Test;
 
-import block1.cc.antlr.*;
+import pp.block1.cc.antlr.*;
 
 public class ExampleTest {
 	private static LexerTester tester = new LexerTester(Example.class);

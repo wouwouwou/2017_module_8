@@ -1,12 +1,10 @@
-package block1.cc.test;
-
-import static block1.cc.dfa.State.ID6_DFA;
+package pp.block1.cc.test;
 
 import org.junit.Assert;
 import org.junit.Test;
 
-import block1.cc.dfa.Checker;
-import block1.cc.dfa.State;
+import pp.block1.cc.dfa.Checker;
+import pp.block1.cc.dfa.State;
 
 /** Test class for Checker implementation. */
 public class CheckerTest {
@@ -16,7 +14,7 @@ public class CheckerTest {
 
 	@Test
 	public void testID6() {
-		this.dfa = ID6_DFA;
+		this.dfa = State.ID6_DFA;
 		accepts("a12345");
 		rejects("");
 		rejects("a12 45");

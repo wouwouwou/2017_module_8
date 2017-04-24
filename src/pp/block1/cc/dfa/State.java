@@ -1,4 +1,4 @@
-package block1.cc.dfa;
+package pp.block1.cc.dfa;
 
 import java.util.Map;
 import java.util.TreeMap;

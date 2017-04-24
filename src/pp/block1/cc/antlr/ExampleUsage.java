@@ -1,5 +1,6 @@
-package block1.cc.antlr;
+package pp.block1.cc.antlr;
 
+import pp.block1.cc.antlr.Example;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.Lexer;
