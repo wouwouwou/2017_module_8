@@ -38,7 +38,6 @@ cabal.sandbox.config
 .stack-work/
 
 ## Core latex/pdflatex auxiliary files:
-*.aux
 *.lof
 *.log
 *.lot
@@ -49,7 +48,6 @@ cabal.sandbox.config
 *.fot
 *.cb
 *.cb2
-*.pdf
 
 ## Intermediate documents:
 *.dvi
@@ -57,7 +55,6 @@ cabal.sandbox.config
 # these rules might exclude image files for figures etc.
 # *.ps
 # *.eps
-# *.pdf
 
 ## Bibliography auxiliary files (bibtex/biblatex/biber):
 *.bbl
@@ -125,7 +122,6 @@ acs-*.bib
 *-gnuplottex-*
 
 # hyperref
-*.brf
 
 # knitr
 *-concordance.tex
@@ -158,7 +154,6 @@ _minted*
 *.mw
 
 # mylatexformat
-*.fmt
 
 # nomencl
 *.nlo
