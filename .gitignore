@@ -16,6 +16,7 @@ hs_err_pid*
 antlr4-4.7.zip
 gen/
 out/
+doc/cc/*.pdf
 
 ## Imported from last year's final project repository
 
