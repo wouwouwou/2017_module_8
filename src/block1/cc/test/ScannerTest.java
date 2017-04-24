@@ -1,14 +1,14 @@
 package block1.cc.test;
 
-import static pp.block1.cc.dfa.State.ID6_DFA;
+import static block1.cc.dfa.State.ID6_DFA;
 
 import java.util.List;
 
 import org.junit.Assert;
 import org.junit.Test;
 
-import pp.block1.cc.dfa.Scanner;
-import pp.block1.cc.dfa.State;
+import block1.cc.dfa.Scanner;
+import block1.cc.dfa.State;
 
 /** Test class for Scanner implementation. */
 public class ScannerTest {

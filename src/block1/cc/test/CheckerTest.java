@@ -1,12 +1,12 @@
 package block1.cc.test;
 
-import static pp.block1.cc.dfa.State.ID6_DFA;
+import static block1.cc.dfa.State.ID6_DFA;
 
 import org.junit.Assert;
 import org.junit.Test;
 
-import pp.block1.cc.dfa.Checker;
-import pp.block1.cc.dfa.State;
+import block1.cc.dfa.Checker;
+import block1.cc.dfa.State;
 
 /** Test class for Checker implementation. */
 public class CheckerTest {
