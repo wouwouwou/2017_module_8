@@ -1,4 +1,4 @@
-package pp.block1.cc.test;
+package block1.cc.test;
 
 import org.junit.Test;
 

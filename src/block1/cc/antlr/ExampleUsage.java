@@ -1,4 +1,4 @@
-package pp.block1.cc.antlr;
+package block1.cc.antlr;
 
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
