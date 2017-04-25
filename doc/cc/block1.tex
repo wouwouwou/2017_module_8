@@ -54,6 +54,7 @@
 \usepackage{pgf}
 \usepackage{tikz}
 \usetikzlibrary{arrows,automata,positioning}
+\usepackage{tikz-qtree}
 %%% END Article customizations
 
 %%% The "real" document content comes below...
@@ -311,6 +312,539 @@ LR(x)
 \end{tabular}
 
 \section*{Exercise 16.1}
+
+\subsection*{Leftmost derivations}
+\noindent Number 1
+
+\begin{tikzpicture}
+
+\tikzset{frontier/.style={distance from root=270pt}}
+
+\Tree [.Sentence 
+        [.\textit{Subject} 
+            [.\textit{Modifier} 
+                [.\textit{Modifier} 
+                    [.\texttt{adjective} \texttt{adjective} ]
+                ]
+                [.\textit{Modifier} 
+                    [.\textit{Modifier} 
+                        [.\texttt{adjective} \texttt{adjective} ]
+                    ]
+                ]
+            ]
+            [.\textit{Subject} 
+                [.\textit{Subject} 
+                    [.\textit{Subject} 
+                        [.\textit{Subject} 
+                            [.\textit{Modifier} 
+                                [.\texttt{adjective} \texttt{adjective} ]
+                            ]
+                            [.\textit{Subject} 
+                                [.\textit{Subject} 
+                                    [.\texttt{noun} \texttt{noun} ]    
+                                ]
+                            ]
+                        ]
+                    ]
+                ]
+            ]
+        ]
+        [.\texttt{verb} \texttt{verb} ]
+        [.\textit{Object}
+            [.\textit{Object}
+                [.\textit{Object}
+                    [.\textit{Object}
+                        [.\textit{Object}
+                            [.\textit{Object}
+                                [.\textit{Object}
+                                    [.\textit{Object}
+                                        \texttt{noun}  
+                                    ]  
+                                ]
+                            ]
+                        ]
+                    ]
+                ]
+            ]
+        ]
+        [.\texttt{endmark} \texttt{endmark} ]
+    ]
+
+\end{tikzpicture}
+
+\noindent Number 2
+
+\begin{tikzpicture}
+
+\tikzset{frontier/.style={distance from root=270pt}}
+
+\Tree [.Sentence 
+        [.\textit{Subject} 
+            [.\textit{Modifier} 
+                [.\texttt{adjective} \texttt{adjective} ]
+            ]
+            [.\textit{Subject} 
+                [.\textit{Subject} 
+                    [.\textit{Modifier} 
+                        [.\texttt{adjective} \texttt{adjective} ]
+                    ]
+                    [.\textit{Subject} 
+                        [.\textit{Subject} 
+                            [.\textit{Modifier} 
+                                [.\texttt{adjective} \texttt{adjective} ]
+                            ]
+                            [.\textit{Subject} 
+                                [.\textit{Subject} 
+                                    [.\texttt{noun} \texttt{noun} ]
+                                ]
+                            ]
+                        ]
+                    ]
+                ]
+            ]
+        ]
+        [.\texttt{verb} \texttt{verb} ]
+        [.\textit{Object}
+            [.\textit{Object}
+                [.\textit{Object}
+                    [.\textit{Object}
+                        [.\textit{Object}
+                            [.\textit{Object}
+                                [.\textit{Object}
+                                    [.\textit{Object}
+                                        \texttt{noun}  
+                                    ]  
+                                ]
+                            ]
+                        ]
+                    ]
+                ]
+            ]
+        ]
+        [.\texttt{endmark} \texttt{endmark} ]
+    ]
+
+\end{tikzpicture} 
+
+\noindent Number 3
+
+\begin{tikzpicture}
+
+\tikzset{frontier/.style={distance from root=270pt}}
+
+\Tree [.Sentence 
+        [.\textit{Subject} 
+            [.\textit{Modifier} 
+                [.\texttt{adjective} \texttt{adjective} ]
+            ]
+            [.\textit{Subject} 
+                [.\textit{Subject} 
+                    [.\textit{Modifier} 
+                        [.\textit{Modifier} 
+                            [.\texttt{adjective} \texttt{adjective} ]
+                        ]
+                        [.\textit{Modifier} 
+                            [.\textit{Modifier} 
+                                [.\texttt{adjective} \texttt{adjective} ]
+                            ]
+                        ]
+                    ]
+                    [.\textit{Subject} 
+                        [.\textit{Subject} 
+                            [.\textit{Subject} 
+                                [.\textit{Subject} 
+                                    [.\texttt{noun} \texttt{noun} ]
+                                ]
+                            ]
+                        ]
+                    ]
+                ]
+            ]
+        ]
+        [.\texttt{verb} \texttt{verb} ]
+        [.\textit{Object}
+            [.\textit{Object}
+                [.\textit{Object}
+                    [.\textit{Object}
+                        [.\textit{Object}
+                            [.\textit{Object}
+                                [.\textit{Object}
+                                    [.\textit{Object}
+                                        \texttt{noun}  
+                                    ]  
+                                ]
+                            ]
+                        ]
+                    ]
+                ]
+            ]
+        ]
+        [.\texttt{endmark} \texttt{endmark} ]
+    ]
+
+\end{tikzpicture} 
+
+\noindent Number 4
+
+\begin{tikzpicture}
+
+\tikzset{frontier/.style={distance from root=270pt}}
+
+\Tree [.Sentence 
+        [.\textit{Subject} 
+            [.\textit{Modifier} 
+                [.\textit{Modifier} 
+                    [.\textit{Modifier} 
+                        [.\texttt{adjective} \texttt{adjective} ]
+                    ]
+                    [.\textit{Modifier} 
+                        [.\textit{Modifier} 
+                            [.\texttt{adjective} \texttt{adjective} ]
+                        ]
+                    ]
+                ]
+                [.\textit{Modifier} 
+                    [.\textit{Modifier} 
+                        [.\textit{Modifier} 
+                            [.\textit{Modifier} 
+                                [.\texttt{adjective} \texttt{adjective} ]
+                            ]
+                        ]
+                    ]
+                ]
+            ]
+            [.\textit{Subject} 
+                [.\textit{Subject}                     
+                    [.\textit{Subject} 
+                        [.\textit{Subject} 
+                            [.\textit{Subject} 
+                                [.\textit{Subject} 
+                                    [.\texttt{noun} \texttt{noun} ]
+                                ]
+                            ]
+                        ]
+                    ]
+                ]
+            ]
+        ]
+        [.\texttt{verb} \texttt{verb} ]
+        [.\textit{Object}
+            [.\textit{Object}
+                [.\textit{Object}
+                    [.\textit{Object}
+                        [.\textit{Object}
+                            [.\textit{Object}
+                                [.\textit{Object}
+                                    [.\textit{Object}
+                                        \texttt{noun}  
+                                    ]  
+                                ]
+                            ]
+                        ]
+                    ]
+                ]
+            ]
+        ]
+        [.\texttt{endmark} \texttt{endmark} ]
+    ]
+
+\end{tikzpicture} 
+
+\noindent Number 5
+
+\begin{tikzpicture}
+
+\tikzset{frontier/.style={distance from root=270pt}}
+
+\Tree [.Sentence 
+        [.\textit{Subject}
+            [.\textit{Modifier} 
+                [.\textit{Modifier} 
+                    [.\texttt{adjective} \texttt{adjective} ]
+                ]
+                [.\textit{Modifier} 
+                    [.\textit{Modifier} 
+                        [.\textit{Modifier} 
+                            [.\texttt{adjective} \texttt{adjective} ]
+                        ]
+                        [.\textit{Modifier} 
+                            [.\textit{Modifier} 
+                                [.\texttt{adjective} \texttt{adjective} ]
+                            ]
+                        ]
+                    ]
+                ]
+            ]
+            [.\textit{Subject} 
+                [.\textit{Subject}                     
+                    [.\textit{Subject} 
+                        [.\textit{Subject} 
+                            [.\textit{Subject} 
+                                [.\textit{Subject} 
+                                    [.\texttt{noun} \texttt{noun} ]
+                                ]
+                            ]
+                        ]
+                    ]
+                ]
+            ]
+        ]
+        [.\texttt{verb} \texttt{verb} ]
+        [.\textit{Object}
+            [.\textit{Object}
+                [.\textit{Object}
+                    [.\textit{Object}
+                        [.\textit{Object}
+                            [.\textit{Object}
+                                [.\textit{Object}
+                                    [.\textit{Object}
+                                        \texttt{noun}  
+                                    ]  
+                                ]
+                            ]
+                        ]
+                    ]
+                ]
+            ]
+        ]
+        [.\texttt{endmark} \texttt{endmark} ]
+    ]
+\end{tikzpicture} 
+
+\subsection*{rightmost derivations}
+
+\noindent Number 1
+
+\begin{tikzpicture}
+
+\tikzset{frontier/.style={distance from root=270pt}}
+
+\Tree [.Sentence 
+        [.\textit{Subject}
+            [.\textit{Subject}
+	            [.\textit{Modifier}
+	                [.\textit{Modifier}
+		                [.\textit{Modifier} 
+		                    [.\textit{Modifier}
+		                        [.\textit{Modifier} 
+		                            [.\textit{Modifier} 
+		                                \texttt{adjective}
+		                            ]
+		                        ] 
+		                        [.\textit{Modifier} 
+		                            [.\texttt{adjective} \texttt{adjective} ]
+		                        ]
+		                    ]
+		                ]
+		                [.\textit{Modifier} 
+		                    [.\texttt{adjective} \texttt{adjective} ]
+		                ]   
+		            ] 
+	            ]
+	            [.\textit{Subject} 
+	                [.\texttt{noun} \texttt{noun} ]
+	            ]
+	        ]
+        ]
+        [.\texttt{verb} \texttt{verb} ]
+        [.\textit{Object}
+            [.\texttt{noun} \texttt{noun} ]
+        ]
+        [.\texttt{endmark} \texttt{endmark} ]
+    ]
+\end{tikzpicture} 
+
+\noindent Number 2
+
+\begin{tikzpicture}
+
+\tikzset{frontier/.style={distance from root=270pt}}
+
+\Tree [.Sentence 
+        [.\textit{Subject}
+            [.\textit{Subject}
+	            [.\textit{Modifier}
+	                [.\textit{Modifier}
+	                    [.\textit{Modifier} 
+		                    [.\textit{Modifier} 
+		                        [.\textit{Modifier} 
+		                            [.\textit{Modifier} 
+		                                \texttt{adjective}
+		                            ]
+		                        ]
+		                    ]
+		                ]
+		                [.\textit{Modifier} 
+	                        [.\textit{Modifier} 
+	                            [.\textit{Modifier} 
+	                                [.\texttt{adjective} \texttt{adjective} ]
+	                            ]
+	                        ]
+	                        [.\textit{Modifier} 
+	                            [.\texttt{adjective} \texttt{adjective} ]
+	                        ]
+		                ]
+		            ] 
+	            ]
+	            [.\textit{Subject} 
+	                [.\texttt{noun} \texttt{noun} ]
+	            ]
+	        ]
+        ]
+        [.\texttt{verb} \texttt{verb} ]
+        [.\textit{Object}
+            [.\texttt{noun} \texttt{noun} ]
+        ]
+        [.\texttt{endmark} \texttt{endmark} ]
+    ]
+\end{tikzpicture} 
+
+\noindent Number 3
+
+\begin{tikzpicture}
+
+\tikzset{frontier/.style={distance from root=270pt}}
+
+\Tree [.Sentence 
+        [.\textit{Subject}
+            [.\textit{Subject}
+	            [.\textit{Modifier}
+	                [.\textit{Modifier}
+	                    [.\textit{Modifier} 
+		                    [.\textit{Modifier} 
+		                        [.\textit{Modifier} 
+		                            [.\textit{Modifier} 
+		                                \texttt{adjective}
+		                            ]
+		                        ]
+		                    ]
+		                ]
+		            ] 
+	            ]
+	            [.\textit{Subject} 
+	                [.\textit{Modifier}
+	                    [.\textit{Modifier}
+	                        [.\textit{Modifier}
+                                [.\textit{Modifier}
+                                    [.\texttt{adjective} \texttt{adjective} ]
+                                ]
+	                        ]
+	                    ]
+	                ]
+	                [.\textit{Subject} 
+		                [.\textit{Modifier}
+	                        [.\textit{Modifier}
+	                            [.\texttt{adjective} \texttt{adjective} ]
+	                        ]
+	                    ]
+	                    [.\textit{Subject} 
+		                    [.\texttt{noun} \texttt{noun} ]
+	                    ]
+	                ]
+	            ]
+	        ]
+        ]
+        [.\texttt{verb} \texttt{verb} ]
+        [.\textit{Object}
+            [.\texttt{noun} \texttt{noun} ]
+        ]
+        [.\texttt{endmark} \texttt{endmark} ]
+    ]
+\end{tikzpicture} 
+
+\noindent Number 4
+
+\begin{tikzpicture}
+
+\tikzset{frontier/.style={distance from root=270pt}}
+
+\Tree [.Sentence 
+        [.\textit{Subject}
+            [.\textit{Subject}
+	            [.\textit{Modifier}
+	                [.\textit{Modifier}
+	                    [.\textit{Modifier} 
+		                    [.\textit{Modifier}
+		                        [.\textit{Modifier}
+	                                [.\textit{Modifier}
+	                                    \texttt{adjective}
+	                                ]
+		                        ]
+		                        [.\textit{Modifier}
+		                            [.\texttt{adjective} \texttt{adjective} ]
+		                        ]
+		                    ]
+		                ]
+		            ] 
+	            ]
+	            [.\textit{Subject} 
+	                [.\textit{Modifier}
+	                    [.\textit{Modifier}
+	                        [.\texttt{adjective} \texttt{adjective} ]
+	                    ]
+	                ]
+	                [.\textit{Subject} 
+		                [.\texttt{noun} \texttt{noun} ]
+	                ]
+	            ]
+	        ]
+        ]
+        [.\texttt{verb} \texttt{verb} ]
+        [.\textit{Object}
+            [.\texttt{noun} \texttt{noun} ]
+        ]
+        [.\texttt{endmark} \texttt{endmark} ]
+    ]
+\end{tikzpicture}
+
+\noindent Number 4
+
+\begin{tikzpicture}
+
+\tikzset{frontier/.style={distance from root=270pt}}
+
+\Tree [.Sentence 
+        [.\textit{Subject}
+            [.\textit{Subject}
+	            [.\textit{Modifier}
+	                [.\textit{Modifier}
+	                    [.\textit{Modifier} 
+		                    [.\textit{Modifier}
+		                        [.\textit{Modifier}
+	                                [.\textit{Modifier}
+	                                    \texttt{adjective}
+	                                ]
+		                        ]
+		                    ]
+		                ]
+		            ] 
+	            ]
+	            [.\textit{Subject} 
+	                [.\textit{Modifier}
+	                    [.\textit{Modifier}
+		                    [.\textit{Modifier}
+		                        [.\textit{Modifier}
+		                            [.\texttt{adjective} \texttt{adjective} ]
+		                        ]
+		                    ]
+	                        [.\textit{Modifier}
+	                            [.\texttt{adjective} \texttt{adjective} ]
+	                        ]
+	                    ]
+	                ]
+	                [.\textit{Subject} 
+		                [.\texttt{noun} \texttt{noun} ]
+	                ]
+	            ]
+	        ]
+        ]
+        [.\texttt{verb} \texttt{verb} ]
+        [.\textit{Object}
+            [.\texttt{noun} \texttt{noun} ]
+        ]
+        [.\texttt{endmark} \texttt{endmark} ]
+    ]
+\end{tikzpicture}
 
 \section*{Exercise 16.2}
 
