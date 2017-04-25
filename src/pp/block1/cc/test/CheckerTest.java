@@ -4,11 +4,12 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import pp.block1.cc.dfa.Checker;
+import pp.block1.cc.dfa.MyChecker;
 import pp.block1.cc.dfa.State;
 
 /** Test class for Checker implementation. */
 public class CheckerTest {
-	private Checker myChecker = null; // TODO instantiate your Checker implementation
+	private Checker myChecker = new MyChecker(); // TODO instantiate your Checker implementation
 
 	private State dfa;
 

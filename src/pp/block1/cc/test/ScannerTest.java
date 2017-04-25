@@ -1,5 +1,6 @@
 package pp.block1.cc.test;
 
+import static pp.block1.cc.dfa.State.DFA_LALA;
 import static pp.block1.cc.dfa.State.ID6_DFA;
 
 import java.util.List;
@@ -7,12 +8,13 @@ import java.util.List;
 import org.junit.Assert;
 import org.junit.Test;
 
+import pp.block1.cc.dfa.MyScanner;
 import pp.block1.cc.dfa.Scanner;
 import pp.block1.cc.dfa.State;
 
 /** Test class for Scanner implementation. */
 public class ScannerTest {
-	private Scanner myGen = null; // TODO instantiate your Scanner implementation
+	private Scanner myGen = new MyScanner(); // TODO instantiate your Scanner implementation
 
 	@Test
 	public void testID6() {
@@ -21,6 +23,18 @@ public class ScannerTest {
 		yields("a12345", "a12345");
 		yields("a12345AaBbCc", "a12345", "AaBbCc");
 	}
+
+	@Test
+    public void testLA() {
+	    this.dfa = DFA_LALA;
+        yields("");
+        yields("La", "La");
+        yields("LaLa", "LaLa");
+        yields("LaLaLaLi", "LaLaLaLi");
+        yields("LaLaLaLiLaLaLaLi", "LaLaLaLi", "LaLaLaLi");
+        yields("LaLaaaaLaaaaLi", "LaLaaaaLaaaaLi");
+        yields("La    Laaaa LaaaaLi", "La    Laaaa LaaaaLi");
+    }
 
 	private void yields(String word, String... tokens) {
 		List<String> result = this.myGen.scan(this.dfa, word);

@@ -97,4 +97,64 @@ public class State {
 			}
 		}
 	}
+
+	static final public State DFA_LALA;
+	static {
+	    DFA_LALA = new State(0, false);
+        State q1 = new State(1, false);
+        State q2 = new State(2, true);
+        State q3 = new State(3, true);
+        State q4 = new State(4, false);
+        State q5 = new State(5, true);
+        State q6 = new State(6, true);
+        State q7 = new State(7, false);
+        State q8 = new State(8, false);
+        State q9 = new State(9, false);
+        State q10 = new State(10, false);
+        State q11 = new State(11, true);
+        State q12 = new State(12, true);
+        State[] states = {DFA_LALA, q1, q2, q3, q4, q5, q6, q7, q8, q9, q10, q11, q12};
+
+        char c = 'L';
+        for (int s = 0; s  < states.length - 1; s++) {
+            State state = states[s];
+            int num = state.getNumber();
+            if (num == 0 | num == 3 | num == 6 | num == 9) {
+                state.addNext(c, states[s + 1]);
+            } else if (num == 2 | num == 5 | num == 8) {
+                state.addNext(c, states[s + 2]);
+            }
+        }
+
+        c = 'a';
+        for (int s = 0; s  < states.length - 1; s++) {
+            State state = states[s];
+            int num = state.getNumber();
+            if (num == 1 | num == 4 | num == 7) {
+                state.addNext(c, states[s + 1]);
+            } else if (num == 2 | num == 5 | num == 8) {
+                state.addNext(c, states[s]);
+            }
+        }
+
+        c = ' ';
+        for (int s = 0; s  < states.length - 1; s++) {
+            State state = states[s];
+            int num = state.getNumber();
+            if (num == 2 | num == 5 | num == 8 | num == 11) {
+                state.addNext(c, states[s + 1]);
+            } else if (num == 3 | num == 6 | num == 9 | num == 12) {
+                state.addNext(c, states[s]);
+            }
+        }
+
+        c = 'i';
+        for (int s = 0; s  < states.length - 1; s++) {
+            State state = states[s];
+            int num = state.getNumber();
+            if (num == 10) {
+                state.addNext(c, states[s + 1]);
+            }
+        }
+    }
 }
