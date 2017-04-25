@@ -113,10 +113,44 @@ Parsing and type checking.
 \end{tabular}
 
 \section*{Exercise 4.1}
+The assignment: $d \leftarrow d + 2 * (a + b)$
+\begin{figure}[H]
+\begin{verbatim}
+1 3  loadAI     r(arp), @a => r(a)
+2 4  loadAI     r(arp), @b => r(b)
+3 5  loadAI     r(arp), @d => r(d)
+5 5  add        r(a), r(b) => r(a)
+6 6  add        r(a), r(a) => r(a)
+7 7  add        r(d), r(a) => r(d)
+8 10 storeAI    r(d) => r(arp), @d 
+\end{verbatim}
+\end{figure}
 
 \section*{Exercise 4.2}
+\begin{figure}[H]
+\begin{verbatim}
+1  3  loadAI    r(arp), @a => r(1)
+2  4  loadAI    r(arp), @b => r(2)
+5  5  add       r(1), r(2) => r(1)
+6  6  add       r(1), r(1) => r(1)
+7  9  loadAI    r(arp), @d => r(2)
+10 10 add       r(1), r(2) => r(1)
+11 13 storeAI   r(1) => r(arp), @d 
+\end{verbatim}
+\end{figure}
 
 \section*{Exercise 4.3}
+\begin{figure}[H]
+\begin{verbatim}
+1 3  loadAI     r(arp), @a => r(1)
+2 4  loadAI     r(arp), @b => r(2)
+3 5  loadAI     r(arp), @d => r(3)
+5 5  add        r(1), r(2) => r(1)
+6 6  add        r(1), r(1) => r(1)
+7 7  add        r(d), r(a) => r(d)
+8 10 storeAI    r(d) => r(arp), @d 
+\end{verbatim}
+\end{figure}
 
 \section*{Exercise 5}
 \begin{figure}[H]
@@ -176,11 +210,14 @@ Regex:
 \end{figure}
 
 \section*{Exercise 7.1}
+(La+\textbackslash \ *)                            \\
+(La+\textbackslash \ *)\{2\}                       \\
+(La+\textbackslash \ *)\{3\}(Li\textbackslash \ *) \\
 
 \section*{Exercise 7.2}
 
 \section*{Exercise 7.3}
-
-More text.
+`Laaaa La' + `Laa'     \\
+`La' + `La La La Li'
 
 \end{document}
