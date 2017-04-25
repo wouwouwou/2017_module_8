@@ -20,6 +20,7 @@
 %   read geometry.pdf for detailed page layout information
 
 \usepackage{graphicx} % support the \includegraphics command and options
+\usepackage{float}
 
 % \usepackage[parfill]{parskip} % Activate to begin paragraphs with an empty line rather than an indent
 
@@ -49,6 +50,10 @@
 \renewcommand{\cftsecfont}{\rmfamily\mdseries\upshape}
 \renewcommand{\cftsecpagefont}{\rmfamily\mdseries\upshape} % No bold!
 
+%% Automata
+\usepackage{pgf}
+\usepackage{tikz}
+\usetikzlibrary{arrows,automata,positioning}
 %%% END Article customizations
 
 %%% The "real" document content comes below...
@@ -114,8 +119,61 @@ Parsing and type checking.
 \section*{Exercise 4.3}
 
 \section*{Exercise 5}
+\begin{figure}[H]
+\begin{tikzpicture}[shorten >=1pt,node distance=2.5cm,auto]
 
+  \node[initial,state]	(A)                    {$1$};
+  \node[state]			(B) [right of=A] {$2$};
+  \node[state]			(C) [right of=B] {$3$};
+  \node[state]			(D) [right of=C] {$4$};
+  \node[state]			(E) [right of=D]       {$5$};
+  \node[state,accepting]	(F) [right of=E]       {$6$};
+
+  \path [->]
+        (A) edge              	node {[a-zA-z]} (B)
+        (B) edge              	node {[a-zA-z0-9]} (C)
+        (C) edge              	node {[a-zA-z0-9]} (D)
+        (D) edge              	node {[a-zA-z0-9]} (E)
+        (E) edge 				node {[a-zA-z0-9]} (F)
+        (F) edge [loop above]	node {[a-zA-z0-9]} (F);
+\end{tikzpicture} 
+\end{figure}
+
+\begin{figure}[H]
+\begin{tikzpicture}[shorten >=1pt,node distance=2.5cm,auto]
+
+  \node[initial,state]	(A)                    {$1$};
+  \node[state]			(B) [right of=A] {$2$};
+  \node[state, accepting]			(C) [right of=B] {$3$};
+
+  \path [->]
+        (A) edge              	node {(} (B)
+        (B) edge  [bend left] 	node {)} (C)
+        (C) edge  [bend left] 	node {(} (B);
+\end{tikzpicture} 
+\end{figure}
 \section*{Exercise 6}
+Regex:
+
+\texttt{(")($\sum$|"")*(")}
+
+\noindent FA:
+\begin{figure}[H]
+\begin{tikzpicture}[shorten >=1pt,node distance=2.5cm,auto]
+
+  \node[initial,state]	    (A)                    {$1$};
+  \node[state]			    (B) [right of=A] {$2$};
+  \node[state, accepting]    (C) [right of=B] {$4$};
+  \node[state]              (D) [above of=B] {$3$};
+
+  \path [->]
+        (A) edge                 node {"}         (B)
+        (B) edge               	 node {"}         (C)
+            edge  [bend left]    node {"}         (D)
+            edge  [loop below]   node {$\sum$}    (B)
+        (D) edge  [bend left]    node {"}         (B);
+\end{tikzpicture} 
+\end{figure}
 
 \section*{Exercise 7.1}
 
