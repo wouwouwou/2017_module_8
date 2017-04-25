@@ -54,7 +54,7 @@
 %%% The "real" document content comes below...
 
 \title{Exercises Compiler Construction}
-\author{Martijn Verkleij (s...) \& Wouter Bos (s1606824)}
+\author{Martijn Verkleij (s1466895) \& Wouter Bos (s1606824)}
 %\date{} % Activate to display a given date or no date (if empty),
          % otherwise the current date is printed 
 
@@ -75,6 +75,7 @@ scanning					& transforms the (input) code language into tokens, first phase of 
 type checking				& checking if the groups of tokens are meaningful, third phase of front-end		\\
 \end{tabular}
 
+
 \section*{Exercise 2.1}
 \begin{tabular}{|c|c|c|c|c|c|}	\hline
 Most 				& students 			& is 	& good 					& programmers 	& . 		\\\hline
@@ -89,9 +90,22 @@ adj 				& noun 				& verb 	& adj 					& noun 			& end 		\\\hline
 of a type error.
 
 \section*{Exercise 2.3}
-Parsing and type checking
+Parsing and type checking.
 
 \section*{Exercise 3}
+\begin{tabular}{lcl}
+\textbf{Sentence}		& $\rightarrow$	& \textbf{Subject} verb \textbf{Object} endmark		\\
+\textbf{Subject}		& $\rightarrow$	& noun												\\
+\textbf{Subject}		& $\rightarrow$	& particle noun										\\
+\textbf{Subject}		& $\rightarrow$	& \textbf{Modifier} noun							\\
+\textbf{Subject}		& $\rightarrow$	& particle \textbf{Modifier} noun					\\
+\textbf{Object}			& $\rightarrow$	& noun												\\
+\textbf{Object}			& $\rightarrow$	& particle noun										\\
+\textbf{Object}			& $\rightarrow$	& \textbf{Modifier} noun							\\
+\textbf{Object}			& $\rightarrow$	& particle \textbf{Modifier} noun					\\
+\textbf{Modifier}		& $\rightarrow$	& adjective											\\
+\textbf{Modifier}		& $\rightarrow$	& \textbf{Modifier} adjective						\\
+\end{tabular}
 
 \section*{Exercise 4.1}
 
