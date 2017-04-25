@@ -120,14 +120,15 @@ Parsing and type checking.
 
 \section*{Exercise 5}
 \begin{figure}[H]
-\begin{tikzpicture}[shorten >=1pt,node distance=2.5cm,auto]
+\begin{tikzpicture}[shorten >=1pt,node distance=3cm,auto]
 
   \node[initial,state]	(A)                    {$1$};
   \node[state]			(B) [right of=A] {$2$};
   \node[state]			(C) [right of=B] {$3$};
   \node[state]			(D) [right of=C] {$4$};
-  \node[state]			(E) [right of=D]       {$5$};
-  \node[state,accepting]	(F) [right of=E]       {$6$};
+  \node[state]			(E) [below of=D]       {$5$};
+  \node[state]	        (F) [left of=E]       {$6$};
+  \node[state,accepting]	(G) [left of=F]       {$7$};
 
   \path [->]
         (A) edge              	node {[a-zA-z]} (B)
@@ -135,7 +136,7 @@ Parsing and type checking.
         (C) edge              	node {[a-zA-z0-9]} (D)
         (D) edge              	node {[a-zA-z0-9]} (E)
         (E) edge 				node {[a-zA-z0-9]} (F)
-        (F) edge [loop above]	node {[a-zA-z0-9]} (F);
+        (F) edge             	node {[a-zA-z0-9]} (G);
 \end{tikzpicture} 
 \end{figure}
 
