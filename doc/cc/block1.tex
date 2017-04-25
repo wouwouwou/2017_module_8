@@ -67,17 +67,37 @@
 \maketitle
 
 \section*{Exercise 1}
-\begin{tabular}{ll}
-back-end					& maps code into computer specific code (thrid phase of a compiler)				\\
-front-end					& understands code syntax and checks for errors (firts phase of a compiler)		\\
-grammar						& rules of a language, used in front-end after scanning (parsing part)			\\
-instruction scheduling		& choosing the order of the instructions										\\
-instruction selection		& choosing which instructions to use											\\
-optimiser					& a transformer that improves the IR											\\
-parsing						& grouping of tokens based on a grammar, second phase of front-end				\\
-register allocation			& optimises the registers used in the program									\\
-scanning					& transforms the (input) code language into tokens, first phase of front-end	\\
-type checking				& checking if the groups of tokens are meaningful, third phase of front-end		\\
+\begin{tabular}{l|p{10cm}}\hline
+Back-end
+& Maps code into computer specific code (thrid phase of a compiler). \\\hline
+
+Front-end
+& Understands code syntax and checks for errors (firts phase of a compiler). \\\hline
+
+Grammar
+& Rules of a language, used in front-end after scanning (parsing part). \\\hline
+
+Instruction scheduling
+& Choosing the order of the instructions. \\\hline
+
+Instruction selection
+& Choosing which instructions to use. \\\hline
+
+Optimiser
+& A transformer that improves the IR. \\\hline
+
+Parsing
+& Grouping of tokens based on a grammar, second phase of Front-end. \\\hline
+
+Register allocation
+& Optimises the registers used in the program. \\\hline
+
+Scanning
+& Transforms the (input) code language into tokens, first phase of front-end. \\\hline
+
+Type checking
+& Checking if the groups of tokens are meaningful, third phase of front-end. \\\hline
+
 \end{tabular}
 
 
@@ -260,5 +280,44 @@ Regex:
 \section*{Exercise 7.3}
 `Laaaa La' + `Laa'     \\
 `La' + `La La La Li'
+
+\section*{Exercise 15}
+\begin{tabular}{l|p{11cm}} \hline
+
+Sentential form
+& A string is a sentential form if it occurs at a step in a valid derivation. \\\hline
+
+Parse tree
+& A graph representation of a derivation. \\\hline
+
+Ambiguity
+& Ambiguity occurs when a sentence in the language of a grammar derives in more than one derivation \\\hline
+
+Left / right recursion
+& Left recursion occurs if a non-terminal symbol can derive to a sentential form with itself as the leftmost symbol. Right recursion is the opposite. \\\hline
+
+Recursive-descent parsing
+& Parsing with a set of mutually recursive procedures. Each non-terminal has such a procedure. Simple and efficient for backtrack-free grammars. \\\hline
+
+LL(x)
+& A left-to-right leftmost parser with a lookahead of x. Reads the input from left to right and uses leftmost derivation to rewrite it. Parses it top-down with a lookahead of x. \\\hline
+
+Bottom-up parsing
+& Parsing from the leaves of a parse tree to the top / root. Creates a leaf node of the tree for a word returned by the scanner and works its way up with other (non)terminals to reach the top / root. \\\hline
+
+LR(x)
+& A left-to-right rightmost parser with a lookahead of x. Reads the input from left to right and uses rightmost derivation to rewrite it. Parses it top-down with a lookahead of x. \\\hline
+
+\end{tabular}
+
+\section*{Exercise 16.1}
+
+\section*{Exercise 16.2}
+
+\section*{Exercise 16.3}
+
+\section*{Exercise 17}
+
+\section*{Exercise 18}
 
 \end{document}
