@@ -216,6 +216,46 @@ Regex:
 (La+\textbackslash \ *)\{3\}(Li\textbackslash \ *) \\
 
 \section*{Exercise 7.2}
+\begin{figure}[H]
+\begin{tikzpicture}[shorten >=1pt,node distance=2.5cm,auto]
+
+  \node[initial,state]	    (A)              {$1$};
+  \node[state]			    (B) [right of=A] {$2$};
+  \node[state, accepting]   (C) [right of=B] {$3$};
+  \node[state, accepting]   (D) [below of=A] {$4$};
+  \node[state]			    (E) [right of=D]  {$5$};
+  \node[state, accepting]   (F) [right of=E]  {$6$};
+  \node[state, accepting]   (G) [below of=D] {$7$};
+  \node[state]			    (H) [right of=G] {$8$};
+  \node[state]              (I) [right of=H] {$9$};
+  \node[state]              (J) [below of=G] {$10$};
+  \node[state]			    (K) [right of=J]  {$11$};
+  \node[state, accepting]   (L) [right of=K]  {$12$};
+
+  \path [->]
+        (A) edge               node                 {L}     (B)
+        (B) edge               node                 {a}     (C)
+        (C) edge  [loop above] node                 {a}     (C)
+            edge               node [sloped, above] {space} (D)
+            edge               node [sloped]        {L}     (E)
+        (D) edge               node                 {L}     (E)
+            edge  [loop above] node                 {space} (D)
+        (E) edge               node                 {a}     (F)
+        (F) edge  [loop above] node                 {a}     (F)
+            edge               node [sloped, above] {space} (G)
+            edge               node [sloped]        {L}     (H)
+        (G) edge               node                 {L}     (H)
+            edge  [loop above] node                 {space} (G)
+        (H) edge               node                 {a}     (I)
+        (I) edge  [loop above] node                 {a}     (I)
+            edge               node [sloped, above] {space} (J)
+            edge               node [sloped]        {L}     (K)
+        (J) edge               node                 {L}     (K)
+            edge  [loop above] node                 {space} (J)
+        (K) edge               node                 {i}     (L)
+        (L) edge  [loop above] node                 {space} (L);
+\end{tikzpicture} 
+\end{figure}
 
 \section*{Exercise 7.3}
 `Laaaa La' + `Laa'     \\
