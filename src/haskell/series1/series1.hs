@@ -1,19 +1,26 @@
 import Data.Char
 
+
+-- Excercise 1
+
 ex1 x = 2*x^2 + 3*x - 5
 
 abc = "abcdefghijklmnopqrstuvwxyz"
 
 code :: Char -> Char
-code (x)        | ord(x) > 96 && ord(x) < 123   = chr(97 + mod (ord(x)-97+3) 26)
+code x          | ord(x) > 96 && ord(x) < 123   = chr(97 + mod (ord(x)-97+3) 26)
                 | ord(x) > 64 && ord(x) < 91    = chr(65 + mod (ord(x)-62+3) 26)
                 | otherwise                     = x
 
+code' x = coden2 3 x
+
 coden :: Int -> Char -> Char
-coden n x       | ord(x) > 96 && ord(x) < 12    = chr(97 + mod (ord(x)-97+n) 26)
+coden n x       | ord(x) > 96 && ord(x) < 123   = chr(97 + mod (ord(x)-97+n) 26)
                 | ord(x) > 64 && ord(x) < 91    = chr(65 + mod (ord(x)-65+n) 26)
                 | otherwise                     = x
 
+-- Variant met 25 letters!
+-- Omdat het.. Omdat het prachtig is! - Wiebes, 2017
 coden2 :: Int -> Char -> Char
 coden2 n x      | ord(x) > 96 && ord(x) < 122   = chr(97 + mod (ord(x)-97+n) 25)
                 | ord(x) > 64 && ord(x) < 90    = chr(65 + mod (ord(x)-65+n) 25)
@@ -30,7 +37,7 @@ interest a r n        = (a*(1+r)**n)
 
 amount :: (Floating a, Eq a) => a -> a -> a -> a
 amount a r 0    = a
-amount a r n    = amount (a*(1+r)**n) r (n-1)
+amount a r n    = amount (a*(1+r)) r (n-1)
 
 root1 ::  Double -> Double -> Double -> Double
 root1 a b c     | disc a b c < 0        = error "negative discriminant"
@@ -47,7 +54,8 @@ extrX :: Double -> Double -> Double -> Double
 extrX a b c = -b/(2*a)
 
 extrY :: Double -> Double -> Double -> Double
-extrY a b c = a*(extrX a b c)^2 + b*(extrX a b c) + c
+extrY a b c = a*(exX)^2 + b*(exX) + c
+    where exX = extrX a b c
 
 
 mylength :: [a] -> Int
@@ -63,12 +71,12 @@ myreverse []            = []
 myreverse (x:xs)        = myreverse xs ++ [x]
 
 mytake :: Int -> [a] -> [a]
-mytake n []     = []
+mytake _ []     = []
 mytake 0 xs     = []
 mytake n (x:xs) = [x] ++ mytake (n-1) xs
 
 myelem :: Eq a => a -> [a] -> Bool
-myelem a []     = False
+myelem _ []     = False
 myelem a (x:xs) | x == a        = True
                 | otherwise     = myelem a xs
 
@@ -105,7 +113,7 @@ total a d i j   = total (a+d) d (i-1) (j-1)
 
 total1 a d i j  | i == j        = (r1 a d j)
                 | i > j         = error "i must be smaller than j"
-                | otherwise     = (r1 a d j) + total1 a d i (j-1)
+                | otherwise     = (r1 a d i) + total1 a d (i+1) j
 
 
 allEqual :: Eq a => [a] -> Bool
@@ -116,6 +124,12 @@ allEqual (x:xs) | x == head xs  = allEqual xs
 
 isAS :: (Num a, Eq a) => [a] -> Bool
 isAS xss@(x1:x2:xs) = allEqual $ zipWith (-) (r x1 (x2-x1)) xss
+
+isAS' []    = True
+isAS' [_]   = True
+isAS' [_,_] = True
+isAS' xss@(x1:x2:x3:xs) | x2-x1 == x3-x2    = isAS' (x2:x3:xs)
+                        | otherwise         = False
 
 matrixSquare :: [[a]] -> Bool
 matrixSquare a = allEqual(map mylength a)
