@@ -111,8 +111,8 @@ total1 a d i j  | i == j        = (r1 a d j)
 allEqual :: Eq a => [a] -> Bool
 allEqual []     = True
 allEqual [x]    = True
-allEqual (x:xs) | x == head xs        = allEqual xs
-                | otherwise        = False
+allEqual (x:xs) | x == head xs  = allEqual xs
+                | otherwise     = False
 
 isAS :: (Num a, Eq a) => [a] -> Bool
 isAS xss@(x1:x2:xs) = allEqual $ zipWith (-) (r x1 (x2-x1)) xss
