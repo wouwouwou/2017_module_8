@@ -43,15 +43,11 @@ getAge (a,b,c,d)	= b
 getSex (a,b,c,d)	= c
 getCity (a,b,c,d)	= d
 
---getByName :: String -> (String,Int,String,String)
-getByNamePr :: String -> [(String, Int, String, String)] -> (String, Int, String, String)
-getByNamePr _ []	= error "not found"
-getByNamePr q (x:xs)	| map (toLower) (getName x) == map (toLower) (q)	= x
-						| otherwise											= getByNamePr q xs
-
 --B
 getByName :: String -> [(String, Int, String, String)] -> (String, Int, String, String)
-getByName q xs 	= getByNamePr q xs
+getByName _ []	= error "not found"
+getByName q (x:xs)	| map (toLower) (getName x) == map (toLower) (q) = x
+					| otherwise                                      = getByName q xs
 
 getNameByName q xs	= getName (getByName q xs)
 getAgeByName q xs	= getAge (getByName q xs)
