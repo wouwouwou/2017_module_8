@@ -9,10 +9,12 @@ allEqual (x:xs)	| x == head xs	= allEqual xs
 		| otherwise	= False
 -------------------------------------------------
 
+
+-- Exercise 1
 myfilter :: (a -> Bool) -> [a] -> [a]
 myfilter _ [] 		= []
 myfilter f (x:xs)	| f x		= x : myfilter f xs
-			| otherwise	= myfilter f xs
+					| otherwise	= myfilter f xs
 
 myfoldl :: (a -> b -> a) -> a -> [b] -> a
 myfoldl f a [x]		= a `f` x
@@ -30,10 +32,9 @@ myzipWith _ _ []		= []
 myzipWith f (x:xs) (y:ys)	= x `f` y : myzipWith f xs ys
 
 
-----------------------------------
+--------------------------
 --	   Excercise 2		--
-----------------------------------
---a
+--------------------------
 gba :: [(String,Int,String,String)]
 gba = [("a", 15, "M", "Soest"), ("b", 37, "F", "Soest"), ("c", 12, "M", "Soest"), ("d", 25, "F", "Amersfoort")]
 
@@ -46,7 +47,7 @@ getCity (a,b,c,d)	= d
 getByNamePr :: String -> [(String, Int, String, String)] -> (String, Int, String, String)
 getByNamePr _ []	= error "not found"
 getByNamePr q (x:xs)	| map (toLower) (getName x) == map (toLower) (q)	= x
-			| otherwise						= getByNamePr q xs
+						| otherwise											= getByNamePr q xs
 
 --B
 getByName :: String -> [(String, Int, String, String)] -> (String, Int, String, String)
