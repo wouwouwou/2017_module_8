@@ -63,6 +63,7 @@ getCityByName q xs    = getCity (getByName q xs)
 
 --C
 --ageRec :: b -> [(a,b,c,d)] -> [(a,b,c,d)]
+-- Adds a years to the age of all items in the database
 ageRec a []     = []
 ageRec a (x:xs) = (getName x,(getAge x) + a,getSex x ,getCity x) : ageRec a xs
 
