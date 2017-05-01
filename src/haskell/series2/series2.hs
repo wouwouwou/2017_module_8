@@ -49,11 +49,17 @@ getByName _ []    = error "not found"
 getByName q (x:xs)    | map (toLower) (getName x) == map (toLower) (q) = x
                     | otherwise                                      = getByName q xs
 
+getNameByName :: String -> [(String, Int, String, String)] -> String
 getNameByName q xs    = getName (getByName q xs)
-getAgeByName q xs    = getAge (getByName q xs)
-getSexByName q xs    = getSex (getByName q xs)
-getCityByName q xs    = getCity (getByName q xs)
 
+getAgeByName :: String -> [(String, Int, String, String)] -> Int
+getAgeByName q xs    = getAge (getByName q xs)
+
+getSexByName :: String -> [(String, Int, String, String)] -> String
+getSexByName q xs    = getSex (getByName q xs)
+
+getCityByName :: String -> [(String, Int, String, String)] -> String
+getCityByName q xs    = getCity (getByName q xs)
 
 --C
 --ageRec :: b -> [(a,b,c,d)] -> [(a,b,c,d)]
