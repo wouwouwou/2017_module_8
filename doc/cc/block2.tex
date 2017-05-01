@@ -68,40 +68,54 @@
 \maketitle
 
 \section*{Exercise 1}
-\begin{tabular}{l|p{10cm}}\hline
-Back-end
-& Maps code into computer specific code (thrid phase of a compiler). \\\hline
+FIRST calculation:
+\begin{figure}[H]
+\begin{tabular}{|c|c|c|c|c|c|c|c|}\hline
+\textbf{FIRST}     & assign & if & expr & then & else & EOF & $\epsilon$ \\\hline
 
-Front-end
-& Understands code syntax and checks for errors (firts phase of a compiler). \\\hline
-
-Grammar
-& Rules of a language, used in front-end after scanning (parsing part). \\\hline
-
-Instruction scheduling
-& Choosing the order of the instructions. \\\hline
-
-Instruction selection
-& Choosing which instructions to use. \\\hline
-
-Optimiser
-& A transformer that improves the IR. \\\hline
-
-Parsing
-& Grouping of tokens based on a grammar, second phase of Front-end. \\\hline
-
-Register allocation
-& Optimises the registers used in the program. \\\hline
-
-Scanning
-& Transforms the (input) code language into tokens, first phase of front-end. \\\hline
-
-Type checking
-& Checking if the groups of tokens are meaningful, third phase of front-end. \\\hline
-
+$0^{th}$ iteration & assign & if & expr & then & else & EOF & $\epsilon$ \\\hline
 \end{tabular}
+\end{figure}
+
+\begin{figure}[H]
+\begin{tabular}{|c|c|c|}\hline
+\textbf{FIRST}     & \textit{Stat}  & \textit{Elsepart} \\\hline
+
+$1^{st}$ iteration & assign, if     & else, $\epsilon$  \\\hline
+\end{tabular}
+\end{figure}
+
+\noindent FOLLOW calculation:
+
+\begin{figure}[H]
+\begin{tabular}{|c|c|c|}\hline
+\textbf{FOLLOW}    & \textit{Stat}      & \textit{ElsePart}  \\\hline
+$0^{th}$ iteration & \texttt{EOF}       &                    \\\hline
+$1^{st}$ iteration & else, \texttt{EOF} & \texttt{EOF}       \\\hline
+$2^{nd}$ iteration & else, \texttt{EOF} & else, \texttt{EOF} \\\hline
+\end{tabular}
+\end{figure}
+
+\noindent FIRST+ calculation:
+
+\begin{figure}[H]
+\begin{tabular}{|c|l|c|c|}\hline
+  & production                                                               & \textbf{FIRST} & \textbf{FIRST+} \\\hline
+1 & \textit{Stat} $\rightarrow$ assign                                       & assign         & assign \\\hline
+2 & \textit{Stat} $\rightarrow$ if expr then \textit{Stat} \textit{ElsePart} & if             & if     \\\hline
+3 & \textit{ElsePart} $\rightarrow$ else \textit{Stat}                       & else           & else   \\\hline
+4 & \textit{ElsePart} $\rightarrow  \epsilon$                                & $\epsilon$     & $\epsilon$, else, \texttt{EOF} \\\hline
+\end{tabular}
+\end{figure}
+
+\section*{Excercise 2}
 
 
+
+%% ---------------------------
+%% ALL TEXT IGNORED FROM HERE!
+%% ---------------------------
+\iffalse
 \section*{Exercise 2.1}
 \begin{tabular}{|c|c|c|c|c|c|}	\hline
 Most 				& students 			& is 	& good 					& programmers 	& . 		\\\hline
@@ -908,7 +922,7 @@ Calculation of the FIRST set of all Terminals:\\
 & \textbf{then}
 & \textbf{expr}
 & \textbf{$\epsilon$}
-& \textbf{eof} \\\hline 
+& \textbf{EOF} \\\hline 
 
 assign
 & if
@@ -916,7 +930,7 @@ assign
 & then
 & expr
 & $\epsilon$
-& eof \\\hline 
+& EOF \\\hline 
 \end{tabular} \\
 
 \noindent Calculation of the FIRST set of all Non-Terminals:\\
@@ -965,7 +979,7 @@ assign, if
 \textbf{Stat}
 & \textbf{ElsePart} \\\hline
 
-eof
+EOF
 & \\\hline 
 \end{tabular} \\
 
@@ -973,16 +987,16 @@ eof
 \textbf{Stat}
 & \textbf{ElsePart} \\\hline
 
-eof
-& eof \\\hline 
+EOF
+& EOF \\\hline 
 \end{tabular} \\
 
 \begin{tabular}{|p{2cm}|c|} \hline 
 \textbf{Stat}
 & \textbf{ElsePart} \\\hline 
 
-eof, else
-& eof, else \\\hline 
+EOF, else
+& EOF, else \\\hline 
 \end{tabular}\\
 
 \noindent Calculation of the FIRST+ set (only rule 4 is necessary):\\
@@ -995,10 +1009,10 @@ eof, else
 4
 & \textbf{ElsePart} $\rightarrow \epsilon$
 & \{$\epsilon$\}
-& \{$\epsilon$, eof, else\} \\\hline 
+& \{$\epsilon$, EOF, else\} \\\hline 
 \end{tabular}\\
 
-\noindent The FIRST+ set of \textbf{ElsePart} $\rightarrow \epsilon$ (\{$\epsilon$, eof, else\}) is not disjoint with FIRST+ set of \textbf{ElsePart} $\rightarrow$ else Stat (\{else, $\epsilon$\}). Therefore, the grammar does not meet the criteria for \textit{LL(1)}\\
+\noindent The FIRST+ set of \textbf{ElsePart} $\rightarrow \epsilon$ (\{$\epsilon$, EOF, else\}) is not disjoint with FIRST+ set of \textbf{ElsePart} $\rightarrow$ else Stat (\{else, $\epsilon$\}). Therefore, the grammar does not meet the criteria for \textit{LL(1)}\\
 
 \section*{Exercise 18}
 \begin{tabular}{llcl}
@@ -1044,13 +1058,13 @@ eof, else
 \textbf{a}
 & \textbf{b}
 & \textbf{c}
-& \textbf{eof}
+& \textbf{EOF}
 & \textbf{$\epsilon$}\\\hline 
 
 a
 & b
 & c
-& eof
+& EOF
 & $\epsilon$\\\hline  
 \end{tabular} \\
 
@@ -1073,9 +1087,9 @@ a, b, c
 & \textbf{R}
 & \textbf{Q} \\\hline 
 
-eof
-& eof, a, b, c
-& eof, a, b \\\hline  
+EOF
+& EOF, a, b, c
+& EOF, a, b \\\hline  
 \end{tabular} \\
 
 \noindent Problem: left recursion at rule 5 and double b at rules 6 and 7!  \\
@@ -1135,13 +1149,13 @@ eof
 \textbf{a}
 & \textbf{b}
 & \textbf{c}
-& \textbf{eof}
+& \textbf{EOF}
 & \textbf{$\epsilon$}\\\hline 
 
 a
 & b
 & c
-& eof
+& EOF
 & $\epsilon$\\\hline  
 \end{tabular} \\
 
@@ -1170,7 +1184,7 @@ a, b, c
 & \textbf{R'}
 & \textbf{Q'} \\\hline
 
-eof
+EOF
 & a
 & b
 & a
@@ -1191,5 +1205,5 @@ eof
 \end{tabular}\\
 
 \noindent Every FIRST+ set of every Non-Terminal rule-combination is disjoint, so this satisfies the \textit{LL(1)} condition!\\
-
+\fi
 \end{document}
