@@ -6,15 +6,15 @@ allEqual :: Eq a => [a] -> Bool
 allEqual []     = True
 allEqual [x]    = True
 allEqual (x:xs)    | x == head xs    = allEqual xs
-        | otherwise    = False
+                   | otherwise       = False
 -------------------------------------------------
 
 
 -- Exercise 1
 myfilter :: (a -> Bool) -> [a] -> [a]
 myfilter _ []         = []
-myfilter f (x:xs)    | f x        = x : myfilter f xs
-                    | otherwise    = myfilter f xs
+myfilter f (x:xs) | f x       = x : myfilter f xs
+                  | otherwise = myfilter f xs
 
 myfoldl :: (a -> b -> a) -> a -> [b] -> a
 myfoldl f a [x]        = a `f` x
@@ -74,11 +74,11 @@ ageHOF a xs    = map (incAge a) xs
 
 --D
 is30to40F (a,b,c,d)     | b >= 30 && b <= 40 && c == "F"    = True
-            | otherwise                = False
+                        | otherwise                = False
 
 get30to40Rec []        = []
 get30to40Rec (x:xs)    | is30to40F x     = x : get30to40Rec xs
-            | otherwise                            = get30to40Rec xs
+                       | otherwise                            = get30to40Rec xs
 
 get30to40List xs    = [ (getName x, getAge x, getSex x, getCity x) | x <- xs, is30to40F x ]
 
