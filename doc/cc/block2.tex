@@ -68,49 +68,302 @@
 \maketitle
 
 \section*{Exercise 1}
-FIRST calculation:
-\begin{figure}[H]
-\begin{tabular}{|c|c|c|c|c|c|c|c|}\hline
-\textbf{FIRST}     & assign & if & expr & then & else & EOF & $\epsilon$ \\\hline
+Calculation of the FIRST set of all Terminals:\\
 
-$0^{th}$ iteration & assign & if & expr & then & else & EOF & $\epsilon$ \\\hline
-\end{tabular}
-\end{figure}
+\begin{tabular}{|c|c|c|c|c|c|c|} \hline 
+\textbf{assign}
+& \textbf{if}
+& \textbf{else}
+& \textbf{then}
+& \textbf{expr}
+& \textbf{$\epsilon$}
+& \textbf{EOF} \\\hline 
 
-\begin{figure}[H]
-\begin{tabular}{|c|c|c|}\hline
-\textbf{FIRST}     & \textit{Stat}  & \textit{Elsepart} \\\hline
+assign
+& if
+& else
+& then
+& expr
+& $\epsilon$
+& EOF \\\hline 
+\end{tabular} \\
 
-$1^{st}$ iteration & assign, if     & else, $\epsilon$  \\\hline
-\end{tabular}
-\end{figure}
+\noindent Calculation of the FIRST set of all Non-Terminals:\\
 
-\noindent FOLLOW calculation:
+\begin{tabular}{|p{2cm}|c|} \hline 
+\textbf{Stat}
+& \textbf{ElsePart} \\\hline 
 
-\begin{figure}[H]
-\begin{tabular}{|c|c|c|}\hline
-\textbf{FOLLOW}    & \textit{Stat}      & \textit{ElsePart}  \\\hline
-$0^{th}$ iteration & \texttt{EOF}       &                    \\\hline
-$1^{st}$ iteration & else, \texttt{EOF} & \texttt{EOF}       \\\hline
-$2^{nd}$ iteration & else, \texttt{EOF} & else, \texttt{EOF} \\\hline
-\end{tabular}
-\end{figure}
+& \\\hline 
+\end{tabular} \\
 
-\noindent FIRST+ calculation:
+\begin{tabular}{|p{2cm}|c|} \hline 
+\textbf{Stat}
+& \textbf{ElsePart} \\\hline 
 
-\begin{figure}[H]
-\begin{tabular}{|c|l|c|c|}\hline
-  & production                                                               & \textbf{FIRST} & \textbf{FIRST+} \\\hline
-1 & \textit{Stat} $\rightarrow$ assign                                       & assign         & assign \\\hline
-2 & \textit{Stat} $\rightarrow$ if expr then \textit{Stat} \textit{ElsePart} & if             & if     \\\hline
-3 & \textit{ElsePart} $\rightarrow$ else \textit{Stat}                       & else           & else   \\\hline
-4 & \textit{ElsePart} $\rightarrow  \epsilon$                                & $\epsilon$     & $\epsilon$, else, \texttt{EOF} \\\hline
-\end{tabular}
-\end{figure}
+assign
+& \\\hline 
+\end{tabular} \\
+
+\begin{tabular}{|p{2cm}|c|} \hline 
+\textbf{Stat}
+& \textbf{ElsePart} \\\hline 
+
+assign, if
+& else \\\hline 
+\end{tabular} \\
+
+\begin{tabular}{|p{2cm}|c|} \hline 
+\textbf{Stat}
+& \textbf{ElsePart} \\\hline
+
+assign, if
+& else, $\epsilon$ \\\hline 
+\end{tabular}\\
+
+\noindent Calculation of the FOLLOW set:\\
+
+\begin{tabular}{|p{2cm}|c|} \hline 
+\textbf{Stat}
+& \textbf{ElsePart} \\\hline 
+
+& \\\hline 
+\end{tabular} \\
+
+\begin{tabular}{|p{2cm}|c|} \hline 
+\textbf{Stat}
+& \textbf{ElsePart} \\\hline
+
+EOF
+& \\\hline 
+\end{tabular} \\
+
+\begin{tabular}{|p{2cm}|c|} \hline 
+\textbf{Stat}
+& \textbf{ElsePart} \\\hline
+
+EOF
+& EOF \\\hline 
+\end{tabular} \\
+
+\begin{tabular}{|p{2cm}|c|} \hline 
+\textbf{Stat}
+& \textbf{ElsePart} \\\hline 
+
+EOF, else
+& EOF, else \\\hline 
+\end{tabular}\\
+
+\noindent Calculation of the FIRST+ set (only rule 4 is necessary):\\
+
+\begin{tabular}{|c|c|c|c|} \hline 
+& Production
+& FIRST Set
+& FIRST+ Set \\\hline
+
+4
+& \textbf{ElsePart} $\rightarrow \epsilon$
+& \{$\epsilon$\}
+& \{$\epsilon$, EOF, else\} \\\hline 
+\end{tabular}\\
+
+\noindent The FIRST+ set of \textbf{ElsePart} $\rightarrow \epsilon$ (\{$\epsilon$, EOF, else\}) is not disjoint with FIRST+ set of \textbf{ElsePart} $\rightarrow$ else Stat (\{else, $\epsilon$\}). Therefore, the grammar does not meet the criteria for \textit{LL(1)}\\
 
 \section*{Excercise 2}
+\begin{tabular}{llcl}
+1
+& \textbf{L}
+& $\rightarrow$
+& \textbf{R}a \\
+
+2
+& 
+& $\vert$
+& \textbf{Q}ba \\
+
+3
+& \textbf{R}
+& $\rightarrow$
+& aba \\
+
+4
+& 
+& $\vert$
+& caba \\
+
+5
+& 
+& $\vert$
+& \textbf{R}bc \\
+
+6
+& \textbf{Q}
+& $\rightarrow$
+& bbc \\
+
+7
+& 
+& $\vert$
+& bc \\
+\end{tabular}\\
+
+\noindent FIRST of Terminals: \\
+
+\begin{tabular}{|c|c|c|c|c|} \hline 
+\textbf{a}
+& \textbf{b}
+& \textbf{c}
+& \textbf{EOF}
+& \textbf{$\epsilon$}\\\hline 
+
+a
+& b
+& c
+& EOF
+& $\epsilon$\\\hline  
+\end{tabular} \\
+
+\noindent FIRST of Non-Terminals: \\
+
+\begin{tabular}{|c|c|c|} \hline 
+\textbf{L}
+& \textbf{R}
+& \textbf{Q} \\\hline 
+
+a, b, c
+& a, c
+& b \\\hline  
+\end{tabular} \\
+
+\noindent FOLLOW: \\
+
+\begin{tabular}{|c|c|c|} \hline 
+\textbf{L}
+& \textbf{R}
+& \textbf{Q} \\\hline 
+
+EOF
+& EOF, a, b, c
+& EOF, a, b \\\hline  
+\end{tabular} \\
+
+\noindent Problem: left recursion at rule 5 and double b at rules 6 and 7!  \\
+
+\begin{tabular}{llcl}
+1
+& \textbf{L}
+& $\rightarrow$
+& \textbf{R}a \\
+
+2
+& 
+& $\vert$
+& \textbf{Q}ba \\
+
+3
+& \textbf{R}
+& $\rightarrow$
+& aba\textbf{R'} \\
+
+4
+& 
+& $\vert$
+& caba\textbf{R'} \\
+
+6
+& \textbf{Q}
+& $\rightarrow$
+& b\textbf{Q'} \\
+
+8
+& \textbf{R'}
+& $\rightarrow$
+& bc\textbf{R'} \\
+
+9
+& 
+& $\vert$
+& $\epsilon$ \\
+
+10
+& \textbf{Q'}
+& $\rightarrow$
+& bc \\
+
+11
+& 
+& $\vert$
+& c \\
+\end{tabular} \\
+
+\noindent Showing that the new grammar satisfies the \textit{LL(1)} condition: \\
+
+\noindent FIRST of Terminals: \\
+
+\begin{tabular}{|c|c|c|c|c|} \hline 
+\textbf{a}
+& \textbf{b}
+& \textbf{c}
+& \textbf{EOF}
+& \textbf{$\epsilon$}\\\hline 
+
+a
+& b
+& c
+& EOF
+& $\epsilon$\\\hline  
+\end{tabular} \\
+
+\noindent FIRST of Non-Terminals: \\
+
+\begin{tabular}{|c|c|c|c|c|} \hline 
+\textbf{L}
+& \textbf{R}
+& \textbf{Q}
+& \textbf{R'}
+& \textbf{Q'} \\\hline 
+
+a, b, c
+& a, c
+& b
+& b, $\epsilon$
+& b, c \\\hline  
+\end{tabular} \\
+
+\noindent FOLLOW: \\
+
+\begin{tabular}{|c|c|c|c|c|} \hline 
+\textbf{L}
+& \textbf{R}
+& \textbf{Q}
+& \textbf{R'}
+& \textbf{Q'} \\\hline
+
+EOF
+& a
+& b
+& a
+& b \\\hline  
+\end{tabular} \\
+
+\noindent $\epsilon$ in rule 9, FIRST+ set: \\
+
+\begin{tabular}{|c|c|c|c|} \hline 
+& Production
+& FIRST Set
+& FIRST+ Set \\\hline
+
+9
+& \textbf{R'} $\rightarrow \epsilon$
+& \{$\epsilon$\}
+& \{$\epsilon$, a\} \\\hline 
+\end{tabular}\\
+
+\noindent Every FIRST+ set of every Non-Terminal rule-combination is disjoint, so this satisfies the \textit{LL(1)} condition!\\
 
 
+\section*{Exercise 7}
+The parsed sentence is printed to stdout. The "tree" is visible from the printed structure, see also the tree exercise in the answers of block 1. Number 3 of the rightmost derivation looks equal to the parsed sentence. If the sentence is invalid, the program prints a friendly error and also adds the way the sentence has been parsed.
 
 %% ---------------------------
 %% ALL TEXT IGNORED FROM HERE!
@@ -912,298 +1165,5 @@ Rightmost derivation is the most clean one and does reflect the structure of the
 
 \end{tabular}
 
-\section*{Exercise 17}
-Calculation of the FIRST set of all Terminals:\\
-
-\begin{tabular}{|c|c|c|c|c|c|c|} \hline 
-\textbf{assign}
-& \textbf{if}
-& \textbf{else}
-& \textbf{then}
-& \textbf{expr}
-& \textbf{$\epsilon$}
-& \textbf{EOF} \\\hline 
-
-assign
-& if
-& else
-& then
-& expr
-& $\epsilon$
-& EOF \\\hline 
-\end{tabular} \\
-
-\noindent Calculation of the FIRST set of all Non-Terminals:\\
-
-\begin{tabular}{|p{2cm}|c|} \hline 
-\textbf{Stat}
-& \textbf{ElsePart} \\\hline 
-
-& \\\hline 
-\end{tabular} \\
-
-\begin{tabular}{|p{2cm}|c|} \hline 
-\textbf{Stat}
-& \textbf{ElsePart} \\\hline 
-
-assign
-& \\\hline 
-\end{tabular} \\
-
-\begin{tabular}{|p{2cm}|c|} \hline 
-\textbf{Stat}
-& \textbf{ElsePart} \\\hline 
-
-assign, if
-& else \\\hline 
-\end{tabular} \\
-
-\begin{tabular}{|p{2cm}|c|} \hline 
-\textbf{Stat}
-& \textbf{ElsePart} \\\hline
-
-assign, if
-& else, $\epsilon$ \\\hline 
-\end{tabular}\\
-
-\noindent Calculation of the FOLLOW set:\\
-
-\begin{tabular}{|p{2cm}|c|} \hline 
-\textbf{Stat}
-& \textbf{ElsePart} \\\hline 
-
-& \\\hline 
-\end{tabular} \\
-
-\begin{tabular}{|p{2cm}|c|} \hline 
-\textbf{Stat}
-& \textbf{ElsePart} \\\hline
-
-EOF
-& \\\hline 
-\end{tabular} \\
-
-\begin{tabular}{|p{2cm}|c|} \hline 
-\textbf{Stat}
-& \textbf{ElsePart} \\\hline
-
-EOF
-& EOF \\\hline 
-\end{tabular} \\
-
-\begin{tabular}{|p{2cm}|c|} \hline 
-\textbf{Stat}
-& \textbf{ElsePart} \\\hline 
-
-EOF, else
-& EOF, else \\\hline 
-\end{tabular}\\
-
-\noindent Calculation of the FIRST+ set (only rule 4 is necessary):\\
-
-\begin{tabular}{|c|c|c|c|} \hline 
-& Production
-& FIRST Set
-& FIRST+ Set \\\hline
-
-4
-& \textbf{ElsePart} $\rightarrow \epsilon$
-& \{$\epsilon$\}
-& \{$\epsilon$, EOF, else\} \\\hline 
-\end{tabular}\\
-
-\noindent The FIRST+ set of \textbf{ElsePart} $\rightarrow \epsilon$ (\{$\epsilon$, EOF, else\}) is not disjoint with FIRST+ set of \textbf{ElsePart} $\rightarrow$ else Stat (\{else, $\epsilon$\}). Therefore, the grammar does not meet the criteria for \textit{LL(1)}\\
-
-\section*{Exercise 18}
-\begin{tabular}{llcl}
-1
-& \textbf{L}
-& $\rightarrow$
-& \textbf{R}a \\
-
-2
-& 
-& $\vert$
-& \textbf{Q}ba \\
-
-3
-& \textbf{R}
-& $\rightarrow$
-& aba \\
-
-4
-& 
-& $\vert$
-& caba \\
-
-5
-& 
-& $\vert$
-& \textbf{R}bc \\
-
-6
-& \textbf{Q}
-& $\rightarrow$
-& bbc \\
-
-7
-& 
-& $\vert$
-& bc \\
-\end{tabular}\\
-
-\noindent FIRST of Terminals: \\
-
-\begin{tabular}{|c|c|c|c|c|} \hline 
-\textbf{a}
-& \textbf{b}
-& \textbf{c}
-& \textbf{EOF}
-& \textbf{$\epsilon$}\\\hline 
-
-a
-& b
-& c
-& EOF
-& $\epsilon$\\\hline  
-\end{tabular} \\
-
-\noindent FIRST of Non-Terminals: \\
-
-\begin{tabular}{|c|c|c|} \hline 
-\textbf{L}
-& \textbf{R}
-& \textbf{Q} \\\hline 
-
-a, b, c
-& a, c
-& b \\\hline  
-\end{tabular} \\
-
-\noindent FOLLOW: \\
-
-\begin{tabular}{|c|c|c|} \hline 
-\textbf{L}
-& \textbf{R}
-& \textbf{Q} \\\hline 
-
-EOF
-& EOF, a, b, c
-& EOF, a, b \\\hline  
-\end{tabular} \\
-
-\noindent Problem: left recursion at rule 5 and double b at rules 6 and 7!  \\
-
-\begin{tabular}{llcl}
-1
-& \textbf{L}
-& $\rightarrow$
-& \textbf{R}a \\
-
-2
-& 
-& $\vert$
-& \textbf{Q}ba \\
-
-3
-& \textbf{R}
-& $\rightarrow$
-& aba\textbf{R'} \\
-
-4
-& 
-& $\vert$
-& caba\textbf{R'} \\
-
-6
-& \textbf{Q}
-& $\rightarrow$
-& b\textbf{Q'} \\
-
-8
-& \textbf{R'}
-& $\rightarrow$
-& bc\textbf{R'} \\
-
-9
-& 
-& $\vert$
-& $\epsilon$ \\
-
-10
-& \textbf{Q'}
-& $\rightarrow$
-& bc \\
-
-11
-& 
-& $\vert$
-& c \\
-\end{tabular} \\
-
-\noindent Showing that the new grammar satisfies the \textit{LL(1)} condition: \\
-
-\noindent FIRST of Terminals: \\
-
-\begin{tabular}{|c|c|c|c|c|} \hline 
-\textbf{a}
-& \textbf{b}
-& \textbf{c}
-& \textbf{EOF}
-& \textbf{$\epsilon$}\\\hline 
-
-a
-& b
-& c
-& EOF
-& $\epsilon$\\\hline  
-\end{tabular} \\
-
-\noindent FIRST of Non-Terminals: \\
-
-\begin{tabular}{|c|c|c|c|c|} \hline 
-\textbf{L}
-& \textbf{R}
-& \textbf{Q}
-& \textbf{R'}
-& \textbf{Q'} \\\hline 
-
-a, b, c
-& a, c
-& b
-& b, $\epsilon$
-& b, c \\\hline  
-\end{tabular} \\
-
-\noindent FOLLOW: \\
-
-\begin{tabular}{|c|c|c|c|c|} \hline 
-\textbf{L}
-& \textbf{R}
-& \textbf{Q}
-& \textbf{R'}
-& \textbf{Q'} \\\hline
-
-EOF
-& a
-& b
-& a
-& b \\\hline  
-\end{tabular} \\
-
-\noindent $\epsilon$ in rule 9, FIRST+ set: \\
-
-\begin{tabular}{|c|c|c|c|} \hline 
-& Production
-& FIRST Set
-& FIRST+ Set \\\hline
-
-9
-& \textbf{R'} $\rightarrow \epsilon$
-& \{$\epsilon$\}
-& \{$\epsilon$, a\} \\\hline 
-\end{tabular}\\
-
-\noindent Every FIRST+ set of every Non-Terminal rule-combination is disjoint, so this satisfies the \textit{LL(1)} condition!\\
 \fi
 \end{document}
