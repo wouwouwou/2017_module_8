@@ -6,6 +6,7 @@ import pp.block2.cc.AST;
 import pp.block2.cc.ParseException;
 import pp.block2.cc.Parser;
 import pp.block2.cc.SymbolFactory;
+// manual import of sentence class
 import pp.block2.cc.ll.Sentence;
 
 public class SentenceConverter 
