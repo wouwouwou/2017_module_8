@@ -1,15 +1,6 @@
 import Data.Char
 import Data.List
 
--------------------------------------------------
-allEqual :: Eq a => [a] -> Bool
-allEqual []     = True
-allEqual [x]    = True
-allEqual (x:xs)    | x == head xs    = allEqual xs
-                   | otherwise       = False
--------------------------------------------------
-
-
 --------------------------
 --     Excercise 1      --
 --------------------------
