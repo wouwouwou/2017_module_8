@@ -365,6 +365,16 @@ EOF
 \section*{Exercise 7}
 The parsed sentence is printed to stdout. The "tree" is visible from the printed structure, see also the tree exercise in the answers of block 1. Number 3 of the rightmost derivation looks equal to the parsed sentence. If the sentence is invalid, the program prints a friendly error and also adds the way the sentence has been parsed.
 
+\section*{Exercise 9}
+1) Not only the entry/exit methods are specified in two alternatives, also the parameters are specified in those alternatives.
+Instead of a SubjectContext we now have a ModSubjectContext and a SimpleSubjectContext which is imported from the parser.
+These classes extend the SubjectContext class and therefore inherit everything from it. However, their fields and
+methods are following the rule alternative they are for. (fields modifier subject vs noun, methods which use those fields).\\
+
+\noindent 2) It corresponds more with the rightmost parse tree now, because the assoc now results in a rightmost derivation of the modifiers.
+If you leave the assoc it will go back to a leftmost parse tree.
+
+
 %% ---------------------------
 %% ALL TEXT IGNORED FROM HERE!
 %% ---------------------------
