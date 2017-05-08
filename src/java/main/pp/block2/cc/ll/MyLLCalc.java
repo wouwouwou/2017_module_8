@@ -59,13 +59,13 @@ public class MyLLCalc implements LLCalc {
         List<Symbol> ruleRhs = rule.getRHS();
         rhs.addAll(FIRST.get(ruleRhs.get(0)));
         rhs.remove(Symbol.EMPTY);
-        int i = 1;
-        while (i < ruleRhs.size() && FIRST.get(ruleRhs.get(i)).contains(Symbol.EMPTY)) {
-            rhs.addAll(FIRST.get(ruleRhs.get(i)));
+        int i = 0;
+        while (i < ruleRhs.size() - 1 && FIRST.get(ruleRhs.get(i)).contains(Symbol.EMPTY)) {
+            rhs.addAll(FIRST.get(ruleRhs.get(i+1)));
             rhs.remove(Symbol.EMPTY);
             i++;
         }
-        if (i == ruleRhs.size() && FIRST.get(ruleRhs.get(i - 1)).contains(Symbol.EMPTY)) {
+        if (i == ruleRhs.size() - 1 && FIRST.get(ruleRhs.get(i)).contains(Symbol.EMPTY)) {
             rhs.add(Symbol.EMPTY);
         }
         return rhs;
@@ -85,7 +85,7 @@ public class MyLLCalc implements LLCalc {
     }
 
     private void initFollow(Grammar g) {
-        // Add all non-terminals to FIRST, initiating the start element with Symbol.EOF
+        // Add all non-terminals to FOLLOW, initiating the start element with Symbol.EOF
         for (NonTerm nonTerm : g.getNonterminals()) {
             FOLLOW.put(nonTerm, new HashSet<Term>());
         }

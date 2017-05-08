@@ -142,6 +142,50 @@ public class LLCalcTest {
         assertFalse(calc.isLL1());
     }
 
+    @Test
+    public void testAbc() {
+        Grammar g = Grammars.makeAbc();
+        // Define the non-terminals
+        NonTerm l = g.getNonterminal("L");
+        NonTerm r = g.getNonterminal("R");
+        NonTerm q = g.getNonterminal("Q");
+        NonTerm rr = g.getNonterminal("R'");
+        NonTerm qq = g.getNonterminal("Q'");
+        // Define the terminals
+        Term empty = Symbol.EMPTY;
+        Term eof = Symbol.EOF;
+        Term a = g.getTerminal(Abc.A);
+        Term b = g.getTerminal(Abc.B);
+        Term c = g.getTerminal(Abc.C);
+        LLCalc calc = createCalc(g);
+        // FIRST
+        Map<Symbol, Set<Term>> first = calc.getFirst();
+        assertEquals(set(empty), first.get(empty));
+        assertEquals(set(eof), first.get(eof));
+        assertEquals(set(a), first.get(a));
+        assertEquals(set(b), first.get(b));
+        assertEquals(set(c), first.get(c));
+        assertEquals(set(a, b, c), first.get(l));
+        assertEquals(set(a, c), first.get(r));
+        assertEquals(set(b), first.get(q));
+        assertEquals(set(b, empty), first.get(rr));
+        assertEquals(set(b, c), first.get(qq));
+        // FOLLOW
+        Map<NonTerm, Set<Term>> follow = calc.getFollow();
+        assertEquals(set(eof), follow.get(l));
+        assertEquals(set(a), follow.get(r));
+        assertEquals(set(b), follow.get(q));
+        assertEquals(set(a), follow.get(rr));
+        assertEquals(set(b), follow.get(qq));
+        // FIRSTP
+        Map<Rule, Set<Term>> firstp = calc.getFirstp();
+        List<Rule> rrRules = g.getRules(rr);
+        assertEquals(set(a, empty), firstp.get(rrRules.get(1)));
+        // LL1
+        assertTrue(calc.isLL1());
+    }
+
+
 
     /**
      * Creates an LL1-calculator for a given grammar.

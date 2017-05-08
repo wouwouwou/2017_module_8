@@ -60,31 +60,31 @@ public class Grammars {
         return g;
     }
 
-//    public static Grammar makeAbc() {
-//        // Define the non-terminals
-//        NonTerm l = new NonTerm("L");
-//        NonTerm r = new NonTerm("R");
-//        NonTerm q = new NonTerm("Q");
-//        NonTerm rr = new NonTerm("R'");
-//        NonTerm qq = new NonTerm("Q'");
-//        // Define the terminals using the Abc.g4 lexer grammar
-//        SymbolFactory fact = new SymbolFactory(Abc.class);
-//        Term a = fact.getTerminal(Abc.A);
-//        Term b = fact.getTerminal(Abc.B);
-//        Term c = fact.getTerminal(Abc.C);
-//        Term empty = Symbol.EMPTY;
-//        // Build the context free grammar
-//        Grammar g = new Grammar(l);
-//        g.addRule(l, r, a);
-//        g.addRule(l, q, b, a);
-//        g.addRule(r, a, b, a, rr);
-//        g.addRule(r, c, a, b, a, rr);
-//        g.addRule(rr, b, c, rr);
-//        g.addRule(rr, empty);
-//        g.addRule(q, b, qq);
-//        g.addRule(qq, b, c);
-//        g.addRule(qq, c);
-//        return g;
-//    }
+    public static Grammar makeAbc() {
+        // Define the non-terminals
+        NonTerm l = new NonTerm("L");
+        NonTerm r = new NonTerm("R");
+        NonTerm q = new NonTerm("Q");
+        NonTerm rr = new NonTerm("R'");
+        NonTerm qq = new NonTerm("Q'");
+        // Define the terminals using the Abc.g4 lexer grammar
+        SymbolFactory fact = new SymbolFactory(Abc.class);
+        Term a = fact.getTerminal(Abc.A);
+        Term b = fact.getTerminal(Abc.B);
+        Term c = fact.getTerminal(Abc.C);
+        Term empty = Symbol.EMPTY;
+        // Build the context free grammar
+        Grammar g = new Grammar(l);
+        g.addRule(l, r, a);
+        g.addRule(l, q, b, a);
+        g.addRule(r, a, b, a, rr);
+        g.addRule(r, c, a, b, a, rr);
+        g.addRule(rr, b, c, rr);
+        g.addRule(rr, empty);
+        g.addRule(q, b, qq);
+        g.addRule(qq, b, c);
+        g.addRule(qq, c);
+        return g;
+    }
 
 }
