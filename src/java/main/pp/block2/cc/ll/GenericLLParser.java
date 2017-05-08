@@ -49,6 +49,10 @@ public class GenericLLParser implements Parser {
         AST result;
         if (symb instanceof Term) {
             if (peek().getType() == ((Term) symb).getTokenType()) {
+                Token term = peek();
+                while (term.getType() == 0) {
+                    next();
+                }
                 result = new AST((Term) symb, next());
             } else {
                 throw new ParseException();

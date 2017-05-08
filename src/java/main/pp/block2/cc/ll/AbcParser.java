@@ -126,6 +126,7 @@ public class AbcParser implements Parser {
 			result.addChild(parseRR());
 			break;
 		case A:
+		case C:
 			break;
 		default:
 			throw unparsable(RR);
@@ -134,6 +135,8 @@ public class AbcParser implements Parser {
 	}
 
 	private ParseException unparsable(NonTerm nt) {
+
+		System.err.println(nt.toString());
 		try {
 			Token next = peek();
 			return new ParseException(String.format(
@@ -141,6 +144,7 @@ public class AbcParser implements Parser {
 					next.getLine(), next.getCharPositionInLine(), nt.getName(),
 					fact.get(next.getType())));
 		} catch (ParseException e) {
+			System.out.print(nt.toString());
 			return e;
 		}
 	}
