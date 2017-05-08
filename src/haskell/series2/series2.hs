@@ -11,12 +11,12 @@ myfilter f (x:xs)
             | otherwise       = myfilter f xs
 
 myfoldl :: (a -> b -> a) -> a -> [b] -> a
-myfoldl f a [x]               = a `f` x
+myfoldl f a []                = a
 myfoldl f a (x:xs)            = myfoldl f (a `f` x) xs
 
 myfoldr :: (a -> b -> b) -> b -> [a] -> b
-myfoldr f a [x]               = x `f` a
-myfoldr f a xs                = myfoldr f ((last xs) `f` a) (init xs)
+myfoldr f a []                = a
+myfoldr f a (x:xs)            = x `f` myfoldr f a xs
 
 myzipWith :: (a -> b -> c) -> [a] -> [b] -> [c]
 myzipWith _ [] _              = []
@@ -110,8 +110,7 @@ swapAB :: (a, b, c, d) -> (b, a, c, d)
 swapAB (a,b,c,d)   = (b,a,c,d)
 
 sortByAge :: [(String, Int, Char, String)] -> [(String, Int, Char, String)]
-sortByAge xs       = map (swapAB) (sort (map (swapAB) xs))
-
+sortByAge       = map swapAB . sort . map swapAB 
 
 --------------------------
 --     Excercise 3      --
@@ -149,7 +148,7 @@ pyth n       = [ (x,y,z) | x <- [1..n], y <- [1..n], z <- [1..n],               
 
 -- B
 pythUniq :: Int -> [(Int, Int, Int)]
-pythUniq n   = [ (x,y,z) | x <- [1..n], y <- [1..n], z <- [1..n], x < y, isPrime z, x^2 + y^2 == z^2]
+pythUniq n   = [ (x,y,z) | x <- [1..n], y <- [x..n], z <- [y..n], x < y, isPrime z, x^2 + y^2 == z^2]
 
 
 --------------------------
@@ -216,7 +215,7 @@ ins v xt@(x:xs)
          | otherwise   = x:(ins v xs)
 
 isort :: Ord a => [a] -> [a]
-isort = foldr altIns []
+isort = foldr ins []
 
 mysplit :: [a] -> ([a], [a])
 mysplit xs = splitAt ((length xs + 1) `div` 2) xs

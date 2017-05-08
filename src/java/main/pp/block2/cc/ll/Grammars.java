@@ -4,6 +4,7 @@
 package pp.block2.cc.ll;
 
 import pp.block2.cc.NonTerm;
+import pp.block2.cc.Symbol;
 import pp.block2.cc.SymbolFactory;
 import pp.block2.cc.Term;
 
@@ -37,4 +38,53 @@ public class Grammars {
 		g.addRule(mod, adj);
 		return g;
 	}
+
+    public static Grammar makeIf() {
+        // Define the non-terminals
+        NonTerm stat = new NonTerm("Stat");
+        NonTerm elsepart = new NonTerm("ElsePart");
+        // Define the terminals using the If.g4 lexer grammar
+        SymbolFactory fact = new SymbolFactory(If.class);
+        Term tIf = fact.getTerminal(If.IF);
+        Term tThen = fact.getTerminal(If.THEN);
+        Term tCond = fact.getTerminal(If.COND);
+        Term tElse = fact.getTerminal(If.ELSE);
+        Term tAssign = fact.getTerminal(If.ASSIGN);
+        Term empty = Symbol.EMPTY;
+        // Build the context free grammar
+        Grammar g = new Grammar(stat);
+        g.addRule(stat, tAssign);
+        g.addRule(stat, tIf, tCond, tThen, stat, elsepart);
+        g.addRule(elsepart, tElse, stat);
+        g.addRule(elsepart, empty);
+        return g;
+    }
+
+//    public static Grammar makeAbc() {
+//        // Define the non-terminals
+//        NonTerm l = new NonTerm("L");
+//        NonTerm r = new NonTerm("R");
+//        NonTerm q = new NonTerm("Q");
+//        NonTerm rr = new NonTerm("R'");
+//        NonTerm qq = new NonTerm("Q'");
+//        // Define the terminals using the Abc.g4 lexer grammar
+//        SymbolFactory fact = new SymbolFactory(Abc.class);
+//        Term a = fact.getTerminal(Abc.A);
+//        Term b = fact.getTerminal(Abc.B);
+//        Term c = fact.getTerminal(Abc.C);
+//        Term empty = Symbol.EMPTY;
+//        // Build the context free grammar
+//        Grammar g = new Grammar(l);
+//        g.addRule(l, r, a);
+//        g.addRule(l, q, b, a);
+//        g.addRule(r, a, b, a, rr);
+//        g.addRule(r, c, a, b, a, rr);
+//        g.addRule(rr, b, c, rr);
+//        g.addRule(rr, empty);
+//        g.addRule(q, b, qq);
+//        g.addRule(qq, b, c);
+//        g.addRule(qq, c);
+//        return g;
+//    }
+
 }

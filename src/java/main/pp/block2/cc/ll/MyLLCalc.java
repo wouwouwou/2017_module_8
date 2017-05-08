@@ -6,14 +6,14 @@ import pp.block2.cc.Term;
 
 import java.util.*;
 
-public class TimLLCalc implements LLCalc {
+public class MyLLCalc implements LLCalc {
 
     private final Map<Symbol, Set<Term>> FIRST;
     private final Map<NonTerm, Set<Term>> FOLLOW;
     private final Map<Rule, Set<Term>> FIRSTP;
     private final boolean ISLL1;
 
-    public TimLLCalc(Grammar g) {
+    public MyLLCalc(Grammar g) {
 
         FIRST = new HashMap<>();
         initFirst(g);
@@ -22,75 +22,6 @@ public class TimLLCalc implements LLCalc {
         FIRSTP = new HashMap<>();
         initFP(g);
         ISLL1 = initLL1(g);
-    }
-
-    private boolean initLL1(Grammar g) {
-        for (NonTerm nonTerm : g.getNonterminals()) {
-            Set<Term> firstAggr = new HashSet<>();
-            for (Rule rule : FIRSTP.keySet()) {
-                if (rule.getLHS().equals(nonTerm)) {
-                    for (Term term : FIRSTP.get(rule)) {
-                        if (firstAggr.contains(term)) {
-                            return false;
-                        }
-                    }
-                    firstAggr.addAll(FIRSTP.get(rule));
-                }
-            }
-        }
-        return true;
-    }
-
-    private void initFP(Grammar g) {
-        for (Rule rule : g.getRules()) {
-            Set<Term> first = firstPerRule(rule);
-            if (first.contains(Symbol.EMPTY)) {
-                Set<Term> aggr = new HashSet<>(first);
-                aggr.addAll(FOLLOW.get(rule.getLHS()));
-                FIRSTP.put(rule, aggr);
-            } else {
-                FIRSTP.put(rule, first);
-            }
-        }
-
-
-    }
-
-    private void initFollow(Grammar g) {
-        // Add all non-terminals to FIRST, initiating the start element with Symbol.EOF
-        for (NonTerm nonTerm : g.getNonterminals()) {
-            FOLLOW.put(nonTerm, new HashSet<Term>());
-        }
-        FOLLOW.get(g.getStart()).add((Symbol.EOF));
-
-        // Determine the contents of FOLLOW
-        boolean changing = true;
-        while (changing) {
-            changing = false;
-            for (Rule rule : g.getRules()) {
-                List<Symbol> rhs = rule.getRHS();
-                NonTerm lhs = rule.getLHS();
-                Set<Term> trailer = new HashSet<>();
-                trailer.addAll(FOLLOW.get(lhs));
-                for (int i = rhs.size() - 1; i >= 0; i--) {
-                    if (rhs.get(i) instanceof NonTerm) {
-                        if (!FOLLOW.get(rhs.get(i)).containsAll(trailer)) {
-                            changing = true;
-                            FOLLOW.get(rhs.get(i)).addAll(trailer);
-                        }
-                        if (FIRST.get(rhs.get(i)).contains(Symbol.EMPTY)) {
-                            Set<Term> temp = new HashSet<>(FIRST.get(rhs.get(i)));
-                            temp.remove(Symbol.EMPTY);
-                            trailer.addAll(temp);
-                        } else {
-                            trailer = FIRST.get(rhs.get(i));
-                        }
-                    } else {
-                        trailer = FIRST.get(rhs.get(i));
-                    }
-                }
-            }
-        }
     }
 
     private void initFirst(Grammar g) {
@@ -138,6 +69,73 @@ public class TimLLCalc implements LLCalc {
             rhs.add(Symbol.EMPTY);
         }
         return rhs;
+    }
+
+    private void initFP(Grammar g) {
+        for (Rule rule : g.getRules()) {
+            Set<Term> first = firstPerRule(rule);
+            if (first.contains(Symbol.EMPTY)) {
+                Set<Term> aggr = new HashSet<>(first);
+                aggr.addAll(FOLLOW.get(rule.getLHS()));
+                FIRSTP.put(rule, aggr);
+            } else {
+                FIRSTP.put(rule, first);
+            }
+        }
+    }
+
+    private void initFollow(Grammar g) {
+        // Add all non-terminals to FIRST, initiating the start element with Symbol.EOF
+        for (NonTerm nonTerm : g.getNonterminals()) {
+            FOLLOW.put(nonTerm, new HashSet<Term>());
+        }
+        FOLLOW.get(g.getStart()).add((Symbol.EOF));
+
+        // Determine the contents of FOLLOW
+        boolean changing = true;
+        while (changing) {
+            changing = false;
+            for (Rule rule : g.getRules()) {
+                List<Symbol> rhs = rule.getRHS();
+                NonTerm lhs = rule.getLHS();
+                Set<Term> trailer = new HashSet<>();
+                trailer.addAll(FOLLOW.get(lhs));
+                for (int i = rhs.size() - 1; i >= 0; i--) {
+                    if (rhs.get(i) instanceof NonTerm) {
+                        if (!FOLLOW.get(rhs.get(i)).containsAll(trailer)) {
+                            changing = true;
+                            FOLLOW.get(rhs.get(i)).addAll(trailer);
+                        }
+                        if (FIRST.get(rhs.get(i)).contains(Symbol.EMPTY)) {
+                            Set<Term> temp = new HashSet<>(FIRST.get(rhs.get(i)));
+                            temp.remove(Symbol.EMPTY);
+                            trailer.addAll(temp);
+                        } else {
+                            trailer = FIRST.get(rhs.get(i));
+                        }
+                    } else {
+                        trailer = FIRST.get(rhs.get(i));
+                    }
+                }
+            }
+        }
+    }
+
+    private boolean initLL1(Grammar g) {
+        for (NonTerm nonTerm : g.getNonterminals()) {
+            Set<Term> firstAggr = new HashSet<>();
+            for (Rule rule : FIRSTP.keySet()) {
+                if (rule.getLHS().equals(nonTerm)) {
+                    for (Term term : FIRSTP.get(rule)) {
+                        if (firstAggr.contains(term)) {
+                            return false;
+                        }
+                    }
+                    firstAggr.addAll(FIRSTP.get(rule));
+                }
+            }
+        }
+        return true;
     }
 
     /**

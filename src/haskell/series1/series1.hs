@@ -162,4 +162,4 @@ columnTotals a          | mylength (head a) == 0        = []
                         | otherwise                     = mysum(map head a) : columnTotals (map tail a)
 
 columnTotals' :: [[Int]] -> [Int]
-columnTotals' a = rowTotals $ transposeMatrix a
+columnTotals' = rowTotals . transposeMatrix
