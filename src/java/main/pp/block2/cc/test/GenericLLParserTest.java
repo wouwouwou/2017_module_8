@@ -14,10 +14,7 @@ import org.junit.Test;
 import pp.block2.cc.AST;
 import pp.block2.cc.ParseException;
 import pp.block2.cc.Parser;
-import pp.block2.cc.ll.GenericLLParser;
-import pp.block2.cc.ll.Grammars;
-import pp.block2.cc.ll.Sentence;
-import pp.block2.cc.ll.SentenceParser;
+import pp.block2.cc.ll.*;
 
 public class GenericLLParserTest {
 	private Parser parser1;
@@ -25,17 +22,27 @@ public class GenericLLParserTest {
 
 	private Class<? extends Lexer> lexerType;
 
-	@Test
-	public void testSentence() {
-		this.lexerType = Sentence.class;
-		this.parser1 = new SentenceParser();
-		this.parser2 = new GenericLLParser(Grammars.makeSentence());
-		compare("students love students.");
-		compare("all undergraduate students love all compilers.");
-		fails("all undergraduate students love all compilers");
-		fails("all undergraduate students love love.");
-		fails("all undergraduate students all compilers.");
-	}
+    @Test
+    public void testSentence() {
+        this.lexerType = Sentence.class;
+        this.parser1 = new SentenceParser();
+        this.parser2 = new GenericLLParser(Grammars.makeSentence());
+        compare("students love students.");
+        compare("all undergraduate students love all compilers.");
+        fails("all undergraduate students love all compilers");
+        fails("all undergraduate students love love.");
+        fails("all undergraduate students all compilers.");
+    }
+
+    @Test
+    public void testaba() {
+        this.lexerType = Abc.class;
+        this.parser1 = new AbcParser();
+        this.parser2 = new GenericLLParser(Grammars.makeAbc());
+        compare("abaa");
+        compare("cababcbca");
+        fails("bbcca");
+    }
 
 	private void fails(String text) {
 		try {
