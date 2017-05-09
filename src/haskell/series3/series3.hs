@@ -128,6 +128,12 @@ mapTree :: (Int -> Int) -> Tree1a -> Tree1a
 mapTree f (Leaf1a n)            = Leaf1a (f n)
 mapTree f (Node1a n a b)        = Node1a (f n) (mapTree f a) (mapTree f b)
 
+treeAdd' :: Int -> Tree1a -> Tree1a
+treeAdd' i                      = mapTree (+i)
+
+treeSquare' :: Tree1a -> Tree1a
+treeSquare'                     = mapTree (^2)
+
 --d
 addNode :: Tree1b -> Tree1a
 addNode (Leaf1b (x,y))          = Leaf1a (x+y)
