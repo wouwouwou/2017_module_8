@@ -201,6 +201,10 @@ makeTree (x:xs) = insertTree x (makeTree xs)
 makeTreeF :: [Int] -> Tree4
 makeTreeF xs    = foldr (insertTree) Leaf4 xs
 
+--why no foldl instead of foldr? just curious
+makeTreeFL :: [Int] -> Tree4
+makeTreeFL xs    = foldl (\x y -> insertTree y x) Leaf4 xs
+
 --c
 makeList :: Tree4 -> [Int]
 makeList Leaf4         = []
