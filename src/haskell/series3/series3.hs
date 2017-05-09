@@ -2,7 +2,7 @@ import FPPrac.Trees
 import Data.Char
 
 ---------------------------------------------------------------------------------
--- Example tree with compementary transition functions (because trees in flat
+-- Example tree with complementary transition functions (because trees in flat
 -- text are a real pain!). The MultTree is a generic tree, which can be
 -- transformed to exampleTrees which can be used in Exercise 1 and 4.
 --
