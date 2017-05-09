@@ -1,6 +1,7 @@
 import FPPrac.Trees
 import Data.Char
 import Data.List
+import Data.Maybe
 
 ---------------------------------------------------------------------------------
 -- Example tree with complementary transition functions (because trees in flat
@@ -81,6 +82,7 @@ type Tree1b     = BinTree (Int, Int) (Int, Int)
 type Tree1c     = BinTree Int Unit
 type Tree4      = BinTree Unit Int
 
+type FSATree    = BinTree Operator (Either Float String)
 
 -- C
 pp :: (Show a, Show b) => BinTree a b -> RoseTree
@@ -156,141 +158,163 @@ parseOpr2 (x:xs)        | isOperand1 x  = (x, xs)
 --------------------------
 --     Excercise 3      --
 --------------------------
--- States:
+-- A
+data Token = TokNum Float
+           | TokId String
+           | TokOp Operator
+           | TokLB
+           | TokRB
+           deriving Show
 
-data CalcFsaState = Func | Nun | Num2 | Ident | Oper | BraceO | BraceC
-        deriving (Show, Eq)
+data Operator = Pls | Min | Mlt | Div | Pow
+           deriving (Show)
 
-isOperand3 x = elem x "+-/*^=><"
-isOp x = elem x "+-/*^=><"
-isPar x = elem x "()"
+isOperator :: Char -> Bool
+isOperator x = x `elem` "+-*/^<>="
 
--- Data type for FSA's
-data FsaState = Start | Neg | Num | Dot | Frac | Op | AlNum | Par | Ws | Stop | Error
-        deriving (Show, Eq)
+isBracket :: Char -> Bool
+isBracket x = x `elem` "()"
 
--- FSA for numbers
-fsaNum :: FsaState -> Char -> FsaState
-fsaNum Start x	| x == '~'	= Neg
-		| isDigit x 	= Num
-		| otherwise	= Error
-fsaNum Neg x	| isDigit x	= Num
-		| otherwise	= Error 
-fsaNum Num x	| isDigit x	= Num
-		| x == '.'	= Dot
-		| otherwise	= Stop
-fsaNum Dot x	| isDigit x	= Frac
-		| otherwise	= Error
-fsaNum Frac x	| isDigit x	= Frac
-		| otherwise	= Stop
--- Error state
-fsaNum _ _	= Error
+toOperator :: Char -> Operator
+toOperator '+' = Pls
+toOperator '-' = Min
+toOperator '*' = Mlt
+toOperator '/' = Div
+toOperator '^' = Pow
+toOperator _ = error ""
 
--- FSA for identifiers
-fsaId :: FsaState -> Char -> FsaState
-fsaId Start x	| isAlpha x	= AlNum
-		| otherwise	= Error
-fsaId AlNum x	| isDigit x	= AlNum
-		| isAlpha x	= AlNum
-		| otherwise	= Stop
--- Error state
-fsaId _ _	= Error
-
--- FSA for operators
-
-fsaOp :: FsaState -> Char -> FsaState
-fsaOp Start x 	| isOp x	= Op
-		| otherwise	= Error
-fsaOp Op x	| isOp x	= Op
-		| otherwise	= Stop
--- Error state
-fsaOp _ _	= Error
-
--- FSA for parentheses
-
-fsaPar :: FsaState -> Char -> FsaState
-fsaPar Start x 	| isPar x	= Par
-		| otherwise	= Error
--- Error state, also if parsing continues after start
-fsaPar Par _	= Stop 
-
--- FSA for spaces
-
-fsaWs :: FsaState -> Char -> FsaState
-fsaWs Start x	| x == ' '	= Ws
-		| otherwise 	= Error
-fsaWs Ws x	| x == ' '	= Ws
-		| otherwise 	= Stop
--- Error state
-fsaWs _ _	= Error
-
---scanner :: [Char] -> [(Char, FsaState)]
---scanner xl@(x:xs) 	| isDigit x	= take (length $ (takeWhile (/= Stop) $ scanl fsaNum Start xl))
---			| otherwise	= error "None"
---			| isAlpha x	= 
---			| isOp x	= 
---			| isPar x 	= 
---			| x == ' '	= 
+data FsaState = Q
+              | R
+              | S
+              deriving (Show, Eq)
 
 
---testFsa = scanl fsa1 Func "((x123r4^23) + 3)"
+-- B
+fsaNmbr :: FsaState -> Char -> FsaState
+fsaNmbr s x = case s of
+  Q | isDigit x -> R
+    | x == '~'  -> R
+    | otherwise -> Q
+  R | isDigit x -> R
+    | x == '.'  -> S
+    | otherwise -> Q
+  S | isDigit x -> S
+    | otherwise -> Q
+
+testFsaNmbr = do
+  print $ foldl fsaNmbr Q "123"
+  print $ foldl fsaNmbr Q "12.34"
+  print $ foldl fsaNmbr Q "12.34.56"
+
+fsaIdnt :: FsaState -> Char -> FsaState
+fsaIdnt s x = case s of
+  Q | isLetter x -> R
+    | otherwise  -> Q
+  R | isLetter x -> R
+    | isDigit  x -> R
+    | otherwise  -> Q
+
+testFsaIdnt = do
+  print $ foldl fsaIdnt Q "abc"
+  print $ foldl fsaIdnt Q "abc123"
+  print $ foldl fsaIdnt Q "a1b2c3"
+
+fsaOprt :: FsaState -> Char -> FsaState
+fsaOprt s x = case s of
+  Q | isOperator x -> R
+    | otherwise    -> Q
+  R | isOperator x -> R
+    | otherwise    -> Q
+
+testFsaOprt = do
+  print $ foldl fsaOprt Q "+"
+  print $ foldl fsaOprt Q "--"
+  print $ foldl fsaOprt Q ">="
+
+fsaBrck :: FsaState -> Char -> FsaState
+fsaBrck s x = case s of
+  Q | isBracket x -> R
+    | otherwise   -> Q
+  R -> Q
+
+testFsaBrck = do
+  print $ foldl fsaBrck Q "()"
+
+fsaWhiteSpace :: FsaState -> Char -> FsaState
+fsaWhiteSpace s x = case s of
+  Q | x == ' '  -> R
+    | otherwise -> Q
+  R | x == ' '  -> R
+    | otherwise -> Q
 
 
-concatOnSnd :: [(String, CalcFsaState)] -> [(String, CalcFsaState)]
-concatOnSnd [x] = [x]
-concatOnSnd ((x1,y1):(x2,y2):zs)        | (y1 == y2) && (not $elem y1 [BraceO, BraceC]) = concatOnSnd ((x1++x2,y1):zs)
-                                        | y1 == Nun && y2 == Num2       = concatOnSnd ((x1++x2,y1):zs)
-                                        | otherwise                     = (x1,y1) : concatOnSnd ((x2,y2):zs)
+-- C
+tokenize :: String -> [Token]
+tokenize []     = []
+tokenize (c:cs) | isNothing fsa = error "parse error"
+                | otherwise = token : tokenize rest
+                where
+                  fsa = findFSA c
+                  (token, rest) = findToken "" (fromJust fsa) Q (c:cs)
 
 
---Variant 3
-parseExpr3 :: [(String,CalcFsaState)] -> (BinTree String String, [(String, CalcFsaState)] )
+findFSA :: Char -> Maybe (FsaState -> Char -> FsaState)
+findFSA c | isOperator c = Just fsaOprt
+          | isDigit c    = Just fsaNmbr
+          | c == '~'     = Just fsaNmbr
+          | isAlpha c    = Just fsaIdnt
+          | isBracket c  = Just fsaBrck
+          | otherwise    = Nothing
 
-parseExpr3 ((str,BraceO):tokens)        = (BinNode op n1 n2, rest)
-                where   (n1, r1)        = parseExpr3 tokens
-                        (op, r2)        = parseOpr3 r1
-                        (n2, r3)        = parseExpr3 r2
-                        (br, r4)        = parseBrC3 r3
-                        rest            | br == ")"     = r4
-                                        | otherwise = error "missing closing brackets"
+findToken :: String -> (FsaState -> Char -> FsaState) -> FsaState -> String -> (Token, String)
+findToken res _fsa _s []     = (tok, "")
+                             where tok = makeToken res
+findToken res fsa  s  (c:cs) | r /= Q = findToken (res++[c]) fsa r cs
+                             | otherwise = (tok, c:cs)
+                             where
+                               r = fsa s c
+                               tok = makeToken res
 
-
-parseExpr3 ((str,Nun):tokens)           = (BinLeaf $ str,tokens)
-parseExpr3 ((str,Ident):tokens)         = (BinLeaf $ str,tokens)
-
-parseBrC3 :: [(String,CalcFsaState)] -> (String, [(String, CalcFsaState)] )
-parseBrC3 ((str,BraceC):tokens)         = (str,tokens)
-
-parseOpr3 :: [(String,CalcFsaState)] -> (String, [(String, CalcFsaState)] )
-parseOpr3 ((str,Oper):tokens)           = (str,tokens)
-
-assign :: ([String], [Double]) -> String -> Double
-assign ([],[]) z        = read $ map repl z :: Double
-        where   repl '~' = '-'
-                repl  x = x
-assign (_ ,[]) z        = error "Unequal array lengths"
-assign ([],_ ) z        = error "Unequal array lengths"
-assign ((x:xs),(y:ys)) z        | z == x        = y
-                                | otherwise     = assign (xs,ys) z
+makeToken :: String -> Token
+makeToken (c:cs) | isOperator c = TokOp (toOperator c)
+                 | isDigit c    = TokNum (read (c:cs))
+                 | c == '~'     = TokNum (-1 * read cs)
+                 | isAlpha c    = TokId (c:cs)
+                 | c == '('     = TokLB
+                 | c == ')'     = TokRB
+                 | otherwise    = error "empty token"
 
 
--- USAGE:   eval (assign (["x"],[24])) (fst $ parseExpr3 (tokenize "(x+3)"))
+--------------------------
+--     Excercise 4      --
+--------------------------
+parseExpr4 :: [Token] -> (FSATree, [Token])
+parseExpr4 []            = error "empty tree"
+parseExpr4 (TokLB:ts)    = (BinNode d t1 t2, tail r3)
+                      where
+                        (t1, r1) = parse ts
+                        (TokOp d:r2) = r1
+                        (t2, r3) = parse r2
+parseExpr4 (TokNum i:ts) = (BinLeaf (Left i), ts)
+parseExpr4 (TokId  s:ts) = (BinLeaf (Right s), ts)
 
-eval :: (String -> Double) -> BinTree String String -> Either Double Bool
-eval f (BinNode o a1 a2)        | o == "+"      = Left (fromLeft (eval f a1) + fromLeft (eval f a2))
-                                | o == "-"      = Left (fromLeft (eval f a1) - fromLeft (eval f a2))
-                                | o == "*"      = Left (fromLeft (eval f a1) * fromLeft (eval f a2))
-                                | o == "/"      = Left (fromLeft (eval f a1) / fromLeft (eval f a2))
-                                | o == "^"      = Left (fromLeft (eval f a1) ** fromLeft (eval f a2))
-                                | o == "="      = Right (fromLeft (eval f a1) == fromLeft (eval f a2))
-                                | o == "<"      = Right (fromLeft (eval f a1) < fromLeft (eval f a2))
-                                | o == ">"      = Right (fromLeft (eval f a1) > fromLeft (eval f a2))
-                                | o == "<="     = Right (fromLeft (eval f a1) <= fromLeft (eval f a2))
-                                | o == ">="     = Right (fromLeft (eval f a1) >= fromLeft (eval f a2))
-                                | o == "/="     = Right (fromLeft (eval f a1) /= fromLeft (eval f a2))
-                                | otherwise     = error "operator not recognised"
+--------------------------
+--     Excercise 5      --
+--------------------------
+eval :: String -> [(String, Float)] -> Float
+eval s l = evaluate l $ fst $ parse $ tokenize s
 
-eval f (BinLeaf x)              = Left (f x)
+evaluate :: [(String, Float)] -> FSATree -> Float
+evaluate _ (BinLeaf (Left i))  = i
+evaluate l (BinLeaf (Right s)) = find s l
+evaluate l (BinNode o t1 t2)   = case o of
+  Pls -> evaluate l t1 + evaluate l t2
+  Min -> evaluate l t1 - evaluate l t2
+  Mlt -> evaluate l t1 * evaluate l t2
+  Div -> evaluate l t1 / evaluate l t2
+  Pow -> evaluate l t1 ** evaluate l t2
 
-fromLeft (Left a)               = a
-fromLeft (Right _)              = error "Expected Left"
+find :: String -> [(String, Float)] -> Float
+find q []         = error (q++" not found")
+find q ((k,v):ks) | k == q = v
+                  | otherwise = find q ks
