@@ -1,4 +1,4 @@
-package pp.block2.cp.annotation;
+package pp.block2.cp_wouter.annotation;
 
 public class Point {
   /*@ spec_public */ private int x;

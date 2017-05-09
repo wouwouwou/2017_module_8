@@ -76,8 +76,12 @@ public class GenericLLParser implements Parser {
      */
     private AST parse(Rule rule) throws ParseException {
         AST result = new AST(rule.getLHS());
-        for (Symbol s : rule.getRHS()) {
-            result.addChild(parse(s));
+        if (!rule.getRHS().isEmpty()) {
+            for (Symbol s : rule.getRHS()) {
+                if (!s.equals(Symbol.EMPTY)) {
+                    result.addChild(parse(s));
+                }
+            }
         }
         return result;
     }

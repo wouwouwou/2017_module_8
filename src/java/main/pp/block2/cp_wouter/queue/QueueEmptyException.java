@@ -1,4 +1,4 @@
-package pp.block2.cp.queue;
+package pp.block2.cp_wouter.queue;
 
 public class QueueEmptyException extends Exception {
     private static final long serialVersionUID = 1L;

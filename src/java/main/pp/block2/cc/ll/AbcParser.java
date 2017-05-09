@@ -12,7 +12,7 @@ import static pp.block2.cc.ll.Abc.*;
 
 public class AbcParser implements Parser {
 
-	private static final NonTerm L = new NonTerm("A");
+	private static final NonTerm L = new NonTerm("L");
 	private static final NonTerm R = new NonTerm("R");
 	private static final NonTerm Q = new NonTerm("Q");
 	private static final NonTerm RR = new NonTerm("R'");

@@ -1,4 +1,4 @@
-package pp.block2.cp.queue;
+package pp.block2.cp_wouter.queue;
 
 public interface Queue<T> {
     /** Push an element at the head of the queue. */
