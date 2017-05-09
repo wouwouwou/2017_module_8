@@ -243,27 +243,26 @@ subtreeAt i (Node4 n a b)   | i == n        = (Node4 n a b)
 --------------------------
 --     Excercise 6      --
 --------------------------
-{-cutOffAt :: Int -> Tree1c -> Tree1c
-cutOffAt _ Leaf1c               = Leaf1c
-cutOffAt 0 _                    = Leaf1c
-cutOffAt x (Node1c i a b)       = Node1c i (cutOffAt (x-1) a) (cutOffAt (x-1) b)-}
---for a different type of tree -untested!
 cutOffAt :: Int -> Tree1a -> Tree1a
 cutOffAt _ (Leaf1a n)       = Leaf1a n
 cutOffAt 0 (Node1a n _ _)   = Leaf1a n
 cutOffAt x (Node1a n l r)   = Node1a n (cutOffAt (x-1) l) (cutOffAt (x-1) r)
 
 
----ex7
---a
+--------------------------
+--     Excercise 7      --
+--------------------------
+-- A
 replace :: Int -> [Char] -> Tree1a -> Tree1a
 replace x [] (Leaf1a _)             = Leaf1a x
 replace x [] (Node1a _ a b)         = Node1a x a b
-replace x _ (Leaf1a i)              = error "Invalid path"
+replace x _ (Leaf1a _)              = error "Invalid path"
 replace x (s:str) (Node1a i a b)    | s == 'l'      = Node1a i (replace x str a) b
                                     | s == 'r'      = Node1a i a (replace x str b)
                                     | otherwise     = error "Invalid character in path"
---b
+
+
+-- B
 subTree :: [Char] -> Tree1a -> Tree1a
 subTree [] (Leaf1a i)           = Leaf1a i
 subTree [] (Node1a i a b)       = Node1a i a b
@@ -272,8 +271,11 @@ subTree (s:str) (Node1a i a b)  | s == 'l'      = subTree str a
                                 | s == 'r'      = subTree str b
                                 | otherwise     = error "Invalid character in path"
 
----ex8
---a
+
+--------------------------
+--     Excercise 8      --
+--------------------------
+-- A
 isBalanced :: Tree4 -> Bool
 isBalanced tree = abs (a - b) < 2
                         where
@@ -286,8 +288,9 @@ branchMinMax (Node4 i a b)     = ( (min (amin+1) (bmin+1)) , (max (amax+1) (bmax
                                 (amin, amax) = branchMinMax a
                                 (bmin, bmax) = branchMinMax b
 
-isBalancedAlt :: Tree4 -> Bool
-isBalancedAlt t = (max - min) < 2
+-- Alternative function based on pathlengths
+isBalanced' :: Tree4 -> Bool
+isBalanced' t = (max - min) < 2
     where 
         xs  = pathLengths t 0
         (max, min) = (maximum xs, minimum xs)
@@ -296,16 +299,16 @@ pathLengths :: Tree4 -> Int -> [Int]
 pathLengths Leaf4 n = [n]
 pathLengths (Node4 _ l r) n = (pathLengths l (n + 1)) ++ (pathLengths r (n + 1)) 
 
---b
+
+-- B
 fsthalf :: [Int] -> [Int]
 fsthalf xs = take ((length xs) `div` 2) xs
+
 sndhalf :: [Int] -> [Int]
 sndhalf xs = drop ((length xs) `div` 2) xs
 
-
 balance = buildBalancedTree . makeList 
 
---buildBalancedTree 
 buildBalancedTree :: [Int] -> Tree4
 buildBalancedTree []    = Leaf4
 buildBalancedTree xs    = Node4 (head (sndhalf xs)) (buildBalancedTree (fsthalf xs)) (buildBalancedTree (tail (sndhalf xs)))
