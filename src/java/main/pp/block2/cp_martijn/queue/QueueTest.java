@@ -1,4 +1,4 @@
-package pp.block2.cp.test;
+package pp.block2.cp_martijn.queue;
 
 import nl.utwente.pp.cp.junit.ConcurrentRunner;
 import nl.utwente.pp.cp.junit.ThreadNumber;
@@ -9,9 +9,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import java.util.Queue;
 import java.util.Random;
-import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
  * ExampleTest class showing the usage of the concurrent JUnit runner.
@@ -53,7 +51,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  * The following example contains
  */
 @RunWith(ConcurrentRunner.class)
-public class ExampleTest {
+public class QueueTest {
 
 	/**
 	 * The amount of threads used in each test.
@@ -77,27 +75,27 @@ public class ExampleTest {
 	@Before
 	public void before() {
 		//Setup an empty queue.
-		this.producerConsumerQueue = new ConcurrentLinkedQueue<>();
+		this.producerConsumerQueue = new LListQueue<>();
 	}
 
 	/**
 	 * Simple multi threaded test which performs reads and writes to a queue from the same threads. There is no
 	 * difference between the task of each thread.
 	 */
-	@Test
+	@Test(timeout = 10000)
 	@Threaded(count = AMOUNT_OF_THREADS)
 	public void simpleMultiThreadedTest() throws InterruptedException {
-		for (int i = 0; i < 100; i++) {
+		for (int i = 0; i < 10; i++) {
 			int write = this.random.nextInt();
-			this.producerConsumerQueue.add(write);
+			this.producerConsumerQueue.push(write);
 		}
-		int i = 100;
+		int i = 10;
 		while (i > 0) {
-			Integer read = this.producerConsumerQueue.poll();
-			if (read == null) {
-				Thread.sleep(500);
-			} else {
+			try {
+				Integer read = this.producerConsumerQueue.pull();
 				i--;
+			} catch (QueueEmptyException e) {
+				Thread.sleep(50);
 			}
 		}
 	}
@@ -108,14 +106,13 @@ public class ExampleTest {
 	 * @throws InterruptedException If the thread got interrupted.
 	 */
 	private void consumer(int num) throws InterruptedException {
-		int i = 100;
+		int i = 10;
 		while (i > 0) {
-			Integer read = this.producerConsumerQueue.poll();
-			if (read == null) {
-				Thread.sleep(500);
-			} else {
-				System.out.printf("Consumer %d: Polled %d.%n", num, read);
+			try {
+				Integer read = this.producerConsumerQueue.pull();
 				i--;
+			} catch (QueueEmptyException e) {
+				Thread.sleep(50);
 			}
 		}
 	}
@@ -125,10 +122,9 @@ public class ExampleTest {
 	 * @param num The number of this producer.
 	 */
 	private void producer(int num) {
-		for (int i = 0; i < 100; i++) {
+		for (int i = 0; i < 10; i++) {
 			int write = this.random.nextInt();
-			System.out.printf("Producer %d: Added %d.%n", num, write);
-			this.producerConsumerQueue.add(write);
+			this.producerConsumerQueue.push(write);
 		}
 	}
 
@@ -151,11 +147,21 @@ public class ExampleTest {
 	 * This test is missing the {@link Threaded} annotation, so it will run single threaded, like a normal JUnit test
 	 * would, which does not run on separate threads at all.
 	 */
-	@Test
+	@Test(timeout = 10000)
 	public void singleThreadedTest() {
 		int write = this.random.nextInt();
-		this.producerConsumerQueue.add(write);
-		this.producerConsumerQueue.poll();
+		this.producerConsumerQueue.push(write);
+		try {
+			this.producerConsumerQueue.pull();
+		} catch (QueueEmptyException e) {
+			Assert.fail("There should be an element in this queue.");
+		}
+
+		try {
+			this.producerConsumerQueue.pull();
+			Assert.fail("There should not be any element in this queue anymore!");
+		} catch (QueueEmptyException e) {
+		}
 	}
 
 	/**
@@ -165,7 +171,11 @@ public class ExampleTest {
 	@After
 	public void after() {
 		//Assert the queue is empty.
-		Assert.assertNull(this.producerConsumerQueue.poll());
+		try {
+			this.producerConsumerQueue.pull();
+			Assert.fail("There should not be any element in this queue anymore!");
+		} catch (QueueEmptyException e) {
+		}
 	}
 
 }

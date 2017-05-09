@@ -39,7 +39,7 @@ public class GenericLLParserTest {
         this.lexerType = Abc.class;
         this.parser1 = new AbcParser();
         this.parser2 = new GenericLLParser(Grammars.makeAbc());
-        compare("abaa");
+		compare("abaa");
         compare("cababcbca");
         fails("bbcca");
     }
@@ -64,6 +64,8 @@ public class GenericLLParserTest {
 	private void compare(String text) {
 		AST ast1 = parse(this.parser1, text);
 		AST ast2 = parse(this.parser2, text);
+		System.out.println(ast1);
+		System.out.println(ast2);
 		assertEquals(ast1, ast2);
 	}
 
@@ -94,4 +96,5 @@ public class GenericLLParserTest {
 		}
 		return result;
 	}
+
 }

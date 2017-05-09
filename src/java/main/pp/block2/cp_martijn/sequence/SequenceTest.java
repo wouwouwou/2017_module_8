@@ -1,4 +1,4 @@
-package pp.block2.cp.test;
+package pp.block2.cp_martijn.sequence;
 
 import nl.utwente.pp.cp.junit.ConcurrentRunner;
 import nl.utwente.pp.cp.junit.ThreadNumber;
@@ -12,6 +12,7 @@ import org.junit.runner.RunWith;
 import java.util.Queue;
 import java.util.Random;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * ExampleTest class showing the usage of the concurrent JUnit runner.
@@ -53,22 +54,16 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  * The following example contains
  */
 @RunWith(ConcurrentRunner.class)
-public class ExampleTest {
+public class SequenceTest {
 
 	/**
 	 * The amount of threads used in each test.
 	 */
 	private static final int AMOUNT_OF_THREADS = 10;
 
-	/**
-	 * Simple random object to get random integers from.
-	 */
-	private final Random random = new Random();
+	private static final int AMOUNT_OF_INCREMENTS = 300;
 
-	/**
-	 * Queue used for the producer consumer example (advancedMultiThreadedTest).
-	 */
-	private Queue<Integer> producerConsumerQueue;
+	private AtomicInteger counter;
 
 	/**
 	 * If you need to setup some object before the multithreaded tests start, you can do it in a method annotated with
@@ -77,7 +72,7 @@ public class ExampleTest {
 	@Before
 	public void before() {
 		//Setup an empty queue.
-		this.producerConsumerQueue = new ConcurrentLinkedQueue<>();
+		counter = new AtomicInteger(0);
 	}
 
 	/**
@@ -87,63 +82,8 @@ public class ExampleTest {
 	@Test
 	@Threaded(count = AMOUNT_OF_THREADS)
 	public void simpleMultiThreadedTest() throws InterruptedException {
-		for (int i = 0; i < 100; i++) {
-			int write = this.random.nextInt();
-			this.producerConsumerQueue.add(write);
-		}
-		int i = 100;
-		while (i > 0) {
-			Integer read = this.producerConsumerQueue.poll();
-			if (read == null) {
-				Thread.sleep(500);
-			} else {
-				i--;
-			}
-		}
-	}
-
-	/**
-	 * Function which reads integers from the queue and therefore performs the task of a consumer.
-	 * @param num The number of this consumer.
-	 * @throws InterruptedException If the thread got interrupted.
-	 */
-	private void consumer(int num) throws InterruptedException {
-		int i = 100;
-		while (i > 0) {
-			Integer read = this.producerConsumerQueue.poll();
-			if (read == null) {
-				Thread.sleep(500);
-			} else {
-				System.out.printf("Consumer %d: Polled %d.%n", num, read);
-				i--;
-			}
-		}
-	}
-
-	/**
-	 * Function which writes integers to the queue and therefore performs the task of a producer.
-	 * @param num The number of this producer.
-	 */
-	private void producer(int num) {
-		for (int i = 0; i < 100; i++) {
-			int write = this.random.nextInt();
-			System.out.printf("Producer %d: Added %d.%n", num, write);
-			this.producerConsumerQueue.add(write);
-		}
-	}
-
-	/**
-	 * Test which shows a simple producer consumer pattern, with different threads performing different tasks.
-	 * @param theadNumber The number of the thread executing the code.
-	 * @throws InterruptedException If one of the threads got interrupted.
-	 */
-	@Test
-	@Threaded(count = AMOUNT_OF_THREADS * 2)
-	public void advancedMultiThreadedTest(@ThreadNumber int theadNumber) throws InterruptedException {
-		if (theadNumber < AMOUNT_OF_THREADS) {
-			this.producer(theadNumber);
-		} else {
-			this.consumer(theadNumber - AMOUNT_OF_THREADS);
+		for(int i = 0; i < AMOUNT_OF_INCREMENTS; i++){
+			counter.getAndAdd(1);
 		}
 	}
 
@@ -153,9 +93,9 @@ public class ExampleTest {
 	 */
 	@Test
 	public void singleThreadedTest() {
-		int write = this.random.nextInt();
-		this.producerConsumerQueue.add(write);
-		this.producerConsumerQueue.poll();
+		for(int i = 0; i < AMOUNT_OF_INCREMENTS*AMOUNT_OF_THREADS; i++){
+			counter.getAndAdd(1);
+		}
 	}
 
 	/**
@@ -165,7 +105,7 @@ public class ExampleTest {
 	@After
 	public void after() {
 		//Assert the queue is empty.
-		Assert.assertNull(this.producerConsumerQueue.poll());
+		Assert.assertEquals(AMOUNT_OF_INCREMENTS*AMOUNT_OF_THREADS, counter.get());
 	}
 
 }
