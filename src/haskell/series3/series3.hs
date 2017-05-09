@@ -155,28 +155,29 @@ addNode (Node1b (x,y) a b)      = Node1a (x+y) (addNode a) (addNode b)
 
 
 -- E
-zipWithTree :: (Int -> Int -> Int) -> Tree1b -> Tree1a
-zipWithTree f (Leaf1b (x,y))            = Leaf1a (x `f` y)
-zipWithTree f (Node1b (x,y) a b)        = Node1a (x `f` y) (zipWithTree f a) (zipWithTree f b)
-
-
--- E (NEW)
 mapTreeVar :: ((Int, Int) -> Int) -> Tree1b -> Tree1a
 mapTreeVar f (Leaf1b (x,y))     = Leaf1a (f (x, y))
 mapTreeVar f (Node1b (x,y) l r) = Node1a (f (x, y)) (mapTreeVar f l) (mapTreeVar f r)
 
----ex3
---a
+
+--------------------------
+--     Excercise 3      --
+--------------------------
+-- A
 binMirror :: Tree1a -> Tree1a
 binMirror (Leaf1a n)            = Leaf1a n
 binMirror (Node1a n a b )       = Node1a n (binMirror b) (binMirror a)
 
---b
+
+-- B
 binMirrorD :: Tree1d -> Tree1d
 binMirrorD (Leaf1d (x,y))       = Leaf1d (y,x)
 binMirrorD (Node1d a)           = Node1d (map binMirrorD (reverse a))
 
---Tree 4 -untested!
+
+--------------------------
+--     Excercise 4      --
+--------------------------
 data Tree4  = Leaf4
             | Node4 Int Tree4 Tree4
                 deriving Show
@@ -185,47 +186,63 @@ pp4 :: Tree4 -> RoseTree
 pp4 (Leaf4)         = RoseNode "" []
 pp4 (Node4 n l r)   = RoseNode (show n) [pp4 l, pp4 r]
 
----ex4
---a
+
+-- A
 insertTree :: Int -> Tree4 -> Tree4
 insertTree n (Leaf4)        = Node4 n Leaf4 Leaf4
 insertTree n (Node4 i a b)  | n <= i        = Node4 i (insertTree n a) b
                             | n > i         = Node4 i a (insertTree n b)
 
---b
+
+-- B
 makeTree :: [Int] -> Tree4
 makeTree []     = Leaf4
 makeTree (x:xs) = insertTree x (makeTree xs)
 
---why no foldl instead of foldr? just curious
+
+-- Why no foldl instead of foldr? Explain.
+-- Type error when using insertTree.
+-- :t foldr    =>    (a -> b -> b) -> b -> [a] -> b
+-- :t foldl    =>    (a -> b -> a) -> a -> [b] -> a
+-- It can also be done with foldl by swapping the arguments of insertTree (see makeTreeFL)
+-- This saves memory, because foldr collapses its computations only at the end, while foldl
+-- collapses after every computation.
 makeTreeF :: [Int] -> Tree4
 makeTreeF xs    = foldr (insertTree) Leaf4 xs
 
---why no foldl instead of foldr? just curious
 makeTreeFL :: [Int] -> Tree4
 makeTreeFL xs    = foldl (\x y -> insertTree y x) Leaf4 xs
 
---c
+
+-- C
 makeList :: Tree4 -> [Int]
 makeList Leaf4         = []
 makeList (Node4 i a b) = (makeList a)++[i]++(makeList b)
 
---d
+
+-- D
 sortList :: [Int] -> [Int]
 sortList xs = makeList $ makeTree xs
 
---e
+
+-- E
 sortTree :: Tree4 -> Tree4
 sortTree tree = makeTree $ makeList tree
 
----ex5
+
+--------------------------
+--     Excercise 5      --
+--------------------------
 subtreeAt :: Int -> Tree4 -> Tree4
 subtreeAt i Leaf4           = error "Number not in tree"
 subtreeAt i (Node4 n a b)   | i == n        = (Node4 n a b)
                             | i < n         = subtreeAt i a
                             | i > n         = subtreeAt i b
 
----ex6
+
+--------------------------
+--     Excercise 6      --
+--------------------------
 {-cutOffAt :: Int -> Tree1c -> Tree1c
 cutOffAt _ Leaf1c               = Leaf1c
 cutOffAt 0 _                    = Leaf1c
