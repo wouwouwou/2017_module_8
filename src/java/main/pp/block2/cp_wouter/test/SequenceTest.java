@@ -1,4 +1,4 @@
-package pp.block2.cp.test;
+package pp.block2.cp_wouter.test;
 
 import nl.utwente.pp.cp.junit.ConcurrentRunner;
 import nl.utwente.pp.cp.junit.Threaded;

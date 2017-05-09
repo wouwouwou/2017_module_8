@@ -1,4 +1,4 @@
-package pp.block2.cp.test;
+package pp.block2.cp_wouter.test;
 
 import nl.utwente.pp.cp.junit.ConcurrentRunner;
 import nl.utwente.pp.cp.junit.ThreadNumber;
@@ -8,8 +8,8 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import pp.block2.cp.queue.MyQueue;
-import pp.block2.cp.queue.QueueEmptyException;
+import pp.block2.cp_wouter.queue.MyQueue;
+import pp.block2.cp_wouter.queue.QueueEmptyException;
 
 import java.util.NoSuchElementException;
 import java.util.Random;
