@@ -1,20 +1,58 @@
----- Series 4
 import FPPrac.Trees
 import Data.Char
 import Data.List
 
 ---------------------------------------------------------------------------------
--- Example tree with compementary transition functions (because trees in flat
--- text are a real pain!)
+-- Example tree with complementary transition functions (because trees in flat
+-- text are a real pain!). The MultTree is a generic tree, which can be
+-- transformed to exampleTrees which can be used in Exercise 1 and 4.
+--
+-- TLDR; the exampleTrees are generated from the MultTree.
 --
 -- EXAMPLE: showTree $ pp1a $ exampleTree1a exampleTree1
 --          showTree $ pp1a $ mapTree (^6) $ exampleTree1a exampleTree1
+--
+-- USAGE: exampleTree1a exampleTree1
+--        exampleTree1b exampleTree1
+--        exampleTree1c exampleTree1
+--        exampleTree1d exampleTree1
 
 data MultTree x  = Nd x [MultTree x]
                         deriving Show
 
 exampleTree1 :: MultTree (Int,Int)
-exampleTree1 = Nd (50,2) [Nd (40,5) [Nd (30,2) [],Nd (45,2) [Nd (60,8) [Nd (61,1) [Nd (62,3) [Nd (63,50) []]]]],Nd (49,2) []],Nd (56,3) [Nd (55,2) [],Nd (57,3) []],Nd (60,8) [Nd (61,1) [Nd (62,3) [Nd (63,50) []]]],Nd (40,5) [Nd (30,2) [],Nd (45,2) [],Nd (49,2) []]]
+exampleTree1 =
+    Nd (50,2) [
+        Nd (40,5) [
+            Nd (30,2) [],
+            Nd (45,2) [
+                Nd (60,8) [
+                    Nd (61,1) [
+                        Nd (62,3) [
+                            Nd (63,50) []
+                        ]
+                    ]
+                ]
+            ],
+            Nd (49,2) []
+        ],
+        Nd (56,3) [
+            Nd (55,2) [],
+            Nd (57,3) []
+        ],
+        Nd (60,8) [
+            Nd (61,1) [
+                Nd (62,3) [
+                    Nd (63,50) []
+                ]
+            ]
+        ],
+        Nd (40,5) [
+            Nd (30,2) [],
+            Nd (45,2) [],
+            Nd (49,2) []
+        ]
+    ]
 
 exampleBinTree :: MultTree (Int, Int) -> BinTree (Int,Int) (Int,Int)
 exampleBinTree (Nd x [])           = BinLeaf x
@@ -24,13 +62,16 @@ exampleBinTree (Nd x (n:o:ns))     = BinNode x (exampleBinTree n) (exampleBinTre
 exampleTree2 = BinNode (50,2) (BinNode (40,5) (BinLeaf (30,2)) (BinNode (45,2) (BinNode (61,1) (BinLeaf (62,3)) (BinLeaf ((-1),2))) (BinLeaf (99,3)))) (BinNode (56,3) (BinLeaf (55,2)) (BinLeaf (57,3))) 
 
 
----------------------------------------------------------------------------------
----ex1
---a
+--------------------------
+--     Excercise 1      --
+--------------------------
+-- A
 data BinTree a b        = BinLeaf b
                         | BinNode a (BinTree a b) (BinTree a b)
                                 deriving Show
---b
+
+
+-- B
 data Unit       = Empty
 instance Show Unit where 
         show Empty = ""
@@ -40,13 +81,18 @@ type Tree1b     = BinTree (Int, Int) (Int, Int)
 type Tree1c     = BinTree Int Unit
 type Tree4      = BinTree Unit Int
 
---c
+
+-- C
 pp :: (Show a, Show b) => BinTree a b -> RoseTree
 pp (BinLeaf x)          = RoseNode (show x) []
 pp (BinNode x a b)      = RoseNode (show x) [pp a, pp b]
 
 
----ex2
+--------------------------
+--     Excercise 2      --
+--------------------------
+-- A
+
 --BNF:
 -- E -> '(' E O E ')'
 -- E -> N
@@ -64,17 +110,20 @@ parseExpr1 E (x:xs)     | x == '('      = (BinNode o t1 t2 ,r3)
                         | isDigit x     = (n, rn)
                         | otherwise     = error $ "parse error at start of expression: "++(x:xs)
                                 where
-                                        (o, ro)         = parseOpr1 r1
-                                        (t1, r1)        = parseExpr1 E xs
-                                        (t2, r2)        = parseExpr1 E ro
-                                        (n, rn)         = parseExpr1 N (x:xs)
-                                        r3              | head r2 == ')' = tail r2
-                                                        | otherwise = error $ "parse error on closing bracket before: "++r2
+                                        (o, ro)    = parseOpr1 r1
+                                        (t1, r1)   = parseExpr1 E xs
+                                        (t2, r2)   = parseExpr1 E ro
+                                        (n, rn)    = parseExpr1 N (x:xs)
+                                        r3         | head r2 == ')' = tail r2
+                                                   | otherwise = error $ "parse error on closing bracket before: "++ r2
 parseExpr1 N (x:xs)     = (BinLeaf $ digitToInt x, xs)
+
 parseOpr1 :: String -> (Char, String) 
 parseOpr1 (x:xs)        | isOperand1 x  = (x, xs)
                         | otherwise     = error $ "parse error at start of operand: "++(x:xs)
 
+
+-- B
 
 --BNF:
 -- E -> '(' E O E ')'
@@ -83,7 +132,6 @@ parseOpr1 (x:xs)        | isOperand1 x  = (x, xs)
 -- N -> [0..9]
 -- O -> ['+', '-', '/', '^']
 -- V -> [a..zA..z]
-
 
 parseExpr2 :: Expr -> [Char] -> (BinTree Char (Either Int Char), [Char])
 parseExpr2 E (x:xs)     | x == '('      = (BinNode o t1 t2 ,r3)
@@ -104,6 +152,10 @@ parseExpr2 V (x:xs)     = (BinLeaf $ Right x, xs)
 parseOpr2 (x:xs)        | isOperand1 x  = (x, xs)
                         | otherwise     = error $ "parse error at start of operand: "++(x:xs)
 
+
+--------------------------
+--     Excercise 3      --
+--------------------------
 -- States:
 
 data CalcFsaState = Func | Nun | Num2 | Ident | Oper | BraceO | BraceC
@@ -172,9 +224,9 @@ fsaWs Ws x	| x == ' '	= Ws
 -- Error state
 fsaWs _ _	= Error
 
-scanner :: [Char] -> [(Char, FsaState)]
-scanner xl@(x:xs) 	| isDigit x	= take (length $ (takeWhile (/= Stop) $ scanl fsaNum Start xl))
-			| otherwise	= error "None"
+--scanner :: [Char] -> [(Char, FsaState)]
+--scanner xl@(x:xs) 	| isDigit x	= take (length $ (takeWhile (/= Stop) $ scanl fsaNum Start xl))
+--			| otherwise	= error "None"
 --			| isAlpha x	= 
 --			| isOp x	= 
 --			| isPar x 	= 
