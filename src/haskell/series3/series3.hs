@@ -3,7 +3,10 @@ import Data.Char
 
 ---------------------------------------------------------------------------------
 -- Example tree with compementary transition functions (because trees in flat
--- text are a real pain!)
+-- text are a real pain!). The MultTree is a generic tree, which can be
+-- transformed to exampleTrees which can be used in Exercise 1 and 4.
+--
+-- TLDR; the exampleTrees are generated from the MultTree.
 --
 -- EXAMPLE: showTree $ pp1a $ exampleTree1a exampleTree1
 --          showTree $ pp1a $ mapTree (^6) $ exampleTree1a exampleTree1
@@ -60,6 +63,10 @@ exampleTree1b (N x [])       = Leaf1b x
 exampleTree1b (N x [n])      = Node1b x (exampleTree1b n) (Leaf1b (0,0))
 exampleTree1b (N x (n:o:ns)) = Node1b x (exampleTree1b n) (exampleTree1b o)
 
+exampleTree1c :: MultTree (Int, Int) -> Tree1c
+exampleTree1c (N (x, _) [])   = Leaf1c x
+exampleTree1c (N (x, _) [n])  = Node1c (exampleTree1c n) (Leaf1c x)
+exampleTree1c (N _ (n:o:ns))  = Node1c (exampleTree1c n) (exampleTree1c o)
 
 exampleTree4 :: MultTree (Int, Int) -> Tree4
 exampleTree4 (N (x,_) [])       = Leaf4
@@ -69,10 +76,12 @@ exampleTree4 (N (x,_) (n:o:ns)) = Node4 x (exampleTree4 n) (exampleTree4 o)
 exampleTree1d :: MultTree (Int, Int) -> Tree1d
 exampleTree1d (N x [])       = Leaf1d x
 exampleTree1d (N x [n])      = Node1d [exampleTree1d n]
-exampleTree1d (N x ns)     = Node1d (map exampleTree1d ns)
+exampleTree1d (N x ns)       = Node1d (map exampleTree1d ns)
 
----------------------------------------------------------------------------------
-
+--------------------------
+--     Excercise 1      --
+--------------------------
+-- A
 data Tree1a     = Leaf1a Int
                 | Node1a Int Tree1a Tree1a
                         deriving Show
@@ -82,6 +91,7 @@ pp1a (Leaf1a n)         = RoseNode (show n) []
 pp1a (Node1a i a b)     = RoseNode (show i) [pp1a a, pp1a b]
 
 
+-- B
 data Tree1b     = Leaf1b (Int, Int)
                 | Node1b (Int, Int) Tree1b Tree1b
                         deriving Show
@@ -91,9 +101,7 @@ pp1b (Leaf1b i)         = RoseNode (show i) []
 pp1b (Node1b i a b)     = RoseNode (show i) [pp1b a, pp1b b]
 
 
---data Tree1c     = Leaf1c
---                | Node1c Int Tree1c Tree1c
---                        deriving Show
+-- C
 data Tree1c     = Leaf1c Int
                 | Node1c Tree1c Tree1c
                     deriving Show
@@ -103,6 +111,7 @@ pp1c (Leaf1c n)           = RoseNode (show n) []
 pp1c (Node1c a b)     = RoseNode "" [pp1c a, pp1c b]
 
 
+-- D
 data Tree1d     = Leaf1d (Int, Int)
                 | Node1d [Tree1d]
                         deriving Show
@@ -111,19 +120,23 @@ pp1d :: Tree1d -> RoseTree
 pp1d (Leaf1d n) = RoseNode (show n) []
 pp1d (Node1d a) = RoseNode "" (map pp1d a)
 
----ex2
---a
 
+--------------------------
+--     Excercise 2      --
+--------------------------
+-- A
 treeAdd :: Int -> Tree1a -> Tree1a
 treeAdd i (Leaf1a n)            = Leaf1a (n+i)
 treeAdd i (Node1a n a b)        = Node1a (n+i) (treeAdd i a) (treeAdd i b)
 
---b
+
+-- B
 treeSquare :: Tree1a -> Tree1a
 treeSquare (Leaf1a n)           = Leaf1a (n^2)
 treeSquare (Node1a n a b)       = Node1a (n^2) (treeSquare a) (treeSquare b)
 
---c
+
+-- C
 mapTree :: (Int -> Int) -> Tree1a -> Tree1a
 mapTree f (Leaf1a n)            = Leaf1a (f n)
 mapTree f (Node1a n a b)        = Node1a (f n) (mapTree f a) (mapTree f b)
@@ -134,17 +147,20 @@ treeAdd' i                      = mapTree (+i)
 treeSquare' :: Tree1a -> Tree1a
 treeSquare'                     = mapTree (^2)
 
---d
+
+-- D
 addNode :: Tree1b -> Tree1a
 addNode (Leaf1b (x,y))          = Leaf1a (x+y)
 addNode (Node1b (x,y) a b)      = Node1a (x+y) (addNode a) (addNode b)
 
---e
+
+-- E
 zipWithTree :: (Int -> Int -> Int) -> Tree1b -> Tree1a
 zipWithTree f (Leaf1b (x,y))            = Leaf1a (x `f` y)
 zipWithTree f (Node1b (x,y) a b)        = Node1a (x `f` y) (zipWithTree f a) (zipWithTree f b)
 
---new e
+
+-- E (NEW)
 mapTreeVar :: ((Int, Int) -> Int) -> Tree1b -> Tree1a
 mapTreeVar f (Leaf1b (x,y))     = Leaf1a (f (x, y))
 mapTreeVar f (Node1b (x,y) l r) = Node1a (f (x, y)) (mapTreeVar f l) (mapTreeVar f r)
