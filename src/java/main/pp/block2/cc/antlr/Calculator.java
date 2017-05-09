@@ -14,7 +14,7 @@ import java.math.BigInteger;
  */
 public class Calculator extends ExprBaseListener {
     private ParseTreeProperty<BigInteger> treeprop;
-    BigInteger result;
+    private BigInteger result;
 
     public Calculator() {
 
