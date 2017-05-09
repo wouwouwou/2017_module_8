@@ -302,7 +302,7 @@ parseExpr4 (TokId  s:ts) = (BinLeaf (Right s), ts)
 --     Excercise 5      --
 --------------------------
 eval :: String -> [(String, Float)] -> Float
-eval s l = evaluate l $ fst $ parse $ tokenize s
+eval s l = evaluate l $ fst $ parseExpr4 $ tokenize s
 
 evaluate :: [(String, Float)] -> FSATree -> Float
 evaluate _ (BinLeaf (Left i))  = i
@@ -318,3 +318,25 @@ find :: String -> [(String, Float)] -> Float
 find q []         = error (q++" not found")
 find q ((k,v):ks) | k == q = v
                   | otherwise = find q ks
+
+
+-- USAGE:   eval (assign (["x"],[24])) (fst $ parseExpr4 (tokenize "(x+3)"))
+
+eval :: (String -> Double) -> FSATree -> Either Double Bool
+eval f (BinNode o a1 a2)        | o == "+"      = Left (fromLeft (eval f a1) + fromLeft (eval f a2))
+                                | o == "-"      = Left (fromLeft (eval f a1) - fromLeft (eval f a2))
+                                | o == "*"      = Left (fromLeft (eval f a1) * fromLeft (eval f a2))
+                                | o == "/"      = Left (fromLeft (eval f a1) / fromLeft (eval f a2))
+                                | o == "^"      = Left (fromLeft (eval f a1) ** fromLeft (eval f a2))
+                                | o == "="      = Right (fromLeft (eval f a1) == fromLeft (eval f a2))
+                                | o == "<"      = Right (fromLeft (eval f a1) < fromLeft (eval f a2))
+                                | o == ">"      = Right (fromLeft (eval f a1) > fromLeft (eval f a2))
+                                | o == "<="     = Right (fromLeft (eval f a1) <= fromLeft (eval f a2))
+                                | o == ">="     = Right (fromLeft (eval f a1) >= fromLeft (eval f a2))
+                                | o == "/="     = Right (fromLeft (eval f a1) /= fromLeft (eval f a2))
+                                | otherwise     = error "operator not recognised"
+
+eval f (BinLeaf x)              = Left (f x)
+
+fromLeft (Left a)               = a
+fromLeft (Right _)              = error "Expected Left"
