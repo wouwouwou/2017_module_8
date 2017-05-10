@@ -16,6 +16,7 @@ Extension of CoreIntro.hs:
 
 type Stack  = [Int]
 
+-- Excercise 4 --
 type Heap = [Int]
 
 data Op     = Add | Mul | Sub
@@ -29,38 +30,48 @@ data Instr  = PushConst Int
             | EndRep
             | EndProg
             deriving Show
-
+-----------------
 data Tick = Tick
 
+          
+-- Excercise 5 --
 data Expr = Const Int                   -- for constants
           | Variable Int                -- for variables
           | BinExpr Op Expr Expr        -- for ``binary expressions''
+-----------------
 
+-- Excercise 5 --
 data Stmnt = Assign Int Expr
            | Repeat Expr [Stmnt]
+-----------------
 
 class CodeGen a where
     codeGen :: a -> [Instr]
 
+-- Excercise 2,6 --
 instance CodeGen Expr where
-    codeGen (BinExpr op l r)    = codeGen l ++ codeGen r ++ [Calc op]
-    codeGen (Variable i)        = [PushAddr i]
-    codeGen (Const n)           = [PushConst n] 
+    codeGen (BinExpr op l r)        = codeGen l ++ codeGen r ++ [Calc op]
+    codeGen (Variable i)            = [PushAddr i]
+    codeGen (Const n)               = [PushConst n] 
+-----------------
 
+-- Excercise 5,6,7 --
 instance CodeGen Stmnt where
-    codeGen (Assign i expr)       = codeGen expr ++ [Store i]
-    codeGen (Repeat expr stmnts) = codeGen expr ++ [PushPC] ++ concat (map codeGen stmnts) ++ [EndRep]
+    codeGen (Assign i expr)         = codeGen expr ++ [Store i]
+    codeGen (Repeat expr stmnts)    = codeGen expr ++ [PushPC] ++ concat (map codeGen stmnts) ++ [EndRep]
+-----------------
 
-
-
+-- Excercise 3,6,7 --
 class ToRose a where
     toRose :: a -> RoseTree
 instance ToRose Stmnt where
-    toRose (Assign n expr)  = RoseNode ("var " ++ show n ++ " :=") [toRose expr]
+    toRose (Assign n expr)          = RoseNode ("var " ++ show n ++ " :=") [toRose expr]
+    toRose (Repeat expr stmnts)     = RoseNode ("repeat") [toRose expr, RoseNode ("block") $ map toRose stmnts]
 instance ToRose Expr where
-    toRose (Const n)        = RoseNode (show n) []
-    toRose (Variable i)     = RoseNode ("var " ++ show i) []
-    toRose (BinExpr op l r) = RoseNode (show op) [toRose l, toRose r]
+    toRose (Const n)                = RoseNode (show n) []
+    toRose (Variable i)             = RoseNode ("var " ++ show i) []
+    toRose (BinExpr op l r)         = RoseNode (show op) [toRose l, toRose r]
+-----------------
 
 -- ========================================================================
 -- Processor functions
@@ -89,17 +100,19 @@ core instrs (pc,sp,stack) tick =  case instrs!!pc of
 core :: [Instr] -> (Int,Int,Heap,Stack) -> Tick -> (Int,Int,Heap,Stack)
 
 core instrs (pc,sp,heap,stack) tick =  case instrs!!pc of
-
+        
+        -- Excercise 4 --
         PushConst n   -> (pc+1, sp+1 , heap, stack <~ (sp,n))
 
         PushAddr i  -> (pc+1, sp+1, heap, stack <~ (sp,heap!!i))
 
         Store i     -> (pc+1, sp-1, heap <~ (i,stack!!(sp-1)), stack)
-
+        -----------------
         Calc op  -> (pc+1, sp-1 , heap, stack <~ (sp-2,v))
                  where
                    v = alu op (stack!!(sp-2)) (stack!!(sp-1))
         
+        -- Excercise 7 --
         PushPC   -> (pc+1, sp+1, heap, stack <~ (sp,pc+1))
         
         EndRep   -> (progc, sp', heap, stack <~ (sp-2, stack!!(sp-2)-1))
@@ -108,6 +121,7 @@ core instrs (pc,sp,heap,stack) tick =  case instrs!!pc of
                        sp'   | stack!!(sp-2) > 1   = sp
                              | otherwise           = sp-2
                              
+        -----------------
         
         EndProg  -> (-1, sp, heap, stack)
 
@@ -155,7 +169,7 @@ stmnt2 = Assign 1 (BinExpr Mul
           (BinExpr Add
               (Const 12)
               (Const 5)))
-stmnt3 = Assign 1 (BinExpr Mul
+stmnt3 = Assign 5 (BinExpr Mul
           (BinExpr Add
               (BinExpr Mul
                   (Variable 1)
@@ -171,28 +185,33 @@ stmnt3 = Assign 1 (BinExpr Mul
 stmnt4 = Repeat expr [stmnt2, stmnt3]
 
 stmnt5 = Repeat (
-		BinExpr Add 
-		(Const 3) 
-		(Const 5)
-		) 
-		[
-		(
-		Assign 4 
-		(BinExpr Mul
-          		(BinExpr Add
-              		(BinExpr Mul
-                  		(Const 2)
-                  		(Const 10))
-             			(BinExpr Mul
-                  		(Const 3)
-                  		(BinExpr Add
-                      			(Const 4)
-                      			(Const 11))))
-          		(BinExpr Add
-              			(Const 12)
-              			(Const 5)))
-		)
-		]
+        BinExpr Add 
+            (Const 3) 
+            (Const 5)
+        ) 
+        [
+        (
+        Assign 4 
+            (BinExpr Mul
+                (BinExpr Add
+                    (BinExpr Mul
+                        (Const 2)
+                        (Const 10))
+                    (BinExpr Mul
+                        (Const 3)
+                        (BinExpr Add
+                            (Const 4)
+                            (Const 11)
+                        )
+                    )
+                )
+                (BinExpr Add
+                      (Const 12)
+                      (Const 5)
+                )
+            )
+        )
+        ]
 
 stmnt6  = Repeat ( Const 5 ) 
             [
@@ -200,6 +219,22 @@ stmnt6  = Repeat ( Const 5 )
                 [Assign 4 (BinExpr Add (Const 1) (Variable 4))]
             ]
 
+onetotenprog  = [
+            (Assign 1 (Const 1)),
+            (Repeat ( Const 10 ) 
+            [
+                Assign 2 (
+                    BinExpr Add 
+                        (Variable 2)
+                        (Variable 1)
+                ),
+                Assign 1 (
+                    BinExpr Add
+                        (Variable 1)
+                        (Const 1)
+                )
+            ])
+            ]
 -- The program that results in the value of the expression (1105):
 {-prog = [ Push 2
        , Push 10
