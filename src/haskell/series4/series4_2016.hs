@@ -164,9 +164,21 @@ data Token = TokNum Float
            | TokOp Operator
            | TokLB
            | TokRB
+           | TokWS
            deriving Show
 
-data Operator = Pls | Min | Mlt | Div | Pow
+-- Compare operator?
+data Operator = Pls
+              | Min
+              | Mlt
+              | Div
+              | Pow
+              | Eq
+              | Gt
+              | Lt
+              | Neq
+              | Get
+              | Let
            deriving (Show)
 
 isOperator :: Char -> Bool
@@ -175,13 +187,19 @@ isOperator x = x `elem` "+-*/^<>="
 isBracket :: Char -> Bool
 isBracket x = x `elem` "()"
 
-toOperator :: Char -> Operator
-toOperator '+' = Pls
-toOperator '-' = Min
-toOperator '*' = Mlt
-toOperator '/' = Div
-toOperator '^' = Pow
-toOperator _ = error ""
+toOperator :: String -> Operator
+toOperator "+"  = Pls
+toOperator "-"  = Min
+toOperator "*"  = Mlt
+toOperator "/"  = Div
+toOperator "^"  = Pow
+toOperator "="  = Eq
+toOperator ">"  = Gt
+toOperator "<"  = Lt
+toOperator "/=" = Neq
+toOperator "<=" = Let
+toOperator ">=" = Get
+toOperator _ = error "Tokenize error when tokenizing an operator in the string."
 
 data FsaState = Q
               | R
@@ -251,8 +269,9 @@ fsaWhiteSpace s x = case s of
 -- C
 tokenize :: String -> [Token]
 tokenize []     = []
-tokenize (c:cs) | isNothing fsa = error "parse error"
-                | otherwise = token : tokenize rest
+tokenize (c:cs) | isNothing fsa = error "Tokenize error, no suitable FSA found at a point in the string."
+                | c == ' '       = tokenize cs
+                | otherwise     = token : tokenize rest
                 where
                   fsa = findFSA c
                   (token, rest) = findToken "" (fromJust fsa) Q (c:cs)
@@ -264,19 +283,21 @@ findFSA c | isOperator c = Just fsaOprt
           | c == '~'     = Just fsaNmbr
           | isAlpha c    = Just fsaIdnt
           | isBracket c  = Just fsaBrck
+          | isSpace c    = Just fsaWhiteSpace
           | otherwise    = Nothing
 
 findToken :: String -> (FsaState -> Char -> FsaState) -> FsaState -> String -> (Token, String)
-findToken res _fsa _s []     = (tok, "")
+findToken res _fsa _s []        = (tok, "")
                              where tok = makeToken res
-findToken res fsa  s  (c:cs) | r /= Q = findToken (res++[c]) fsa r cs
-                             | otherwise = (tok, c:cs)
+findToken res fsa  s  (c:cs)
+                 | r /= Q       = findToken (res++[c]) fsa r cs
+                 | otherwise    = (tok, c:cs)
                              where
                                r = fsa s c
                                tok = makeToken res
 
 makeToken :: String -> Token
-makeToken (c:cs) | isOperator c = TokOp (toOperator c)
+makeToken (c:cs) | isOperator c = TokOp (toOperator (c:cs))
                  | isDigit c    = TokNum (read (c:cs))
                  | c == '~'     = TokNum (-1 * read cs)
                  | isAlpha c    = TokId (c:cs)
@@ -288,55 +309,63 @@ makeToken (c:cs) | isOperator c = TokOp (toOperator c)
 --------------------------
 --     Excercise 4      --
 --------------------------
+
+--BNF:
+-- E -> TokLB E TokOp E TokRB
+-- E -> TokNum
+-- E -> TokId
+-- N -> TokNum.value
+-- O -> TokOp.value
+-- V -> TokId.value
+
 parseExpr4 :: [Token] -> (FSATree, [Token])
 parseExpr4 []            = error "empty tree"
 parseExpr4 (TokLB:ts)    = (BinNode d t1 t2, tail r3)
                       where
-                        (t1, r1) = parse ts
+                        (t1, r1) = parseExpr4 ts
                         (TokOp d:r2) = r1
-                        (t2, r3) = parse r2
+                        (t2, r3) = parseExpr4 r2
 parseExpr4 (TokNum i:ts) = (BinLeaf (Left i), ts)
 parseExpr4 (TokId  s:ts) = (BinLeaf (Right s), ts)
+
 
 --------------------------
 --     Excercise 5      --
 --------------------------
-eval :: String -> [(String, Float)] -> Float
-eval s l = evaluate l $ fst $ parseExpr4 $ tokenize s
+eval :: String -> [(String, Float)] -> String
+eval s l = case res of
+ Left  a  -> show(a)
+ Right a  -> show(a)
+ where res = evaluate l $ fst' $ parseExpr4 $ tokenize s
 
-evaluate :: [(String, Float)] -> FSATree -> Float
-evaluate _ (BinLeaf (Left i))  = i
-evaluate l (BinLeaf (Right s)) = find s l
+fst' :: (FSATree, [Token]) -> FSATree
+fst' (a, []) = a
+fst' _       = error "Error when parsing, there are still tokens left."
+
+evaluate :: [(String, Float)] -> FSATree -> Either Float Bool
+evaluate _ (BinLeaf (Left i))  = Left i
+evaluate l (BinLeaf (Right s)) = Left (find' s l)
 evaluate l (BinNode o t1 t2)   = case o of
-  Pls -> evaluate l t1 + evaluate l t2
-  Min -> evaluate l t1 - evaluate l t2
-  Mlt -> evaluate l t1 * evaluate l t2
-  Div -> evaluate l t1 / evaluate l t2
-  Pow -> evaluate l t1 ** evaluate l t2
-
-find :: String -> [(String, Float)] -> Float
-find q []         = error (q++" not found")
-find q ((k,v):ks) | k == q = v
-                  | otherwise = find q ks
-
-
--- USAGE:   eval (assign (["x"],[24])) (fst $ parseExpr4 (tokenize "(x+3)"))
-
-eval :: (String -> Double) -> FSATree -> Either Double Bool
-eval f (BinNode o a1 a2)        | o == "+"      = Left (fromLeft (eval f a1) + fromLeft (eval f a2))
-                                | o == "-"      = Left (fromLeft (eval f a1) - fromLeft (eval f a2))
-                                | o == "*"      = Left (fromLeft (eval f a1) * fromLeft (eval f a2))
-                                | o == "/"      = Left (fromLeft (eval f a1) / fromLeft (eval f a2))
-                                | o == "^"      = Left (fromLeft (eval f a1) ** fromLeft (eval f a2))
-                                | o == "="      = Right (fromLeft (eval f a1) == fromLeft (eval f a2))
-                                | o == "<"      = Right (fromLeft (eval f a1) < fromLeft (eval f a2))
-                                | o == ">"      = Right (fromLeft (eval f a1) > fromLeft (eval f a2))
-                                | o == "<="     = Right (fromLeft (eval f a1) <= fromLeft (eval f a2))
-                                | o == ">="     = Right (fromLeft (eval f a1) >= fromLeft (eval f a2))
-                                | o == "/="     = Right (fromLeft (eval f a1) /= fromLeft (eval f a2))
-                                | otherwise     = error "operator not recognised"
-
-eval f (BinLeaf x)              = Left (f x)
+  Pls -> Left  (fromLeft (evaluate l t1) +  fromLeft (evaluate l t2))
+  Min -> Left  (fromLeft (evaluate l t1) -  fromLeft (evaluate l t2))
+  Mlt -> Left  (fromLeft (evaluate l t1) *  fromLeft (evaluate l t2))
+  Div -> Left  (fromLeft (evaluate l t1) /  fromLeft (evaluate l t2))
+  Pow -> Left  (fromLeft (evaluate l t1) ** fromLeft (evaluate l t2))
+  Eq  -> Right (fromLeft (evaluate l t1) == fromLeft (evaluate l t2))
+  Gt  -> Right (fromLeft (evaluate l t1) >  fromLeft (evaluate l t2))
+  Lt  -> Right (fromLeft (evaluate l t1) <  fromLeft (evaluate l t2))
+  Neq -> Right (fromLeft (evaluate l t1) /= fromLeft (evaluate l t2))
+  Get -> Right (fromLeft (evaluate l t1) >= fromLeft (evaluate l t2))
+  Let -> Right (fromLeft (evaluate l t1) <= fromLeft (evaluate l t2))
 
 fromLeft (Left a)               = a
 fromLeft (Right _)              = error "Expected Left"
+
+fromRight (Right a)             = a
+fromTight (Left _)              = error "Expected Left"
+
+find' :: String -> [(String, Float)] -> Float
+find' q []              = error ("Variable '" ++ q ++ "' not found when evaluating function!")
+find' q ((k, v):ks)
+            | k == q    = v
+            | otherwise = find' q ks
