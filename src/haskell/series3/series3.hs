@@ -191,7 +191,7 @@ pp4 (Node4 n l r)   = RoseNode (show n) [pp4 l, pp4 r]
 insertTree :: Int -> Tree4 -> Tree4
 insertTree n (Leaf4)        = Node4 n Leaf4 Leaf4
 insertTree n (Node4 i a b)  | n <= i        = Node4 i (insertTree n a) b
-                            | n > i         = Node4 i a (insertTree n b)
+                            | otherwise     = Node4 i a (insertTree n b)
 
 
 -- B
@@ -301,6 +301,7 @@ pathLengths (Node4 _ l r) n = (pathLengths l (n + 1)) ++ (pathLengths r (n + 1))
 
 
 -- B
+-- splitAt can be used here. Is more elegant. :-)
 fsthalf :: [Int] -> [Int]
 fsthalf xs = take ((length xs) `div` 2) xs
 

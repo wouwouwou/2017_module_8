@@ -15,41 +15,41 @@ data Instr = Push Int
 -- ========================================================================
 -- Processor functions
 
-g op = case op of
+alu op = case op of
                 Add -> (+)
                 Mul -> (*)
                 Sub -> (-)
 
-f stack instr = case instr of
+core stack instr = case instr of
 
                      Push n   -> n : stack
 
-                     Calc op  -> v : drop 2 stack
+                     Calc op  -> v : stack'
                               where
-                                v = g op (stack!!1) (stack!!0)
+                                x:y:stack' = stack
+                                v          = alu op y x
 
 -- ========================================================================
--- example Program for expression: (((5*10) - (3*(4+6))) * (2+1))
+-- example Program for expression: (((2*10) + (3*(4+11))) * (12+5))
 
-prog = [ Push 5
+prog = [ Push 2
        , Push 10
        , Calc Mul
        , Push 3
        , Push 4
-       , Push 6
+       , Push 11
        , Calc Add
        , Calc Mul
-       , Calc Sub
-       , Push 2
-       , Push 1
+       , Calc Add
+       , Push 12
+       , Push 5
        , Calc Add
        , Calc Mul
        ]
 
-test0 = foldl f [] prog
+test0 = putStr $ unlines $ map show
+           $ foldl core [] prog
 
-test1 = scanl f [] prog
-
-test2 = putStr $ unlines $ map show
-      $ scanl f [] prog
+test1 = putStr $ unlines $ map show
+           $ scanl core [] prog
 
