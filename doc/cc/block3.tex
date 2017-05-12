@@ -149,8 +149,38 @@ Finally, one can construct a method with a variable amount of arguments, with th
 \textbf{num}   & bool & \textit{error} & \textit{error} \\\hline
 \textbf{bool}   & \textit{error} & bool & \textit{error} \\\hline
 \textbf{str}   & \textit{error} & \textit{error} & bool \\\hline
-\end{tabular}
+\end{tabular} \\
 
+\section*{Exercise 8}
+TABLEBEGIN \\
+TABLEEND \\
+ROWEND \\
+COLSEP \\
+ENTRY \\
+COMMENT $\rightarrow$ skip
+
+\section*{Exercise 9}
+The method syntaxError of BaseErrorListener has 6 parameters:\\
+
+\begin{tabular}{|l|p{10cm}|}\hline
+Recognizer$<$?, ?$>$ recognizer
+& The recognizer which recognized the error. \\\hline
+
+Object offendingSymbol
+& The symbol where the error occurred. \\\hline
+
+int line
+& The line where the error occurred. \\\hline
+
+int charPositionInLine
+& The char position in the line where the error occurred. \\\hline
+
+String msg
+& The error message. \\\hline
+
+RecognitionException e
+& Extension of RuntimeException, specified for the recognizer in the first parameter. \\\hline
+\end{tabular} \\
 
 \section*{Exercise 4.1}
 The assignment: $d \leftarrow d + 2 * (a + b)$
