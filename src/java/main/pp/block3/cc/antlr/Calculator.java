@@ -2,19 +2,19 @@ package pp.block3.cc.antlr;
 
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.ParseTreeProperty;
-
-import pp.block3.cc.antlr.CalcParser.NumberContext;
-import pp.block3.cc.antlr.CalcParser.ParContext;
-import pp.block3.cc.antlr.CalcParser.PlusContext;
-import pp.block3.cc.antlr.CalcParser.TimesContext;
+import pp.block3.cc.antlr.CalcParser.*;
 
 public class Calculator extends CalcBaseListener {
-	/** Map storing the val attribute for all parse tree nodes. */
+	/**
+	 * Map storing the val attribute for all parse tree nodes.
+	 */
 	private ParseTreeProperty<Integer> vals;
 
-	/** Initialises the calculator before using it to walk a tree. */
+	/**
+	 * Initialises the calculator before using it to walk a tree.
+	 */
 	public void init() {
-		this.vals = new ParseTreeProperty<Integer>();
+		vals = new ParseTreeProperty<Integer>();
 	}
 
 	@Override
@@ -37,13 +37,22 @@ public class Calculator extends CalcBaseListener {
 		set(ctx, val(ctx.expr(0)) + val(ctx.expr(1)));
 	}
 
-	/** Sets the val attribute of a given node. */
-	private void set(ParseTree node, int val) {
-		this.vals.put(node, val);
+	@Override
+	public void exitNeg(NegContext ctx) {
+		set(ctx, -Integer.parseInt(ctx.NUMBER().getText()));
 	}
 
-	/** Retrieves the val attribute of a given node. */
+	/**
+	 * Sets the val attribute of a given node.
+	 */
+	private void set(ParseTree node, int val) {
+		vals.put(node, val);
+	}
+
+	/**
+	 * Retrieves the val attribute of a given node.
+	 */
 	public int val(ParseTree node) {
-		return this.vals.get(node);
+		return vals.get(node);
 	}
 }
