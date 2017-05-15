@@ -1,20 +1,11 @@
 package pp.block3.cc.antlr.operators;
 
-import java.math.BigInteger;
-
-import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.ParseTreeProperty;
-
-import pp.block2.cc.ParseException;
 import pp.block3.cc.antlr.Type;
-import pp.block3.cc.antlr.operators.OperParser.BoolContext;
-import pp.block3.cc.antlr.operators.OperParser.EqualsContext;
-import pp.block3.cc.antlr.operators.OperParser.HatContext;
-import pp.block3.cc.antlr.operators.OperParser.NumContext;
-import pp.block3.cc.antlr.operators.OperParser.ParenthesesContext;
-import pp.block3.cc.antlr.operators.OperParser.PlusContext;
-import pp.block3.cc.antlr.operators.OperParser.StrContext;
+import pp.block3.cc.antlr.operators.OperParser.*;
+
+import java.math.BigInteger;
 
 public class OperCalculator extends OperBaseListener {
     /**

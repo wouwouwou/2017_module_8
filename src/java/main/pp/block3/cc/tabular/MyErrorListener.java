@@ -14,11 +14,11 @@ public class MyErrorListener extends BaseErrorListener {
 
     private List<String> errorlist;
 
-    public MyErrorListener() {
+    MyErrorListener() {
         this.errorlist = new ArrayList<>();
     }
 
-    public List<String> getErrorlist() {
+    List<String> getErrorlist() {
         return errorlist;
     }
 

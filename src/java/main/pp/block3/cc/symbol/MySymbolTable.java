@@ -9,6 +9,7 @@ import java.util.Stack;
  */
 public class MySymbolTable implements SymbolTable {
 
+    // Could have been a Stack of Sets. :D
     private Map<Integer, Stack<String>> symboltable;
 
     public MySymbolTable() {
