@@ -19,7 +19,7 @@ expr returns [ int val ]
        LPAR e=expr RPAR
        { $val = $e.val; }
      | { System.out.println("Evaluating NEGATIVE"); }
-       MINUS NUMBER
+       MINUS expr
        { $val = -getValue($NUMBER.text); }
      | { System.out.println("Evaluating NUMBER"); }
        NUMBER
