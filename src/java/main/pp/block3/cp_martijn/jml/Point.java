@@ -1,4 +1,4 @@
-package pp.block3.cp.jml;
+package pp.block3.cp_martijn.jml;
 
 public class Point {
 	/*@ spec_public */private int x = 0;

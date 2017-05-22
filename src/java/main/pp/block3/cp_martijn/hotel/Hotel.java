@@ -1,4 +1,4 @@
-package pp.block3.cp.hotel;
+package pp.block3.cp_martijn.hotel;
 
 import java.util.*;
 import java.util.concurrent.locks.*;
