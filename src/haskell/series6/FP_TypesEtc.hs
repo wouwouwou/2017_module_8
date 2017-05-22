@@ -13,16 +13,20 @@ import FPPrac.Trees
 -- ===================================================================
 -- Example Alphabet
 -- - Extend, adapt, change the non-terminals to your own needs
--- - Do NOT change the first two groups of constructors (Symbol ... Rep1)
+-- - Do NOT change the first three groups of constructors (Symbol ... None)
 
 data Alphabet = Terminal String               -- Terminal symbol: WILL be included in parseTree
               | Symbol   String               -- Terminal symbol: will NOT be included in parseTree
               | SyntCat  Alphabet             -- Checks whether a string belongs to a syntactic category
 
+              -- EBNF constructions
               | Alt   [Alphabet] [Alphabet]   -- Try both
               | Opt   [Alphabet]              -- Optional
               | Rep0  [Alphabet]              -- Zero or more repetitions
               | Rep1  [Alphabet]              -- One or more repetitions
+
+              | None                          -- For error messages
+              -- Do NOT change the part above, this is generic and used by the parser generator
 
               | Expr                          -- Expression
               | Nmbr                          -- Number
@@ -86,7 +90,8 @@ type ParseState = ( Alphabet       -- Non-terminal indicating the present subexp
 x ∈ xs = x `elem` xs
 
 -- ===================================================================
--- Pretty Printing
+-- Pretty Printing for Parse Trees
+-- ===================================================================
 
 toStrings tree = case tree of
      PLeaf t                 -> ["PLeaf " ++ show t]
@@ -139,11 +144,11 @@ data AST = ASTRoot [AST]
 ptreeToAst :: ParseTree -> AST
 ptreeToAst (PNode Program l)
     = ASTRoot (map ptreeToAst l)
-ptreeToAst (PNode Stat (st@(PLeaf (Rep,_,_)):e:bl:_))
+ptreeToAst (PNode Stat ((PLeaf (Rep,_,_)):e:bl:_))
     = ASTStat "repeat" (ptreeToAst e) [(ptreeToAst bl)] []
-ptreeToAst (PNode Stat (st@(PLeaf (If,_,_)):e:(PLeaf (Then,_,_)):th:(PLeaf (Else,_,_)):el:_))
+ptreeToAst (PNode Stat ((PLeaf (If,_,_)):e:(PLeaf (Then,_,_)):th:(PLeaf (Else,_,_)):el:_))
     = ASTStat "if" (ptreeToAst e) [(ptreeToAst th)] [(ptreeToAst el)]
-ptreeToAst (PNode Stat (st@(PLeaf (If,_,_)):e:(PLeaf (Then,_,_)):th:_))
+ptreeToAst (PNode Stat ((PLeaf (If,_,_)):e:(PLeaf (Then,_,_)):th:_))
     = ASTStat "if" (ptreeToAst e) [(ptreeToAst th)] []
 ptreeToAst (PNode Block l)
     = ASTBlock (map ptreeToAst l)

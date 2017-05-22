@@ -23,21 +23,24 @@ grammar :: Grammar
 
 grammar nt = case nt of
 
-        Nmbr    -> [[ nmbr                               ]]
+        Nmbr    -> [[ nmbr                                                        ]]
 
-        Op      -> [[ op                                 ]]
+        Op      -> [[ op                                                          ]]
 
-        Var     -> [[ var                                ]]
+        Var     -> [[ var                                                         ]]
 
-        Expr    -> [[ lBracket, Expr, Op, Expr, rBracket ]
-                   ,[ Nmbr                               ]
-                   ,[ Var                                   ]]
-        Stat    -> [[ Var, asm, Expr                        ]
-                   ,[ rep, Expr, Block                      ]
-                   ,[ ifstr, Expr, thenstr, Block, Opt [elsestr, Block]]
-                   ,[ Expr                                  ]]
-        Block   -> [[ lBrace, (+:) [Stat], rBrace           ]]
-        Program -> [[ Block                                 ]]
+        Expr    -> [[ lBracket, Expr,        Op,      Expr, rBracket              ]
+                   ,[ Nmbr                                                        ]
+                   ,[ Var                                                         ]]
+
+        Stat    -> [[ Var,      asm,         Expr                                 ]
+                   ,[ rep,      Expr,        Block                                ]
+                   ,[ ifstr,    Expr,        thenstr, Block, Opt [elsestr, Block] ]
+                   ,[ Expr                                                        ]]
+
+        Block   -> [[ lBrace,   (+:) [Stat], rBrace                               ]]
+
+        Program -> [[ Block                                                       ]]
 
 
 -- shorthand names can be handy, such as:
@@ -168,3 +171,9 @@ testGr     = showTree $ toRoseTree parseTree0
 testShow2  = showTree $ astToRose $ ptreeToAst $ parse grammar Program $ resWord $ toTokenList tokenList2
 
 
+{-
+
+-- Exercise 4b --
+The core does not contain any jump instructions, needed for executing if and else statements.
+
+-}

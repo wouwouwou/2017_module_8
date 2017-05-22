@@ -20,6 +20,15 @@ endSkip nt = case nt of
 
 -- ==========================================================================================================
 -- Parser Generator
+-- ----------------
+--      NOTE:
+--      - Grammar gr is *function*
+--      - nt is non-terminal; nt:rule is the rule under consideration
+--      - nt0 is the father node
+--      - ts is the list of subtrees under nt0 produced so far
+--      - tokens here is the list of *indexed* input tokens
+--      - recCheck is used for checking left-recursiveness of the grammar
+-- ==========================================================================================================
 
 parserGen :: Grammar -> [Alphabet] -> ParseState -> [(ParseTree,[Token])]
 
