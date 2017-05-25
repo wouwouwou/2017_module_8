@@ -35,7 +35,7 @@ public class DeclUseList extends DeclUseBaseListener {
      */
     public DeclUseList() {
         this.errors = new ParseTreeProperty<>();
-        this. symbolTable = new MySymbolTable();
+        this.symbolTable = new MySymbolTable();
         this.errorlist = new ArrayList<>();
     }
 
