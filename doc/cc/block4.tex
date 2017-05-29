@@ -73,24 +73,41 @@
 \maketitle
 
 \section*{Exercise 1}
-\begin{tabular}{|l|p{10cm}|}\hline
-Operator Overloading
-& The return type of an operator depends on the type of its operands. \\\hline
 
-Type Inference
-& Automatically determining the type of an expression. \\\hline
+\bgroup
+\def\arraystretch{1.5}
+\begin{tabular}{lp{10cm}}
+\textbf{Term} & \textbf{Meaning} \\
+\hline
+AST
+& Abstract Syntax Tree. It only shows the abstract syntactic structure of the source code. A parse tree retains all information of the source code, while an AST only shows the information related to the syntactic structure. \\
 
-Synthesized Attribute
-& Type determined by self \& children in the parse tree. \\\hline
+DAG
+& Directed Acyclic Graph. It is a directed graph with no directed cycles. There is no way to start at a node n and follow a sequence of edges that eventually loops back to n again. \\
 
-Inherited Attribute
-& Type determined by siblings \& parents in the parse tree. \\\hline
+Basic Block
+& A maximal length sequence of straightline, or branch-free, code. A basic block is a sequence of operations that always execute together, unless an operation raises an exception. Control always enters a basic block at its first operation and exits at its last operation. \\
 
-Syntax-Directed Translation
-& Compiling input bit by bit, using short pieces of the code to determine the rule which has to be executed and building the output in little pieces. \\\hline
+CFG
+& Context-free Grammar. A formal grammar in which every production rule is of the form V $\rightarrow$ w, where V is a single nonterminal and w is a string of terminals and nonterminals or empty. \\
 
+& Control Flow Graph. A representation of all paths that might be transversed during the execution of a program. \\
+
+Dependence Graph
+& A directed graph representing the dependencies of objects towards each other. \\
+
+Call Graph
+& A flow graph that represents calling relationships between subroutines in a program. \\
+
+SSA
+& Static Single Assignment. Each variable is assigned exactly once, and each variable is defined before it is used. \\
+
+Symbol Table
+& A data structure where each identifier is associated with information relating to its declaration or appearance in the program. \\
+
+\hline
 \end{tabular}
-
+\egroup
 
 \section*{Exercise 2.1}
 Java contains the following base types:
