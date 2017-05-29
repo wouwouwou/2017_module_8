@@ -72,120 +72,81 @@
 \begin{document}
 \maketitle
 
-\section*{Exercise 1}
-
-\bgroup
-\def\arraystretch{1.5}
-\begin{tabular}{lp{10cm}}
-\textbf{Term} & \textbf{Meaning} \\
-\hline
-AST
-& Abstract Syntax Tree. It only shows the abstract syntactic structure of the source code. A parse tree retains all information of the source code, while an AST only shows the information related to the syntactic structure. \\
-
-DAG
-& Directed Acyclic Graph. It is a directed graph with no directed cycles. There is no way to start at a node n and follow a sequence of edges that eventually loops back to n again. \\
-
-Basic Block
-& A maximal length sequence of straightline, or branch-free, code. A basic block is a sequence of operations that always execute together, unless an operation raises an exception. Control always enters a basic block at its first operation and exits at its last operation. \\
-
-CFG
-& Context-free Grammar. A formal grammar in which every production rule is of the form V $\rightarrow$ w, where V is a single nonterminal and w is a string of terminals and nonterminals or empty. \\
-
-& Control Flow Graph. A representation of all paths that might be transversed during the execution of a program. \\
-
-Dependence Graph
-& A directed graph representing the dependencies of objects towards each other. \\
-
-Call Graph
-& A flow graph that represents calling relationships between subroutines in a program. \\
-
-SSA
-& Static Single Assignment. Each variable is assigned exactly once, and each variable is defined before it is used. \\
-
-Symbol Table
-& A data structure where each identifier is associated with information relating to its declaration or appearance in the program. \\
-
-\hline
+\section*{Exercise 8.1}
+\begin{tabular}{l|lllllll}
+\textit{\textbf{Scope}} & \textit{\textbf{a}}      & \textit{\textbf{b}}      & \textit{\textbf{c}}      & \textit{\textbf{d}}       & \textit{\textbf{e}}       & \textit{\textbf{f}}      & \textit{\textbf{g}}       \\ \hline
+\textit{\textbf{Main}}  & \textless1,0\textgreater & \textless1,4\textgreater & \textless1,8\textgreater & \textless1,12\textgreater & \textless1,16\textgreater & -                        & -                         \\
+\textit{\textbf{P4}}    & \textless2,0\textgreater & \textless1,4\textgreater & \textless2,4\textgreater & \textless2,12\textgreater & \textless1,16\textgreater & -                        & -\textless2,8\textgreater \\
+\textit{\textbf{P1}}    & \textless1,0\textgreater & \textless2,0\textgreater & \textless1,8\textgreater & \textless2,4\textgreater  & \textless1,16\textgreater & \textless2,8\textgreater & -                         \\
+\textit{\textbf{P2}}    & \textless1,0\textgreater & \textless2,0\textgreater & \textless1,8\textgreater & \textless2,4\textgreater  & \textless1,16\textgreater & \textless2,8\textgreater & -                         \\
+\textit{\textbf{P3}}    & \textless3,0\textgreater & \textless3,4\textgreater & \textless1,8\textgreater & \textless2,4\textgreater  & \textless1,16\textgreater & \textless2,8\textgreater & -                         \\
+\textit{\textbf{P5}}    & \textless2,0\textgreater & \textless1,4\textgreater & \textless3,0\textgreater & \textless3,4\textgreater  & \textless1,16\textgreater & -                        & \textless2,8\textgreater 
 \end{tabular}
-\egroup
 
-\section*{Exercise 2.1}
-\begin{tikzpicture}
-\node (A) {1};
-\node (B) [below of = A]{2};
-\node (C) [below of = B]{3};
-\node (D) [below of = C]{4};
-\node (E) [below of = D]{5};
-\node (F) [below of = E]{6};
-\node (G) [below of = F]{7};
-\node (J) [left of = E]{10};
-
-\draw[->] (A) -- (B);
-\draw[->] (B) -- (C);
-\draw[->] (C) -- (D);
-\draw[->] (D) -- (E);
-\draw[->] (E) -- (F);
-\draw[->] (F) -- (G);
-\draw[->] (F) .. controls +(right:25pt) and +(right:25pt) .. (D);
-\draw[->] (G) .. controls +(right:55pt) and +(right:55pt) .. (D);
-\draw[->] (D.west) .. controls +(left:15pt) and +(up:15pt) .. (J.north);
-
+\section*{Exercise 8.2}
+\begin{center}
+\begin{tikzpicture}[scale=0.2]
+\tikzstyle{every node}+=[inner sep=0pt]
+\draw [black] (38.7,-5.2) circle (3);
+\draw (38.7,-5.2) node {$Main$};
+\draw [black] (49,-18.7) circle (3);
+\draw (49,-18.7) node {$P1$};
+\draw [black] (28.1,-35.3) circle (3);
+\draw (28.1,-35.3) node {$P5$};
+\draw [black] (42,-35.3) circle (3);
+\draw (42,-35.3) node {$P2$};
+\draw [black] (57.7,-35.3) circle (3);
+\draw (57.7,-35.3) node {$P3$};
+\draw [black] (28.1,-18.1) circle (3);
+\draw (28.1,-18.1) node {$P4$};
+\draw [black] (36.8,-7.52) -- (30,-15.78);
+\fill [black] (30,-15.78) -- (30.9,-15.48) -- (30.13,-14.85);
+\draw [black] (40.52,-7.59) -- (47.18,-16.31);
+\fill [black] (47.18,-16.31) -- (47.09,-15.38) -- (46.3,-15.98);
+\draw [black] (28.1,-21.1) -- (28.1,-32.3);
+\fill [black] (28.1,-32.3) -- (28.6,-31.5) -- (27.6,-31.5);
+\draw [black] (47.83,-21.46) -- (43.17,-32.54);
+\fill [black] (43.17,-32.54) -- (43.94,-31.99) -- (43.02,-31.6);
+\draw [black] (50.39,-21.36) -- (56.31,-32.64);
+\fill [black] (56.31,-32.64) -- (56.38,-31.7) -- (55.49,-32.17);
 \end{tikzpicture}
+\end{center}
 
-\section*{Exercise 2.2}
-(1, 2, 3), (5, 6)
-
-\section*{Exercise 2.3}
-1, 2, 3
-
-\section*{Exercise 3.1}
-\begin{tikzpicture}
-\node (A) {1};
-\node (B) [below of = A]{2};
-\node (C) [below of = B]{3};
-\node (D) [below of = C]{4};
-\node (E) [below of = D]{5};
-\node (F) [below of = E]{6};
-\node (G) [below right of = F]{7};
-\node (I) [below left of = G]{9};
-\node (K) [left of = E]{11};
-
-\draw[->] (A) -- (B);
-\draw[->] (B) -- (C);
-\draw[->] (C) -- (D);
-\draw[->] (E) -- (D);
-\draw[->] (E) -- (F);
-\draw[->] (F) -- (G);
-\draw[->] (F) -- (I);
-\draw[->] (G) .. controls +(right:25pt) and +(right:25pt) .. (E);
-\draw[->] (I) .. controls +(right:55pt) and +(right:55pt) .. (E);
-\draw[->] (D.west) .. controls +(left:15pt) and +(up:15pt) .. (K.north);
-
+\section*{Exercise 8.3}
+\begin{center}
+\begin{tikzpicture}[scale=0.2]
+\tikzstyle{every node}+=[inner sep=0pt]
+\draw [black] (38.7,-5.2) circle (3);
+\draw (38.7,-5.2) node {$Main$};
+\draw [black] (49.5,-18.1) circle (3);
+\draw (49.5,-18.1) node {$P1$};
+\draw [black] (28.1,-35.3) circle (3);
+\draw (28.1,-35.3) node {$P5$};
+\draw [black] (42,-35.3) circle (3);
+\draw (42,-35.3) node {$P2$};
+\draw [black] (57.7,-35.3) circle (3);
+\draw (57.7,-35.3) node {$P3$};
+\draw [black] (28.1,-18.1) circle (3);
+\draw (28.1,-18.1) node {$P4$};
+\draw [black] (36.8,-7.52) -- (30,-15.78);
+\fill [black] (30,-15.78) -- (30.9,-15.48) -- (30.13,-14.85);
+\draw [black] (40.63,-7.5) -- (47.57,-15.8);
+\fill [black] (47.57,-15.8) -- (47.44,-14.87) -- (46.68,-15.51);
+\draw [black] (28.1,-21.1) -- (28.1,-32.3);
+\fill [black] (28.1,-32.3) -- (28.6,-31.5) -- (27.6,-31.5);
+\draw [black] (48.3,-20.85) -- (43.2,-32.55);
+\fill [black] (43.2,-32.55) -- (43.98,-32.02) -- (43.06,-31.62);
+\draw [black] (50.79,-20.81) -- (56.41,-32.59);
+\fill [black] (56.41,-32.59) -- (56.52,-31.65) -- (55.61,-32.09);
+\draw [black] (46.773,-19.344) arc (-69.29081:-110.70919:22.545);
+\fill [black] (30.83,-19.34) -- (31.4,-20.09) -- (31.75,-19.16);
+\draw [black] (31.044,-17.527) arc (99.24266:80.75734:48.288);
+\fill [black] (46.56,-17.53) -- (45.85,-16.9) -- (45.69,-17.89);
+\draw [black] (30.44,-33.42) -- (47.16,-19.98);
+\fill [black] (47.16,-19.98) -- (46.22,-20.09) -- (46.85,-20.87);
+\draw [black] (54.7,-35.3) -- (45,-35.3);
+\fill [black] (45,-35.3) -- (45.8,-35.8) -- (45.8,-34.8);
 \end{tikzpicture}
-
-\section*{Exercise 3.2}
-(1, 2, 3)
-
-\section*{Exercise 3.3}
-1, 2, 3
-
-
-\section*{Exercise 7}
-\begin{tikzpicture}
-\node (A) {start};
-\node (B) [below of = A]               {while};
-\node (C) [below of = B]               {body};
-\node (D) [below of = C]               {then};
-\node (E) [right of = C, xshift = 1cm] {endif};
-\node (F) [left of  = B, xshift = -1cm]{end};
-
-\draw[->] (A) -- (B);
-\draw[->] (B) -- (C);
-\draw[->] (C) -- (D);
-\draw[->] (B) -- (F);
-\draw[->] (C) -- (E);
-\draw[->] (D) .. controls +(right:25pt) and +(down:25pt) .. (E);
-\draw[->] (E) .. controls +(up:25pt) and +(right:25pt) .. (B);
-\end{tikzpicture}
+\end{center}
 
 \end{document}
