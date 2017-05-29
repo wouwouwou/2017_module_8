@@ -5,6 +5,8 @@ import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
+import java.net.URL;
 
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.junit.Test;
@@ -16,7 +18,7 @@ import pp.block5.cc.simple.Type;
 
 @SuppressWarnings("javadoc")
 public class SimpleCheckerTest {
-	private final static String BASE_DIR = "pp/block5/cc/sample";
+	private final static String BASE_DIR = "../sample/";
 	private final static String EXT = ".pascal";
 	private final SimplePascalCompiler compiler = SimplePascalCompiler
 			.instance();
@@ -76,7 +78,15 @@ public class SimpleCheckerTest {
 	}
 
 	private ParseTree parse(String filename) throws IOException, ParseException {
-		return this.compiler.parse(new File(BASE_DIR, filename + EXT));
+	    String path = BASE_DIR + filename + EXT;
+	    URL url = getClass().getResource(path);
+	    File file = null;
+        try {
+            file = new File(url.toURI());
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
+        return this.compiler.parse(file);
 	}
 
 	private Result check(ParseTree tree) throws ParseException {

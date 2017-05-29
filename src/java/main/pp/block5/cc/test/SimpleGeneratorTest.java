@@ -7,6 +7,8 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
+import java.net.URL;
 
 import org.junit.Test;
 
@@ -17,7 +19,7 @@ import pp.iloc.model.Program;
 
 @SuppressWarnings("javadoc")
 public class SimpleGeneratorTest {
-	private final static String BASE_DIR = "pp/block5/cc/sample";
+	private final static String BASE_DIR = "../sample/";
 	private final static String EXT = ".pascal";
 	private final SimplePascalCompiler compiler = SimplePascalCompiler
 			.instance();
@@ -41,7 +43,15 @@ public class SimpleGeneratorTest {
 	}
 
 	private Program compile(String filename) throws IOException, ParseException {
-		return this.compiler.compile(new File(BASE_DIR, filename + EXT));
+        String path = BASE_DIR + filename + EXT;
+        URL url = getClass().getResource(path);
+        File file = null;
+        try {
+            file = new File(url.toURI());
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
+		return this.compiler.compile(file);
 	}
 
 	private String sim(Program prog, String input) {

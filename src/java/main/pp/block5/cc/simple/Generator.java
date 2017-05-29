@@ -6,14 +6,10 @@ import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.ParseTreeProperty;
 
 import pp.block5.cc.pascal.SimplePascalBaseVisitor;
+import pp.block5.cc.pascal.SimplePascalParser;
 import pp.iloc.Simulator;
-import pp.iloc.model.Label;
-import pp.iloc.model.Num;
-import pp.iloc.model.Op;
-import pp.iloc.model.OpCode;
-import pp.iloc.model.Operand;
-import pp.iloc.model.Program;
-import pp.iloc.model.Reg;
+import pp.iloc.model.*;
+
 /** Class to generate ILOC code for Simple Pascal. */
 public class Generator extends SimplePascalBaseVisitor<Op> {
 	/** The representation of the boolean value <code>false</code>. */
@@ -109,4 +105,164 @@ public class Generator extends SimplePascalBaseVisitor<Op> {
 	private void setReg(ParseTree node, Reg reg) {
 		this.regs.put(node, reg);
 	}
+
+    @Override
+    public Op visitProgram(SimplePascalParser.ProgramContext ctx) {
+        return visit(ctx.body());
+    }
+
+    @Override
+    public Op visitBody(SimplePascalParser.BodyContext ctx) {
+        return visit(ctx.block());
+    }
+
+    @Override
+    public Op visitBlock(SimplePascalParser.BlockContext ctx) {
+        Op result = visit(ctx.stat(0));
+        for (int i = 1; i < ctx.stat().size(); i++) {
+            result = visit(ctx.stat(i));
+        }
+        return result;
+    }
+
+    @Override
+    public Op visitAssStat(SimplePascalParser.AssStatContext ctx) {
+        visit(ctx.expr());
+        return emit(OpCode.storeAI, reg(ctx.expr()), arp, offset(ctx.target()));
+    }
+
+    @Override
+    public Op visitIfStat(SimplePascalParser.IfStatContext ctx) {
+        Op result = visit(ctx.expr());
+        Label lthen = createLabel(ctx, "then");
+        Label lend = createLabel(ctx, "end");
+        if (ctx.stat().size() > 1) {
+            Label lelse = createLabel(ctx, "else");
+            emit(OpCode.cbr, reg(ctx.expr()), lthen, lelse);
+            emit(lthen, OpCode.nop);
+            visit(ctx.stat(0));
+            emit(OpCode.jumpI, lend);
+            emit(lelse, OpCode.nop);
+            visit(ctx.stat(1));
+        } else {
+            emit(OpCode.cbr, reg(ctx.expr()), lthen, lend);
+            emit(lthen, OpCode.nop);
+            visit(ctx.stat(0));
+        }
+        emit(lend, OpCode.nop);
+        return result;
+    }
+
+    @Override
+    public Op visitWhileStat(SimplePascalParser.WhileStatContext ctx) {
+        Label lwhile = createLabel(ctx, "while");
+        Label ldo = createLabel(ctx, "do");
+        Label lend = createLabel(ctx, "end");
+        emit(lwhile, OpCode.nop);
+        Op result = visit(ctx.expr());
+        emit(OpCode.cbr, reg(ctx.expr()), ldo, lend);
+        emit(ldo, OpCode.nop);
+        visit(ctx.stat());
+        emit(OpCode.jumpI, lwhile);
+        emit(lend, OpCode.nop);
+        return result;
+    }
+
+    @Override
+    public Op visitInStat(SimplePascalParser.InStatContext ctx) {
+        String input = ctx.STR().getText().replaceAll("\"", "");
+        Op result = emit(OpCode.in, new Str(input), reg(ctx));
+        emit(OpCode.storeAI, reg(ctx), arp, offset(ctx.target()));
+        return result;
+    }
+
+    @Override
+    public Op visitOutStat(SimplePascalParser.OutStatContext ctx) {
+        String output = ctx.STR().getText().replaceAll("\"", "");
+        visit(ctx.expr());
+        return emit(OpCode.out, new Str(output), reg(ctx.expr()));
+    }
+
+    @Override
+    public Op visitPrfExpr(SimplePascalParser.PrfExprContext ctx) {
+        visit(ctx.expr());
+        return (ctx.prfOp().MINUS() != null)
+                ? emit(OpCode.multI, reg(ctx.expr()), new Num(-1), reg(ctx))
+                : emit(OpCode.xorI, reg(ctx.expr()), TRUE_VALUE, reg(ctx));
+    }
+
+    @Override
+    public Op visitMultExpr(SimplePascalParser.MultExprContext ctx) {
+        visit(ctx.expr(0));
+        visit(ctx.expr(1));
+        return (ctx.multOp().STAR() != null)
+                ? emit(OpCode.mult, reg(ctx.expr(0)), reg(ctx.expr(1)), reg(ctx))
+                : emit(OpCode.div, reg(ctx.expr(0)), reg(ctx.expr(1)), reg(ctx));
+    }
+
+    @Override
+    public Op visitPlusExpr(SimplePascalParser.PlusExprContext ctx) {
+        visit(ctx.expr(0));
+        visit(ctx.expr(1));
+        return (ctx.plusOp().PLUS() != null)
+                ? emit(OpCode.add, reg(ctx.expr(0)), reg(ctx.expr(1)), reg(ctx))
+                : emit(OpCode.sub, reg(ctx.expr(0)), reg(ctx.expr(1)), reg(ctx));
+    }
+
+    @Override
+    public Op visitCompExpr(SimplePascalParser.CompExprContext ctx) {
+        visit(ctx.expr(0));
+        visit(ctx.expr(1));
+        switch (ctx.compOp().getStart().getType()) {
+            case SimplePascalParser.LE:
+                return emit(OpCode.cmp_LE, reg(ctx.expr(0)), reg(ctx.expr(1)), reg(ctx));
+            case SimplePascalParser.LT:
+                return emit(OpCode.cmp_LT, reg(ctx.expr(0)), reg(ctx.expr(1)), reg(ctx));
+            case SimplePascalParser.GE:
+                return emit(OpCode.cmp_GE, reg(ctx.expr(0)), reg(ctx.expr(1)), reg(ctx));
+            case SimplePascalParser.GT:
+                return emit(OpCode.cmp_GT, reg(ctx.expr(0)), reg(ctx.expr(1)), reg(ctx));
+            case SimplePascalParser.EQ:
+                return emit(OpCode.cmp_EQ, reg(ctx.expr(0)), reg(ctx.expr(1)), reg(ctx));
+            case SimplePascalParser.NE:
+                return emit(OpCode.cmp_NE, reg(ctx.expr(0)), reg(ctx.expr(1)), reg(ctx));
+            default:
+                return null;
+        }
+    }
+
+    @Override
+    public Op visitBoolExpr(SimplePascalParser.BoolExprContext ctx) {
+        visit(ctx.expr(0));
+        visit(ctx.expr(1));
+        return (ctx.boolOp().AND() != null)
+                ? emit(OpCode.and, reg(ctx.expr(0)), reg(ctx.expr(1)), reg(ctx))
+                : emit(OpCode.or, reg(ctx.expr(0)), reg(ctx.expr(1)), reg(ctx));
+    }
+
+    @Override
+    public Op visitParExpr(SimplePascalParser.ParExprContext ctx) {
+        setReg(ctx, reg(ctx.expr()));
+        return visit(ctx.expr());
+    }
+
+    @Override
+    public Op visitIdExpr(SimplePascalParser.IdExprContext ctx) {
+        return emit(OpCode.loadAI, arp, offset(ctx), reg(ctx));
+    }
+
+    @Override
+    public Op visitNumExpr(SimplePascalParser.NumExprContext ctx) {
+        return emit(OpCode.loadI, new Num(Integer.parseInt(ctx.NUM().getText())), reg(ctx));
+    }
+
+    @Override
+    public Op visitTrueExpr(SimplePascalParser.TrueExprContext ctx) {
+        return emit(OpCode.loadI, TRUE_VALUE, reg(ctx));
+    }
+
+    @Override
+    public Op visitFalseExpr(SimplePascalParser.FalseExprContext ctx) {
+        return emit(OpCode.loadI, FALSE_VALUE, reg(ctx));
+    }
 }
