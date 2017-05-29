@@ -6,6 +6,8 @@ import static org.junit.Assert.fail;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
+import java.net.URL;
 
 import org.junit.Test;
 
@@ -23,7 +25,7 @@ public class FindTest {
 	@Test
 	//(timeout = 1000)
 	public void simulate() {
-		Program p = assemble("pp/block4/cc/iloc/find");
+		Program p = assemble("../iloc/find.iloc");
 		if (SHOW) {
 			System.out.println(p.prettyPrint());
 		}
@@ -48,10 +50,11 @@ public class FindTest {
 	}
 
 	private Program assemble(String filename) {
-		File file = new File(filename + ".iloc");
+        URL url = getClass().getResource(filename);
 		try {
+            File file = new File(url.toURI());
 			return this.assembler.assemble(file);
-		} catch (FormatException | IOException e) {
+		} catch (FormatException | IOException | URISyntaxException e) {
 			fail(e.getMessage());
 			return null;
 		}
