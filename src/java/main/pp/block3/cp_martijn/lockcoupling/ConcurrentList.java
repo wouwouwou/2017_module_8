@@ -65,8 +65,8 @@ public class ConcurrentList<T> implements List<T> {
             rest = next;
             next = rest.getNextItem();
         }
-        ConcurrentListItem item = new ConcurrentListItem(val);
-        rest.setNextItem(item);
+        // ConcurrentListItem item = new ConcurrentListItem(val);
+        // rest.setNextItem(item);
         rest.unlock();
 
     }
