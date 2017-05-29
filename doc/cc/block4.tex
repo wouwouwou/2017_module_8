@@ -170,95 +170,22 @@ Symbol Table
 1, 2, 3
 
 
-\begin{tabular}{|c||c|c|c|}
-\hline
-\rot{45}{\textbf{a\^{}b}} & \textbf{num} & \textbf{bool} & \textbf{str} \\\hline
-\hline
-\textbf{num}   & num & \textit{error} & \textit{error} \\\hline
-\textbf{bool}   & \textit{error} & \textit{error} & \textit{error} \\\hline
-\textbf{str}   & str & \textit{error} & \textit{error} \\\hline
-\end{tabular}\\[5pt]
+\section*{Exercise 7}
+\begin{tikzpicture}
+\node (A) {start};
+\node (B) [below of = A]               {while};
+\node (C) [below of = B]               {body};
+\node (D) [below of = C]               {then};
+\node (E) [right of = C, xshift = 1cm] {endif};
+\node (F) [left of  = B, xshift = -1cm]{end};
 
-\noindent
-\begin{tabular}{|c||c|c|c|}
-\hline
-\rot{45}{\textbf{a+b}}   & \textbf{num} & \textbf{bool} & \textbf{str} \\\hline
-\hline
-\textbf{num}   & num & \textit{error} & \textit{error} \\\hline
-\textbf{bool}   & \textit{error} & bool & \textit{error} \\\hline
-\textbf{str}   & \textit{error} & \textit{error} & str \\\hline
-\end{tabular}\\[5pt]
-
-\noindent
-\begin{tabular}{|c||c|c|c|}
-\hline
-\rot{45}{\textbf{a=b}}   & \textbf{num} & \textbf{bool} & \textbf{str} \\\hline
-\hline
-\textbf{num}   & bool & \textit{error} & \textit{error} \\\hline
-\textbf{bool}   & \textit{error} & bool & \textit{error} \\\hline
-\textbf{str}   & \textit{error} & \textit{error} & bool \\\hline
-\end{tabular} \\
-
-\section*{Exercise 3.2}
-\noindent
-\begin{tabular}{|rcl|l|}
-\hline
-&& \textbf{Production} & \textbf{Attribution rules} \\\hline
-$T_0$ & $\rightarrow$ & $T_1 ~^\wedge ~T_2$ & $T_0$.type $\leftarrow$ $F_{^\wedge}$($T_1$.type, $T_2$.type) \\
-& $|$ & $T_1 + T_2$ & $T_0$.type $\leftarrow$ $F_+$($T_1$.type, $T_2$.type) \\
-& $|$ & $T_1 = T_2$ & $T_0$.type $\leftarrow$ $F_=$($T_1$.type, $T_2$.type) \\
-& $|$ & ($T_1$) & $T_0$.type $\leftarrow$ $T_1$.type \\
-$T$ & $\rightarrow$ & Num & $T$.type $\leftarrow$ Num.type \\
-& $|$ & Bool & $T$.type $\leftarrow$ Bool.type \\
-& $|$ & Str & $T$.type $\leftarrow$ Str.type \\
-\hline
-\end{tabular}
-
-\section*{Excercise 3.3}
-
-The attributes defined above are synthesized, as a function needs to be called to find out the correct type for the binary expressions.
-
-
-\section*{Exercise 4.2}
-The attribute variant requires less code, and combines language definition and language parsing in one file. The listener variant is however much more flexible, being able to parse both bottom-up and top-down.
-
-\section*{Exercise 4.3}
-It break on TIMES and PLUS, something about being mutually left-recursive
-
-Order of before statements does not match the order the after statements (pre-order vs. post-order tree traversal)
-
-\section*{Excercise 4.4}
-It provides a tool to get information from both parents and children as well as itself, giving you the option to both inherit and synthesize.
-
-\section*{Exercise 8}
-TABLEBEGIN \\
-TABLEEND \\
-ROWEND \\
-COLSEP \\
-ENTRY \\
-COMMENT $\rightarrow$ skip
-
-\section*{Exercise 9}
-The method syntaxError of BaseErrorListener has 6 parameters:\\
-
-\begin{tabular}{|l|p{10cm}|}\hline
-Recognizer$<$?, ?$>$ recognizer
-& The recognizer which recognized the error. \\\hline
-
-Object offendingSymbol
-& The symbol where the error occurred. \\\hline
-
-int line
-& The line where the error occurred. \\\hline
-
-int charPositionInLine
-& The char position in the line where the error occurred. \\\hline
-
-String msg
-& The error message. \\\hline
-
-RecognitionException e
-& Extension of RuntimeException, specified for the recognizer in the first parameter. \\\hline
-\end{tabular} \\
+\draw[->] (A) -- (B);
+\draw[->] (B) -- (C);
+\draw[->] (C) -- (D);
+\draw[->] (B) -- (F);
+\draw[->] (C) -- (E);
+\draw[->] (D) .. controls +(right:25pt) and +(down:25pt) .. (E);
+\draw[->] (E) .. controls +(up:25pt) and +(right:25pt) .. (B);
+\end{tikzpicture}
 
 \end{document}
