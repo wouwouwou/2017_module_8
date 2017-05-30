@@ -17,10 +17,7 @@
 
 5  She stopped at the stand in Marsh the day before she stopped at Sally’s Ice Cream.
 
-6  Alice’s Ice Cream was in Boulder but Sherry didn’t stop there on Friday night.
-
-Rule 6 was in the original problem, but by error left out in the teacher’s
-version. If we leave out rule 6, there are two solutions to this problem.
+6  The ice Sherry got last night in Boulder was gorgeous as well.
 
 */
 
@@ -61,12 +58,12 @@ solve(Sol) :-
   right([_, marsh, _, _],[sally, _, _, _], Sol),
 
   % 6
-  % member([alice, boulder, C6_day, _], Sol),
+  member([alice, boulder, C6_day, _], Sol),
 
   not(C1_loc = rockland),     % 1a
   not(C1_flav = peppermint),  % 1b
   not(C3_day = tuesday),      % 3
-  % not(C6_day = friday),     % 6
+  not(C6_day = friday),       % 6
   not(C4_stand = alice).      % 4
 
 go(Sol) :- solve(Sol).
