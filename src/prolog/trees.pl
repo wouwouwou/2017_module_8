@@ -8,9 +8,9 @@ min(t(nil,N,_),N):-!.
 min(t(L,_,_),M):-min(L,M).
 
 issorted(t(nil,_,nil)):-!.
-issorted(t(nil,N,R)):-issorted(R),!,min(R,X),X>=N.
+issorted(t(nil,N,R)):-issorted(R),!,min(R,X),X>N.
 issorted(t(L,N,nil)):-issorted(L),!,max(L,X),X=<N.
-issorted(t(L,N,R)):-issorted(L),issorted(R),max(L,X),min(R,Y),X=<N,Y>=N.
+issorted(t(L,N,R)):-issorted(L),issorted(R),max(L,X),min(R,Y),X=<N,Y>N.
 
 find(t(L,N,_),I,S):-I<N,!,find(L,I,S).
 find(t(_,N,R),I,S):-I>N,!,find(R,I,S).
