@@ -20,6 +20,9 @@ public class BottomUpCFGBuilder extends FragmentBaseListener {
      */
     private Graph graph;
 
+    /**
+     * Nodelist parsetreeproperty
+     */
     private ParseTreeProperty<Node[]> nodes = new ParseTreeProperty<>();
 
     /**
@@ -78,7 +81,6 @@ public class BottomUpCFGBuilder extends FragmentBaseListener {
     private Graph build(ParseTree tree) {
         this.graph = new Graph();
         new ParseTreeWalker().walk(this, tree);
-
         return graph;
     }
 
