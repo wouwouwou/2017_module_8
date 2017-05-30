@@ -60,15 +60,15 @@ public class NumWordProcessor extends NumWordBaseVisitor<Integer> {
     @Override
     public Integer visitSentence(NumWordParser.SentenceContext ctx) {
         int count = 0;
+        count += visit(ctx.number(0));
+        visit(ctx.word(0));
         int words = ctx.word().size();
-
-
-        for (int i = 0; i < words - 1; i++) {
+        for (int i = 1; i < words - 1; i++) {
+            System.out.printf(", ");
             count += visit(ctx.number(i));
             visit(ctx.word(i));
-            System.out.printf(", ");
         }
-        System.out.printf("and ");
+        System.out.printf(" and ");
         visit(ctx.number(words - 1));
         visit(ctx.word(words - 1));
         System.out.printf("\n");

@@ -18,7 +18,7 @@ public class GenericTests {
 
     @Test
     public void exercise6Test() {
-        Simulator.DEBUG = true;
+        Simulator.DEBUG = false;
         Program max = parse("../iloc/max.iloc");
         Simulator s = new Simulator(max);
         s.getVM().init("a", 1, 2, 3, 4, 10, 6, 7, 8, 9);
@@ -38,7 +38,7 @@ public class GenericTests {
     @Test
     public void fibMTest() {
         Program fib = parse("../iloc/fibm.iloc");
-        Simulator.DEBUG = true;
+        Simulator.DEBUG = false;
         Simulator s = new Simulator(fib);
         s.getVM().setNum("n", 10);
         s.getVM().init("x", 1);

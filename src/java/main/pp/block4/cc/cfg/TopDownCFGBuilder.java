@@ -19,9 +19,8 @@ public class TopDownCFGBuilder extends FragmentBaseListener {
      */
     private Graph graph;
 
-    
     /**
-     * 
+     * Parsetreeproperties for entrance nodes and exit nodes.
      */
     private ParseTreeProperty<Node> entrances = new ParseTreeProperty<>();
     private ParseTreeProperty<Node> exits = new ParseTreeProperty<>();
@@ -86,8 +85,7 @@ public class TopDownCFGBuilder extends FragmentBaseListener {
      */
     private Graph build(ProgramContext tree) {
         this.graph = new Graph();
-        ParseTreeWalker walker = new ParseTreeWalker();
-        walker.walk(this, tree);
+        new ParseTreeWalker().walk(this, tree);
         return graph;
     }
 
