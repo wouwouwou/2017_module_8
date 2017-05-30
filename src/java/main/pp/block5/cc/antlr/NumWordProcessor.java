@@ -61,6 +61,8 @@ public class NumWordProcessor extends NumWordBaseVisitor<Integer> {
     public Integer visitSentence(NumWordParser.SentenceContext ctx) {
         int count = 0;
         int words = ctx.word().size();
+
+
         for (int i = 0; i < words - 1; i++) {
             count += visit(ctx.number(i));
             visit(ctx.word(i));

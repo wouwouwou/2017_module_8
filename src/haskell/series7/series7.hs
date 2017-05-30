@@ -57,7 +57,7 @@ env =   [("+", FunType IntType (FunType IntType IntType))
         ,("c", BoolType)
         ]
         
-testTriplePlus = typeOf env (BinOp "+++" (Triple (Const 5) (Const 3) (Const 12)) (Triple (Const 22) (Var "x") (Var "y")))
+testTriplePlus = typeOf env (BinOp "+++" (Triple (Const 5) (Const 3) (Const 12)) (Triple (Const 22) (Var "a") (Var "y")))
 
 
 typeOf :: Env -> Expr -> Type

@@ -42,6 +42,7 @@ public class MyLLCalc implements LLCalc {
         // Determine the contents of FIRST
         boolean changing = true;
         while (changing) {
+            System.out.println(FIRST);
             changing = false;
             for (Rule rule : g.getRules()) {
                 Set<Term> rhs = firstPerRule(rule);
@@ -52,6 +53,15 @@ public class MyLLCalc implements LLCalc {
                 }
             }
         }
+
+        for (Term term : g.getTerminals()) {
+            Set<Term> set = new HashSet<>();
+            set.add(term);
+            assert set.equals(FIRST.get(term));
+            FIRST.put(term, set);
+        }
+
+        System.out.println(FIRST);
     }
 
     public Set<Term> firstPerRule(Rule rule) {
@@ -82,6 +92,8 @@ public class MyLLCalc implements LLCalc {
                 FIRSTP.put(rule, first);
             }
         }
+
+        System.out.println(FIRSTP);
     }
 
     private void initFollow(Grammar g) {
@@ -91,11 +103,22 @@ public class MyLLCalc implements LLCalc {
         }
         FOLLOW.get(g.getStart()).add((Symbol.EOF));
 
+
+
         // Determine the contents of FOLLOW
         boolean changing = true;
         while (changing) {
+            System.out.println(FOLLOW);
             changing = false;
             for (Rule rule : g.getRules()) {
+
+                for (Term term : g.getTerminals()) {
+                    Set<Term> set = new HashSet<>();
+                    set.add(term);
+                    assert set.equals(FIRST.get(term));
+                    FIRST.put(term, set);
+                }
+
                 List<Symbol> rhs = rule.getRHS();
                 NonTerm lhs = rule.getLHS();
                 Set<Term> trailer = new HashSet<>();
@@ -107,18 +130,22 @@ public class MyLLCalc implements LLCalc {
                             FOLLOW.get(rhs.get(i)).addAll(trailer);
                         }
                         if (FIRST.get(rhs.get(i)).contains(Symbol.EMPTY)) {
-                            Set<Term> temp = new HashSet<>(FIRST.get(rhs.get(i)));
+                            Set<Term> temp = new HashSet<>();
+                            temp.addAll(FIRST.get(rhs.get(i)));
                             temp.remove(Symbol.EMPTY);
                             trailer.addAll(temp);
                         } else {
                             trailer = FIRST.get(rhs.get(i));
                         }
                     } else {
-                        trailer = FIRST.get(rhs.get(i));
+                        trailer = new HashSet<>();
+                        trailer.addAll(FIRST.get(rhs.get(i)));
                     }
                 }
             }
         }
+
+        System.out.println(FOLLOW);
     }
 
     private boolean initLL1(Grammar g) {

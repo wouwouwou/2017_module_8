@@ -1,91 +1,182 @@
 package pp.block4.cc.cfg;
 
-import java.io.File;
-import java.io.IOException;
-
-import org.antlr.v4.runtime.CharStream;
-import org.antlr.v4.runtime.CharStreams;
-import org.antlr.v4.runtime.CommonTokenStream;
-import org.antlr.v4.runtime.Lexer;
-import org.antlr.v4.runtime.ParserRuleContext;
-import org.antlr.v4.runtime.TokenStream;
+import org.antlr.v4.runtime.*;
+import org.antlr.v4.runtime.tree.ParseTreeProperty;
+import org.antlr.v4.runtime.tree.ParseTreeWalker;
 import pp.block4.cc.ErrorListener;
-import pp.block4.cc.cfg.FragmentParser.BreakStatContext;
-import pp.block4.cc.cfg.FragmentParser.ContStatContext;
-import pp.block4.cc.cfg.FragmentParser.DeclContext;
-import pp.block4.cc.cfg.FragmentParser.IfStatContext;
-import pp.block4.cc.cfg.FragmentParser.PrintStatContext;
 import pp.block4.cc.cfg.FragmentParser.ProgramContext;
 
-/** Template top-down CFG builder. */
-public class TopDownCFGBuilder extends FragmentBaseListener {
-	/** The CFG being built. */
-	private Graph graph;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 
-	/** Builds the CFG for a program contained in a given file. */
-	public Graph build(File file) {
-		Graph result = null;
-		ErrorListener listener = new ErrorListener();
-		try {
-			CharStream chars = CharStreams.fromPath(file.toPath());
-			Lexer lexer = new FragmentLexer(chars);
-			lexer.removeErrorListeners();
-			lexer.addErrorListener(listener);
-			TokenStream tokens = new CommonTokenStream(lexer);
-			FragmentParser parser = new FragmentParser(tokens);
-			parser.removeErrorListeners();
-			parser.addErrorListener(listener);
-			ProgramContext tree = parser.program();
-			if (listener.hasErrors()) {
-				System.out.printf("Parse errors in %s:%n", file.getPath());
-				for (String error : listener.getErrors()) {
-					System.err.println(error);
-				}
-			} else {
-				result = build(tree);
-			}
+/**
+ * Template top-down CFG builder.
+ */
+public class TopDownCFGBuilder extends FragmentBaseListener {
+    /**
+     * The CFG being built.
+     */
+    private Graph graph;
+
+    
+    /**
+     * 
+     */
+    private ParseTreeProperty<Node> entrances = new ParseTreeProperty<>();
+    private ParseTreeProperty<Node> exits = new ParseTreeProperty<>();
+
+    /**
+     * Main method to build and print the CFG of a simple Java program.
+     */
+    public static void main(String[] args) {
+        if (args.length == 0) {
+            System.err.println("Usage: [filename]+");
+            return;
+        }
+        TopDownCFGBuilder builder = new TopDownCFGBuilder();
+        for (String filename : args) {
+            File file = new File(filename);
+            System.out.println(filename);
+            System.out.println(builder.build(file));
+            try {
+                builder.graph.writeDOT(filename + "_TD.dot", true);
+            } catch (IOException e) {
+                //
+            }
+        }
+    }
+
+    /**
+     * Builds the CFG for a program contained in a given file.
+     */
+    private Graph build(File file) {
+        Graph result = null;
+        ErrorListener listener = new ErrorListener();
+        try {
+            CharStream chars = new ANTLRInputStream(new FileReader(file));
+            Lexer lexer = new FragmentLexer(chars);
+            lexer.removeErrorListeners();
+            lexer.addErrorListener(listener);
+            TokenStream tokens = new CommonTokenStream(lexer);
+            FragmentParser parser = new FragmentParser(tokens);
+            parser.removeErrorListeners();
+            parser.addErrorListener(listener);
+            ProgramContext tree = parser.program();
+            if (listener.hasErrors()) {
+                System.out.printf("Parse errors in %s:%n", file.getPath());
+                listener.getErrors().forEach(System.err::println);
+            } else {
+                result = build(tree);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        try {
+			result.writeDOT("Dottopdown", true);
 		} catch (IOException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		return result;
-	}
+        return result;
+    }
 
-	/** Builds the CFG for a program given as an ANTLR parse tree. */
-	public Graph build(ProgramContext tree) {
-		this.graph = new Graph();
-		// TODO Fill in
-		throw new UnsupportedOperationException("Fill in");
-	}
+    /**
+     * Builds the CFG for a program given as an ANTLR parse tree.
+     */
+    private Graph build(ProgramContext tree) {
+        this.graph = new Graph();
+        ParseTreeWalker walker = new ParseTreeWalker();
+        walker.walk(this, tree);
+        return graph;
+    }
 
-	@Override
-	public void enterBreakStat(BreakStatContext ctx) {
-		throw new IllegalArgumentException("Break not supported");
-	}
+    @Override
+    public void enterProgram(ProgramContext ctx) {
+        Node node = new Node(0, "program");
+        for (FragmentParser.StatContext stat : ctx.stat()) {
+            Node childEntry = addNode(stat, stat.getText() + " <in>");
+            Node childExit = addNode(stat, stat.getText() + " <out>");
+            entrances.put(stat, childEntry);
+            exits.put(stat, childExit);
+            node.addEdge(childEntry);
+            node = childExit;
+        }
+    }
 
-	@Override
-	public void enterContStat(ContStatContext ctx) {
-		throw new IllegalArgumentException("Continue not supported");
-	}
+    @Override
+    public void enterDecl(FragmentParser.DeclContext ctx) {
+        entrances.get(ctx).addEdge(exits.get(ctx));
+    }
 
-	/** Adds a node to he CGF, based on a given parse tree node.
-	 * Gives the CFG node a meaningful ID, consisting of line number and 
-	 * a further indicator.
-	 */
-	private Node addNode(ParserRuleContext node, String text) {
-		return this.graph.addNode(node.getStart().getLine() + ": " + text);
-	}
+    @Override
+    public void enterAssignStat(FragmentParser.AssignStatContext ctx) {
+        entrances.get(ctx).addEdge(exits.get(ctx));
+    }
 
-	/** Main method to build and print the CFG of a simple Java program. */
-	public static void main(String[] args) {
-		if (args.length == 0) {
-			System.err.println("Usage: [filename]+");
-			return;
-		}
-		TopDownCFGBuilder builder = new TopDownCFGBuilder();
-		for (String filename : args) {
-			File file = new File(filename);
-			System.out.println(filename);
-			System.out.println(builder.build(file));
-		}
-	}
+    @Override
+    public void enterIfStat(FragmentParser.IfStatContext ctx) {
+        Node entrance = entrances.get(ctx);
+        Node exit = exits.get(ctx);
+        Node ifEntry = addNode(ctx.stat(0), ctx.stat(0).getText() +  " <in>");
+        Node ifExit = addNode(ctx.stat(0), ctx.stat(0).getText() + " <out>");
+        entrance.addEdge(exit);
+        entrances.put(ctx.stat(0), ifEntry);
+        exits.put(ctx.stat(0), ifExit);
+        if (ctx.stat(1) == null) {
+            entrance.addEdge(ifEntry);
+            ifExit.addEdge(exit);
+        } else {
+            Node elseEntry = addNode(ctx.stat(1), ctx.stat(1).getText() +  " <in>");
+            Node elseExit = addNode(ctx.stat(1), ctx.stat(1).getText() + " <out>");
+            entrances.put(ctx.stat(1), elseEntry);
+            exits.put(ctx.stat(1), elseExit);
+            entrance.addEdge(ifEntry);
+            ifExit.addEdge(exit);
+            elseExit.addEdge(exit);
+        }
+    }
+
+    @Override
+    public void enterWhileStat(FragmentParser.WhileStatContext ctx) {
+        Node entrance = entrances.get(ctx);
+        Node exit = exits.get(ctx);
+        Node whileEntry = addNode(ctx.stat(), ctx.stat().getText() +  " <in>");
+        Node whileExit = addNode(ctx.stat(), ctx.stat().getText() + " <out>");
+        entrances.put(ctx.stat(), whileEntry);
+        exits.put(ctx.stat(), whileExit);
+        entrance.addEdge(whileEntry);
+        entrance.addEdge(exit);
+        whileExit.addEdge(entrance);
+    }
+
+    @Override
+    public void enterBlockStat(FragmentParser.BlockStatContext ctx) {
+        Node entrance = entrances.get(ctx);
+        Node exit = exits.get(ctx);
+        Node node = entrance;
+        for (FragmentParser.StatContext stat : ctx.stat()) {
+            Node blockEntry = addNode(stat, stat.getText() +  " <in>");
+            Node blockExit = addNode(stat, stat.getText() +" <out>");
+            entrances.put(stat, blockEntry);
+            exits.put(stat, blockExit);
+            node.addEdge(blockEntry);
+            node = blockExit;
+        }
+        node.addEdge(exit);
+    }
+
+    @Override
+    public void enterPrintStat(FragmentParser.PrintStatContext ctx) {
+        entrances.get(ctx).addEdge(exits.get(ctx));
+    }
+
+    /**
+     * Adds a node to he CGF, based on a given parse tree node.
+     * Gives the CFG node a meaningful ID, consisting of line number and
+     * a further indicator.
+     */
+    private Node addNode(ParserRuleContext node, String text) {
+        return this.graph.addNode(node.getStart().getLine() + ": " + text);
+    }
 }

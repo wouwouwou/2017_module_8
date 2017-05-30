@@ -186,6 +186,16 @@ public class LLCalcTest {
     }
 
 
+    @Test
+    public void testClass() {
+        Grammar g = Grammars.makeClass();
+
+        LLCalc calc = createCalc(g);
+
+        assertFalse(calc.isLL1());
+    }
+
+
 
     /**
      * Creates an LL1-calculator for a given grammar.
