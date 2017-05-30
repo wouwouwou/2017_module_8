@@ -20,7 +20,7 @@ public class BottomUpCFGBuilder extends FragmentBaseListener {
      */
     private Graph graph;
 
-    private ParseTreeProperty<Node[]> nodes = new ParseTreeProperty<>();
+    private ParseTreeProperty<Node[]> cfgNodes = new ParseTreeProperty<>();
 
     /**
      * Main method to build and print the CFG of a simple Java program.
@@ -85,8 +85,8 @@ public class BottomUpCFGBuilder extends FragmentBaseListener {
     @Override
     public void exitProgram(ProgramContext ctx) {
         for (int i = 0; i < ctx.stat().size() - 1; i++) {
-            Node[] stat1 = nodes.get(ctx.stat(i));
-            Node[] stat2 = nodes.get(ctx.stat(i + 1));
+            Node[] stat1 = cfgNodes.get(ctx.stat(i));
+            Node[] stat2 = cfgNodes.get(ctx.stat(i + 1));
             stat1[1].addEdge(stat2[0]);
 
         }
@@ -95,14 +95,14 @@ public class BottomUpCFGBuilder extends FragmentBaseListener {
     @Override
     public void exitDecl(DeclContext ctx) {
         Node n = addNode(ctx, "decl");
-        nodes.put(ctx, new Node[]{n, n});
+        cfgNodes.put(ctx, new Node[]{n, n});
     }
 
 
     @Override
     public void exitAssignStat(AssignStatContext ctx) {
         Node n = addNode(ctx, "assign");
-        nodes.put(ctx, new Node[]{n, n});
+        cfgNodes.put(ctx, new Node[]{n, n});
     }
 
     @Override
@@ -110,7 +110,7 @@ public class BottomUpCFGBuilder extends FragmentBaseListener {
         Node exprNode = addNode(ctx.expr(), "ifStat");
         Node ifExit = addNode(ctx, "ifExit");
         for (StatContext s : ctx.stat()) {
-            Node thenelse[] = nodes.get(s);
+            Node thenelse[] = cfgNodes.get(s);
             exprNode.addEdge(thenelse[0]);
             thenelse[1].addEdge(ifExit);
         }
@@ -118,37 +118,37 @@ public class BottomUpCFGBuilder extends FragmentBaseListener {
             exprNode.addEdge(ifExit);
         }
 
-        nodes.put(ctx, new Node[]{exprNode, ifExit});
+        cfgNodes.put(ctx, new Node[]{exprNode, ifExit});
     }
 
 
     @Override
     public void exitWhileStat(WhileStatContext ctx) {
         Node exprNode = addNode(ctx.expr(), "whileStat");
-        Node[] whileNode = nodes.get(ctx.stat());
-        exprNode.addEdge(whileNode[0]);
-        whileNode[1].addEdge(exprNode);
+        Node[] statNode = cfgNodes.get(ctx.stat());
+        exprNode.addEdge(statNode[0]);
+        statNode[1].addEdge(exprNode);
         Node exitNode = addNode(ctx.expr(), "whileExit");
         exprNode.addEdge(exitNode);
-        nodes.put(ctx, new Node[]{exprNode, exitNode});
+        cfgNodes.put(ctx, new Node[]{exprNode, exitNode});
     }
 
     @Override
     public void exitBlockStat(BlockStatContext ctx) {
         for (int i = 0; i < ctx.stat().size() - 1; i++) {
-            Node[] stat1 = nodes.get(ctx.stat(i));
-            Node[] stat2 = nodes.get(ctx.stat(i + 1));
+            Node[] stat1 = cfgNodes.get(ctx.stat(i));
+            Node[] stat2 = cfgNodes.get(ctx.stat(i + 1));
 //			System.out.println(stat1 + " |\n " + ctx.stat(i).getText());
 //			System.out.println(stat2 + " " + ctx.stat(i + 1).getText());
             stat1[1].addEdge(stat2[0]);
         }
-        nodes.put(ctx, new Node[]{nodes.get(ctx.stat(0))[0], nodes.get(ctx.stat(ctx.stat().size() - 1))[1]});
+        cfgNodes.put(ctx, new Node[]{cfgNodes.get(ctx.stat(0))[0], cfgNodes.get(ctx.stat(ctx.stat().size() - 1))[1]});
     }
 
     @Override
     public void exitPrintStat(PrintStatContext ctx) {
         Node n = addNode(ctx, "print");
-        nodes.put(ctx, new Node[]{n, n});
+        cfgNodes.put(ctx, new Node[]{n, n});
     }
 
     @Override
@@ -160,34 +160,34 @@ public class BottomUpCFGBuilder extends FragmentBaseListener {
         }
 
         Node exitNode;
-        if (nodes.get(((WhileStatContext) repctx).expr()) == null) {
+        if (cfgNodes.get(((WhileStatContext) repctx).expr()) == null) {
 
             Node exprNode = addNode(((WhileStatContext) repctx).expr(), "whileStat");
-            Node[] whileNode = nodes.get(((WhileStatContext) repctx).stat());
+            Node[] whileNode = cfgNodes.get(((WhileStatContext) repctx).stat());
             exprNode.addEdge(whileNode[0]);
             whileNode[1].addEdge(exprNode);
             exitNode = addNode(((WhileStatContext) repctx).expr(), "whileExit");
             exprNode.addEdge(exitNode);
-            nodes.put(((WhileStatContext) repctx), new Node[]{exprNode, exitNode});
+            cfgNodes.put(((WhileStatContext) repctx), new Node[]{exprNode, exitNode});
         } else {
-            exitNode = nodes.get(((WhileStatContext) repctx).expr())[1];
+            exitNode = cfgNodes.get(((WhileStatContext) repctx).expr())[1];
         }
-        nodes.put(((WhileStatContext) repctx).expr(), new Node[] {exitNode});
+        cfgNodes.put(((WhileStatContext) repctx).expr(), new Node[] {exitNode});
         n.addEdge(exitNode);
-        nodes.put(ctx, new Node[]{n});
+        cfgNodes.put(ctx, new Node[]{n});
     }
 
     @Override
     public void exitContStat(ContStatContext ctx) {
         Node n = addNode(ctx, "cont");
-        Node exit = nodes.get(ctx.getParent().getParent())[0];
+        Node exit = cfgNodes.get(ctx.getParent().getParent())[0];
         n.addEdge(exit);
-        nodes.put(ctx, new Node[]{n, exit});
+        cfgNodes.put(ctx, new Node[]{n, exit});
     }
 
 //    private void simpleExpr(ParserRuleContext ctx) {
 //        Node n = addNode(ctx, "simple");
-//        nodes.put(ctx, new Node[]{n, n});
+//        cfgNodes.put(ctx, new Node[]{n, n});
 //    }
 
     /**
