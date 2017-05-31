@@ -16,9 +16,13 @@ example(n2, nfa(0,
   trans(0,b,0),trans(0,b,3),trans(3,b,4),trans(4,b,5),trans(5,b,5)],
  [5])).
 
-% example n3 equals n1, but also accepts state 1.
-%
-example(n3, nfa(0,[trans(0,a,0), trans(0,a,1),trans(1,b,1),trans(1,b,2)], [1, 2]) ).
+ % example n3 equals n1, but also accepts state 1.
+ %
+ example(n3, nfa(0,[trans(0,a,0), trans(0,a,1),trans(1,b,1),trans(1,b,2)], [1, 2]) ).
+
+ % example n4 equals n3, but is not a valid nfa.
+ %
+ example(n4, nfa(b,[trans(0,a,0), trans(0,a,1),trans(1,b,1),trans(1,b,2)], [1, 2]) ).
 
 % Question 1: alphabet/2
 
@@ -33,6 +37,7 @@ example(n3, nfa(0,[trans(0,a,0), trans(0,a,1),trans(1,b,1),trans(1,b,2)], [1, 2]
 init(nfa(Init, _, _), I) :- I = Init.
 accepting(nfa(_, _, Accepting), A) :- A = Accepting.
 transitions(nfa(_, Transitions, _), Ts) :- Ts = Transitions.
+
 
 isnfa(nil).
 isnfa(nfa(Init, Transitions, Accepting)) :-
