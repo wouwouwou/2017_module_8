@@ -88,7 +88,25 @@ count(C*, O) :- count(C, N), O is N+1.
 
 % Question 4: testRE/2
 
-testRE(STR, RE) :- makeNFA(RE, N), testNFA(STR, N).
+testRE(S, E) :- makeNFA(E, N), testNFA(S, N).
 
+makeNFA(C, nfa(0, [trans(0, C, 1)], [1])) :- atom(C).
+makeNFA(C+D, N) :- makeNFA(C, CN), makeNFA(D, DN), orNFA(CN, DN, N).
+makeNFA(C^D, N) :- makeNFA(C, CN), makeNFA(D, DN), concNFA(CN, DN, N).
+makeNFA(C*, N) :- makeNFA(C, CN), kleeneNFA(CN, N).
 
-% ...
+orNFA(CN, DN, N) :- !.
+
+concNFA(CN, DN, N) :- !.
+
+kleeneNFA(CN, N) :- beginState(CN, Begin), endState(CN, End), New is End + 1,
+ reform(End, New, CN, CN2), reform(Begin, New, CN2, N).
+
+reform(OldS, NewS, nfa(InitOld, TransitionsOld, AcceptingOld),
+ nfa(InitNew, TransitionsNew, AcceptingNew)) :- !.
+
+beginState(nfa(_, Transitions, _), S) :- my_min(Transitions, S))
+endState(nfa(_, Transitions, _), S) :- my_max(Transitions, S).
+
+my_max([trans(F, _, T)|Ss], M) :- my_max(Ss, N), M is max(N,max(F, T)).
+my_min([trans(F, _, T)|Ss], M) :- my_min(Ss, N), M is min(N,min(F, T)))
