@@ -81,7 +81,10 @@ exampleRE(e2,(a^a+b)*).
 
 % Question 3: count/2
 
-% ...
+count(C, 0) :- atom(C).
+count(C+D, O) :- count(C, N), count(D, M), O is M+N+1.
+count(C^D, O) :- count(C, N), count(D, M), O is M+N+1.
+count(C*, O) :- count(C, N), O is N+1.
 
 % Question 4: testRE/2
 
