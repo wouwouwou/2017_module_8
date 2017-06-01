@@ -62,7 +62,9 @@ alphabet(N, L) :- transitions(N, Ts), labels(Ts, L).
 
 % Question 2: testNFA/2
 
-% ...
+testNFA([], nfa(Init, _, Accepting)) :- !,  member(Init, Accepting).
+testNFA([S|Ss], nfa(Init, Transitions, Accepting)) :-
+  testNFA(Ss, nfa(To, Transitions, Accepting)), member(trans(Init, S, To), Transitions).
 
 % Operators for regular expressions
 
