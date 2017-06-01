@@ -49,8 +49,8 @@ isState(S) :- integer(S).
 areTransitions([]).
 areTransitions([T|Ts]) :- isTransistion(T), areTransitions(Ts).
 
-isTransistion(nil) :- fail.
-isTransistion(trans(S1, L, S2)) :- isState(S1), is_alpha(L), isState(S2).
+isTransition(nil) :- fail.
+isTransition(trans(S1, L, S2)) :- isState(S1), is_alpha(L), isState(S2).
 
 areStates([]).
 areStates([S|States]) :- isState(S), areStates(States).
@@ -63,8 +63,12 @@ alphabet(N, L) :- transitions(N, Ts), labels(Ts, L).
 % Question 2: testNFA/2
 
 testNFA([], nfa(Init, _, Accepting)) :- !,  member(Init, Accepting).
-testNFA([S|Ss], nfa(Init, Transitions, Accepting)) :-
-  testNFA(Ss, nfa(To, Transitions, Accepting)), member(trans(Init, S, To), Transitions).
+testNFA([S|Ss], nfa(Init, Transitions, Accepting)) :- findTrans(Init, S, Transitions, To),
+  testNFA(Ss, nfa(To, Transitions, Accepting)),!.
+
+findTrans(Init, S, [trans(Init, S, To)|_], To).
+findTrans(Init, S, [_|Ts], To) :- findTrans(Init, S, Ts, To).
+
 
 % Operators for regular expressions
 
