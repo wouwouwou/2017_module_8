@@ -90,23 +90,77 @@ count(C*, O) :- count(C, N), O is N+1.
 
 testRE(S, E) :- makeNFA(E, N), testNFA(S, N).
 
-makeNFA(C, nfa(0, [trans(0, C, 1)], [1])) :- atom(C).
-makeNFA(C+D, N) :- makeNFA(C, CN), makeNFA(D, DN), orNFA(CN, DN, N).
-makeNFA(C^D, N) :- makeNFA(C, CN), makeNFA(D, DN), concNFA(CN, DN, N).
-makeNFA(C*, N) :- makeNFA(C, CN), kleeneNFA(CN, N).
 
-orNFA(CN, DN, N) :- !.
+makeNFA(C, N) :- makeNFA_SE(C, N).
 
-concNFA(CN, DN, N) :- !.
+makeNFA_SE(C, nfa(0, [trans(0, C, 1)], [1])) :- atom(C).
+%makeNFA_SE(C+D, N, S, E) :- makeNFA_SE(C, C_N, C_S, C_E), makeNFA_SE(D, D_N, D_S, D_E), orNFA(C_N, D_N, N).
 
-kleeneNFA(CN, N) :- beginState(CN, Begin), endState(CN, End), New is End + 1,
- reform(End, New, CN, CN2), reform(Begin, New, CN2, N).
+% String Concatenation
+makeNFA_SE(C^D, N) 
+    :-  makeNFA_SE(C, nfa(C_Init, C_Edges, [C_Final|_])), 
+        makeNFA_SE(D, D_N), 
+        nfa_max(C_Edges, Offset),
+        translate_states(Offset + 1, D_N, nfa(D_Init, D_Edges, [D_Final|_])),
+        append(C_Edges, D_Edges, F_Edges),
+        reform(D_Init, C_Final, nfa(C_Init, F_Edges, [D_Final]), N).
 
-reform(OldS, NewS, nfa(InitOld, TransitionsOld, AcceptingOld),
- nfa(InitNew, TransitionsNew, AcceptingNew)) :- !.
 
-beginState(nfa(_, Transitions, _), S) :- my_min(Transitions, S))
-endState(nfa(_, Transitions, _), S) :- my_max(Transitions, S).
+% Kleene Star
+makeNFA_SE(C*, N) :- makeNFA_SE(C, nfa(C_Init, C_Edges, [C_Final|_])), reform(C_Init, C_Final, nfa(C_Init, C_Edges, [C_Final]), N).
 
-my_max([trans(F, _, T)|Ss], M) :- my_max(Ss, N), M is max(N,max(F, T)).
-my_min([trans(F, _, T)|Ss], M) :- my_min(Ss, N), M is min(N,min(F, T)))
+%orNFA(CN, DN, N) :- !.
+
+%concNFA(CN, DN, N) :- !.
+
+
+reform(_, _, 
+    nfa(InitOld, [], AcceptingOld), 
+    nfa(InitOld, [], AcceptingOld)) 
+        :- !.
+
+% transform initial and accepting fields
+reform(OldS, NewS, 
+    nfa(OldS, TransitionsOld, AcceptingOld), 
+    nfa(NewS, TransitionsNew, AcceptingNew)) 
+        :-  reform(OldS, NewS, 
+                nfa(NewS, TransitionsOld, AcceptingOld), 
+                nfa(NewS, TransitionsNew, AcceptingNew)), !.
+
+reform(OldS, NewS, 
+    nfa(InitOld, TransitionsOld, AcceptingOld), 
+    nfa(InitNew, TransitionsNew, AcceptingSel)) 
+        :-  member(OldS, AcceptingOld), 
+            select(OldS, AcceptingOld, NewS, AcceptingSel),
+            reform(OldS, NewS, 
+                nfa(InitOld, TransitionsOld, AcceptingSel), 
+                nfa(InitNew, TransitionsNew, AcceptingSel)), !.
+
+% transform edges
+reform(OldS, NewS, 
+    nfa(InitOld, [trans(From,Char,To)|Transitions], AcceptingOld), 
+    nfa(InitNew, [trans(FromNew, Char, ToNew)|TransitionsNew], AcceptingNew)) 
+        :-  ((OldS =:= From, FromNew is NewS); (FromNew is From)),
+            ((OldS =:= To, ToNew is NewS); (ToNew is To)),
+            reform(OldS, NewS, 
+                nfa(InitOld, Transitions, AcceptingOld), 
+                nfa(InitNew, TransitionsNew, AcceptingNew)), !.
+
+translate_states(_, nfa(InitOld, [], AcceptingOld), nfa(InitOld, [], AcceptingOld))
+        :-  !.
+
+translate_states(Offset, nfa(InitOld, [trans(From,Char,To)|Transitions], [AcceptingOld|_]), nfa(InitNew, [trans(FromNew,Char,ToNew)|TransitionsNew], [AcceptingNew]))
+        :-  InitNew is InitOld + Offset,
+            AcceptingNew is AcceptingOld + Offset,
+            FromNew is From + Offset,
+            ToNew is To + Offset,
+            translate_states(Offset, nfa(InitOld, Transitions, AcceptingOld), nfa(_, TransitionsNew, _)).
+
+minState(nfa(_, Transitions, _), S) :- nfa_min(Transitions, S), !.
+maxState(nfa(_, Transitions, _), S) :- nfa_max(Transitions, S), !.
+
+nfa_max([trans(F, _, T)], M) :- M is max(F, T), !.
+nfa_max([trans(F, _, T)|Ss], M) :- nfa_max(Ss, N), M is max(N,max(F, T)).
+
+nfa_min([trans(F, _, T)], M) :- M is min(F, T), !.
+nfa_min([trans(F, _, T)|Ss], M) :- nfa_min(Ss, N), M is min(N,min(F, T)).
