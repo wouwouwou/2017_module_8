@@ -88,4 +88,7 @@ count(C*, O) :- count(C, N), O is N+1.
 
 % Question 4: testRE/2
 
+testRE(STR, RE) :- makeNFA(RE, N), testNFA(STR, N).
+
+
 % ...
