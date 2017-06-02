@@ -141,6 +141,7 @@ public class Checker extends SimplePascalBaseListener {
         setEntry(ctx, ctx);
     }
 
+    //Exercise 6
     @Override
     public void exitVar(VarContext ctx) {
         for (TerminalNode id : ctx.ID()) {
@@ -209,6 +210,7 @@ public class Checker extends SimplePascalBaseListener {
     public void exitIntType(IntTypeContext ctx) {
         setType(ctx, Type.INT);
     }
+    //End exercise 6
 
     /** Indicates if any errors were encountered in this tree listener. */
     public boolean hasErrors() {
