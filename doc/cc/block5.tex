@@ -149,4 +149,88 @@
 \end{tikzpicture}
 \end{center}
 
+\section*{Exercise 9}
+\begin{figure}[H]
+\includegraphics[width=\textwidth]{Ex5-9.jpg}
+\caption{The activation records for \texttt{main} [p.304 EC]}
+\end{figure}
+
+\section*{Exercise 10}
+\begin{figure}[H]
+\includegraphics[width=\textwidth]{Ex5-10.jpg}
+\caption{The class structure for Dumbo [p.326 EC]}
+\end{figure}
+
+\section*{Exercise 11}
+\begin{figure}[H]
+\centering
+\begin{tabular}{ccccc}
+line & \multicolumn{3}{c}{\texttt{a}} & \texttt{i} \\ 
+\hline 
+6 & 1 & 10 & 77 & 1 \\ 
+7 & 1 & 5 & 77 & 1 \\ 
+8 & 1 & 5 & 77 & 2 \\ 
+9 & 1 & 5 & 77 & 2 \\ 
+\hline 
+\end{tabular} 
+\caption{Variable content for call-by-value}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\begin{tabular}{ccccc}
+line & \multicolumn{3}{c}{\texttt{a}} & \texttt{i} \\ 
+\hline 
+6 & 1 & 13 & 77 & 1 \\ 
+7 & 1 & 5 & 77 & 1 \\ 
+8 & 1 & 5 & 77 & 2 \\ 
+9 & 1 & 9 & 77 & 2 \\ 
+\hline 
+\end{tabular} 
+\caption{Variable content for call-by-reference}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\begin{tabular}{ccccc}
+line & \multicolumn{3}{c}{\texttt{a}} & \texttt{i} \\ 
+\hline 
+6 & 1 & 13 & 77 & 1 \\ 
+7 & 1 & 5 & 77 & 1 \\ 
+8 & 1 & 5 & 77 & 2 \\ 
+9 & 1 & 5 & 81 & 2 \\ 
+\hline 
+\end{tabular} 
+\caption{Variable content for call-by-name}
+\end{figure}
+
+\section*{Exercise 12}
+\begin{figure}[H]
+\centering
+\begin{tabular}{|c|}
+\hline 
+Access Link(8) \\ 
+Return Address(6) \\ 
+b \\ 
+\hline 
+a \\ 
+Access Link(1) \\ 
+Return Address (19) \\ 
+g \\ 
+\hline 
+a \\ 
+Access Link(8) \\ 
+Return Address (23) \\
+\hline
+a \\ 
+Access Link (1) \\ 
+Return Address (26) \\ 
+\hline
+Access Link (0) \\ 
+Return Address (0) \\ 
+\hline 
+\end{tabular} 
+\caption{Variable content for call-by-name}
+\end{figure}
+
 \end{document}
