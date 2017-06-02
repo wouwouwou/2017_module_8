@@ -1,0 +1,50 @@
+// Read and store inputs, start function call
+start:		in "arg? " => r_arg             // r_arg = input
+			loadI #end => r_return_addr     // r_return_addr = #end
+			push r_return_addr              // push r_return_addr
+			push r_arg                      // push r_arg
+
+// fib(n) function: if
+if:			pop => r_arg                    // r_arg = pop
+			push r_arg                      // push r_arg
+			loadI 1 => r_cmp                // r_cmp = 1
+			cmp_LE r_arg, r_cmp => r_cbr    // r_cbr = r_arg <= r_cmp
+			cbr r_cbr -> then, else         // r_cbr == 1 ? branch then : branch else
+
+// fib(n) function: then
+then:		pop => r_void                   // remove top of stack
+			pop => r_return_addr            // r_return_addr = pop
+			loadI 1 => r_return_val         // r_return_val = 1
+			push r_return_val               // push r_return_val
+			jump -> r_return_addr           // jump to r_return_addr
+
+// fib(n) function: call to fib(n-1)
+else:		pop => r_arg                    // r_arg = pop
+			push r_arg                      // push r_arg
+			loadI #proc1 => r_return_addr   // r_return_addr = #proc1
+			push r_return_addr              // push r_return_addr
+			subI r_arg, 1 => r_arg          // r_arg--
+			push r_arg                      // push r_arg
+			jumpI -> if                     // jump to if
+
+// fib(n) function: call to fib(n-2)
+proc1:		pop => r_return_val             // r_return_val = pop
+			pop => r_arg                    // r_arg = pop
+			loadI #proc2 => r_return_addr   // r_return_addr = #proc2
+			subI r_arg, 2 => r_arg          // r_arg = r_arg - 2
+			push r_return_val               // push r_return_val
+			push r_return_addr              // push r_return_addr
+			push r_arg                      // push r_arg
+			jumpI -> if                     // jump to if
+
+// fib(n) function: +
+proc2:		pop => r_return_val_1           // r_return_val_1 = pop
+			pop => r_return_val_2           // r_return_val_1 = pop
+			pop => r_return_addr            // r_return_addr = pop
+			add r_return_val_1, r_return_val_2 => r_return_val      // r_return_val = r_return_val_1 + r_return_val_2
+			push r_return_val               // push r_return_val
+			jump -> r_return_addr           // jump to r_return_addr
+
+// End of program, print result
+end:		pop => r_return_val             // r_return_val = pop
+			out "fib: ", r_return_val       // print("fib: " + r_return_val)

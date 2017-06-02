@@ -1,0 +1,16 @@
+start:		in "argument? " => r_arg
+			loadI #end => returnaddr
+			push returnaddr
+			push r_arg
+			jumpI -> fib
+fib:		pop => r_arg_copy
+			push => r_arg_copy
+if:			loadI 1 => cmp
+			cmp_LE r_arg_copy, cmp => ifres
+			cbr ifres -> then, else
+then:		loadI 1 => res
+			
+			
+			
+end:		pop => return
+			out "Result: ", return

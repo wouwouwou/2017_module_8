@@ -58,12 +58,12 @@ solve(Sol) :-
   right([_, marsh, _, _],[sally, _, _, _], Sol),
 
   % 6
-  member([alice, boulder, C6_day, _], Sol),
+  % member([alice, boulder, C6_day, _], Sol),
 
   not(C1_loc = rockland),     % 1a
   not(C1_flav = peppermint),  % 1b
   not(C3_day = tuesday),      % 3
-  not(C6_day = friday),       % 6
+  % not(C6_day = friday),       % 6
   not(C4_stand = alice).      % 4
 
 go(Sol) :- solve(Sol).

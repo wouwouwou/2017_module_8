@@ -1,0 +1,50 @@
+			jumpI -> start					// Jump to start of program
+fib:		pop => r_arg					// Retrieve AR from callee
+			pop => r_return_addr			//
+			nop								// We leave the callee
+			nop								// regs untouched
+			nop								//push r_arg
+			loadI 1 => r_cmp				// Compare N with one
+			cmp_LE r_arg, r_cmp => r_cbr	// 
+			cbr r_cbr -> then, else			// n < 1 ? then : else
+then:		loadI 1 => r_return_val
+			push r_return_val				// Push return value
+			jump -> r_return_addr			// Jump back
+
+else:		push r_return_addr				// setup for first call
+			push r_arg						//   push args to remember
+			loadI #fib1 => r_return_addr	//   load instr after call
+			push r_return_addr				//   push instr address
+			subI r_arg, 2 => r_fib1a		//   fib(n-2)-argument
+			push r_fib1a					//   push 'n' 
+			jumpI -> fib					//   jump to fib(n)
+			
+fib1:		pop => r_val1					// pop result
+			pop => r_arg					// pop saved registers
+			pop => r_return_addr			//  ^
+			push r_return_addr				// setup for second call
+			push r_arg						//   push args to remember
+			push r_val1						//     ^
+			loadI #fib2 => r_return_addr	//   load instr after call
+			push r_return_addr				//   push instr address
+			subI r_arg, 1 => r_fib2a		//   fib(n-1)-argument
+			push r_fib2a					//   push 'n' 
+			jumpI -> fib					//   jump to fib(n)
+
+fib2:		pop => r_val2					// pop result
+			pop => r_val1					// pop saved registers
+			pop => r_arg					//  ^
+			pop => r_return_addr			//  ^
+			add r_val1, r_val2 => r_return_val
+			nop								// Return value
+			push r_return_val
+			jump -> r_return_addr
+			
+start:		in "arg? " => r_arg
+			loadI #end => r_return_addr 	// Setup AR for fib(arg) call 
+			nop								//  Push any registers we want to save
+			push r_return_addr				//  jump to end after
+			push r_arg						//  push one argument, 'n'
+			jumpI -> fib					//  
+end:		pop => r_return_val
+			out "fib: ", r_return_val
