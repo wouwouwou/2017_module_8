@@ -69,7 +69,6 @@ testNFA([S|Ss], nfa(Init, Transitions, Accepting)) :- findTrans(Init, S, Transit
 findTrans(Init, S, [trans(Init, S, To)|_], To).
 findTrans(Init, S, [_|Ts], To) :- findTrans(Init, S, Ts, To).
 
-
 % Operators for regular expressions
 
 :- op(650,xfy,+).
