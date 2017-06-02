@@ -11,6 +11,8 @@ import pp.iloc.parse.FormatException;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.stream.IntStream;
 
 import static org.junit.Assert.assertEquals;
@@ -18,6 +20,8 @@ import static org.junit.Assert.fail;
 
 public class FibTest {
 
+    private final static String BASE_DIR = "./";
+    private final static String EXT = ".iloc";
 
 	@Test
 	public void test() {
@@ -26,7 +30,7 @@ public class FibTest {
 	}
 
 	private void testCase(int input) {
-		Program p = parse("src/pp/block6/cc/fib2016");
+		Program p = parse("fib2016");
 		Simulator s = new Simulator(p);
 		Machine vm = s.getVM();
 		s.setIn(new ByteArrayInputStream(("" + input).getBytes()));
@@ -35,8 +39,11 @@ public class FibTest {
 	}
 
 	private Program parse(String filename) {
-		File file = new File(filename + ".iloc");
-		try {
+        String path = BASE_DIR + filename + EXT;
+        URL url = getClass().getResource(path);
+        File file;
+        try {
+            file = new File(url.toURI());
 			Program result = Assembler.instance().assemble(file);
 			String print = result.prettyPrint();
 			System.out.println("Program " + file + ":");
@@ -44,7 +51,7 @@ public class FibTest {
 			Program other = Assembler.instance().assemble(print);
 			assertEquals(result, other);
 			return result;
-		} catch (FormatException | IOException e) {
+		} catch (FormatException | IOException | URISyntaxException e) {
 			fail(e.getMessage());
 			return null;
 		}
