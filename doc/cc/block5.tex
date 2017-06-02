@@ -167,10 +167,10 @@
 \begin{tabular}{ccccc}
 line & \multicolumn{3}{c}{\texttt{a}} & \texttt{i} \\ 
 \hline 
-6 & 1 & 10 & 77 & 1 \\ 
-7 & 1 & 5 & 77 & 1 \\ 
-8 & 1 & 5 & 77 & 2 \\ 
-9 & 1 & 5 & 77 & 2 \\ 
+6 & [1, & 10, & 77] & 1 \\ 
+7 & [1, & 5, & 77] & 1 \\ 
+8 & [1, & 5, & 77] & 2 \\ 
+9 & [1, & 5, & 77] & 2 \\ 
 \hline 
 \end{tabular} 
 \caption{Variable content for call-by-value}
@@ -181,10 +181,10 @@ line & \multicolumn{3}{c}{\texttt{a}} & \texttt{i} \\
 \begin{tabular}{ccccc}
 line & \multicolumn{3}{c}{\texttt{a}} & \texttt{i} \\ 
 \hline 
-6 & 1 & 13 & 77 & 1 \\ 
-7 & 1 & 5 & 77 & 1 \\ 
-8 & 1 & 5 & 77 & 2 \\ 
-9 & 1 & 9 & 77 & 2 \\ 
+6 & [1, & 13, & 77] & 1 \\ 
+7 & [1, & 5, & 77] & 1 \\ 
+8 & [1, & 5, & 77] & 2 \\ 
+9 & [1, & 9, & 77] & 2 \\ 
 \hline 
 \end{tabular} 
 \caption{Variable content for call-by-reference}
@@ -195,10 +195,10 @@ line & \multicolumn{3}{c}{\texttt{a}} & \texttt{i} \\
 \begin{tabular}{ccccc}
 line & \multicolumn{3}{c}{\texttt{a}} & \texttt{i} \\ 
 \hline 
-6 & 1 & 13 & 77 & 1 \\ 
-7 & 1 & 5 & 77 & 1 \\ 
-8 & 1 & 5 & 77 & 2 \\ 
-9 & 1 & 5 & 81 & 2 \\ 
+6 & [1, & 13, & 77] & 1 \\ 
+7 & [1, & 5, & 77] & 1 \\ 
+8 & [1, & 5, & 77] & 2 \\ 
+9 & [1, & 5, & 81] & 2 \\ 
 \hline 
 \end{tabular} 
 \caption{Variable content for call-by-name}
@@ -209,12 +209,12 @@ line & \multicolumn{3}{c}{\texttt{a}} & \texttt{i} \\
 \centering
 \begin{tabular}{|c|}
 \hline 
-Access Link(8) \\ 
+Access Link(2) \\ 
 Return Address(6) \\ 
 b \\ 
 \hline 
 a \\ 
-Access Link(1) \\ 
+Access Link(14) \\ 
 Return Address (19) \\ 
 g \\ 
 \hline 
@@ -236,8 +236,8 @@ Return Address (0) \\
 \section*{Exercise 12}
 
 \begin{itemize}
-\item \texttt{x}: Callee saves, the caller knows it needs the value still, but callees may be able to determine they do not need the register.
-\item \texttt{a and c}: Caller saves, the caller knows it needs the value still, but a lot of calls are still happening, so a great chance exists that values will be overwritten.
+\item \texttt{x}: Callee saves, the caller knows that it still needs the value, but callees may be able to determine they do not need the register and therefore do not need to save the register in memory.
+\item \texttt{a and c}: Caller saves, the caller knows that it still needs the value, but a lot of calls are still happening, so a great chance exists that values will be overwritten.
 \end{itemize}
 \end{document}
 
