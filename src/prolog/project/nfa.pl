@@ -90,72 +90,84 @@ count(C*, O) :- count(C, N), O is N+1.
 
 testRE(S, E) :- makeNFA(E, N), testNFA(S, N).
 
+% Base Case with one character
+makeNFA(C, nfa(0, [trans(0, C, 1)], [1])) :- atom(C).
 
-makeNFA(C, N) :- makeNFA_SE(C, N).
-
-makeNFA_SE(C, nfa(0, [trans(0, C, 1)], [1])) :- atom(C).
-%makeNFA_SE(C+D, N, S, E) :- makeNFA_SE(C, C_N, C_S, C_E), makeNFA_SE(D, D_N, D_S, D_E), orNFA(C_N, D_N, N).
+% Or operator (+)
+makeNFA(C+D, N)
+    :-  makeNFA(C, nfa(C_Init, C_Edges, [C_Final|_])),
+        makeNFA(D, D_N),
+        nfa_max(C_Edges, Offset),
+        translate_states(Offset + 1, D_N, nfa(D_Init, D_Edges, [D_Final|_])),
+        append(C_Edges, D_Edges, F_Edges),
+        reform(D_Init, C_Init, nfa(C_Init, F_Edges, [C_Final]), Z),
+        reform(D_Final, C_Final, Z, N).
 
 % String Concatenation
-makeNFA_SE(C^D, N) 
-    :-  makeNFA_SE(C, nfa(C_Init, C_Edges, [C_Final|_])), 
-        makeNFA_SE(D, D_N), 
+makeNFA(C^D, N)
+    :-  makeNFA(C, nfa(C_Init, C_Edges, [C_Final|_])),
+        makeNFA(D, D_N),
         nfa_max(C_Edges, Offset),
         translate_states(Offset + 1, D_N, nfa(D_Init, D_Edges, [D_Final|_])),
         append(C_Edges, D_Edges, F_Edges),
         reform(D_Init, C_Final, nfa(C_Init, F_Edges, [D_Final]), N).
 
-
 % Kleene Star
-makeNFA_SE(C*, N) :- makeNFA_SE(C, nfa(C_Init, C_Edges, [C_Final|_])), reform(C_Init, C_Final, nfa(C_Init, C_Edges, [C_Final]), N).
+makeNFA(C*, N)
+    :-  makeNFA(C, nfa(C_Init, C_Edges, [C_Final|_])),
+        reform(C_Init, C_Final, nfa(C_Init, C_Edges, [C_Final]), N).
 
-%orNFA(CN, DN, N) :- !.
-
-%concNFA(CN, DN, N) :- !.
-
-
-reform(_, _, 
-    nfa(InitOld, [], AcceptingOld), 
-    nfa(InitOld, [], AcceptingOld)) 
+% Base case reform function.
+reform(_, _,
+    nfa(InitOld, [], AcceptingOld),
+    nfa(InitOld, [], AcceptingOld))
         :- !.
 
-% transform initial and accepting fields
-reform(OldS, NewS, 
-    nfa(OldS, TransitionsOld, AcceptingOld), 
-    nfa(NewS, TransitionsNew, AcceptingNew)) 
-        :-  reform(OldS, NewS, 
-                nfa(NewS, TransitionsOld, AcceptingOld), 
+% Transform initial and accepting states. The first function transforms the
+% initial state to the new state. The second function transforms the
+% old accepting states to the new state number.
+reform(OldS, NewS,
+    nfa(OldS, TransitionsOld, AcceptingOld),
+    nfa(NewS, TransitionsNew, AcceptingNew))
+        :-  reform(OldS, NewS,
+                nfa(NewS, TransitionsOld, AcceptingOld),
                 nfa(NewS, TransitionsNew, AcceptingNew)), !.
 
-reform(OldS, NewS, 
-    nfa(InitOld, TransitionsOld, AcceptingOld), 
-    nfa(InitNew, TransitionsNew, AcceptingSel)) 
-        :-  member(OldS, AcceptingOld), 
+reform(OldS, NewS,
+    nfa(InitOld, TransitionsOld, AcceptingOld),
+    nfa(InitNew, TransitionsNew, AcceptingSel))
+        :-  member(OldS, AcceptingOld),
             select(OldS, AcceptingOld, NewS, AcceptingSel),
-            reform(OldS, NewS, 
-                nfa(InitOld, TransitionsOld, AcceptingSel), 
+            reform(OldS, NewS,
+                nfa(InitOld, TransitionsOld, AcceptingSel),
                 nfa(InitNew, TransitionsNew, AcceptingSel)), !.
 
-% transform edges
-reform(OldS, NewS, 
-    nfa(InitOld, [trans(From,Char,To)|Transitions], AcceptingOld), 
-    nfa(InitNew, [trans(FromNew, Char, ToNew)|TransitionsNew], AcceptingNew)) 
+% Transforms the transitions, such that all present old states will be
+% replaced by the new state.
+reform(OldS, NewS,
+    nfa(InitOld, [trans(From,Char,To)|Transitions], AcceptingOld),
+    nfa(InitNew, [trans(FromNew, Char, ToNew)|TransitionsNew], AcceptingNew))
         :-  ((OldS =:= From, FromNew is NewS); (FromNew is From)),
             ((OldS =:= To, ToNew is NewS); (ToNew is To)),
-            reform(OldS, NewS, 
-                nfa(InitOld, Transitions, AcceptingOld), 
+            reform(OldS, NewS,
+                nfa(InitOld, Transitions, AcceptingOld),
                 nfa(InitNew, TransitionsNew, AcceptingNew)), !.
 
+
+% Adds an offset to all states.
 translate_states(_, nfa(InitOld, [], AcceptingOld), nfa(InitOld, [], AcceptingOld))
         :-  !.
 
-translate_states(Offset, nfa(InitOld, [trans(From,Char,To)|Transitions], [AcceptingOld|_]), nfa(InitNew, [trans(FromNew,Char,ToNew)|TransitionsNew], [AcceptingNew]))
+translate_states(Offset,
+    nfa(InitOld, [trans(From,Char,To)|Transitions], [AcceptingOld|_]),
+    nfa(InitNew, [trans(FromNew,Char,ToNew)|TransitionsNew], [AcceptingNew]))
         :-  InitNew is InitOld + Offset,
             AcceptingNew is AcceptingOld + Offset,
             FromNew is From + Offset,
             ToNew is To + Offset,
-            translate_states(Offset, nfa(InitOld, Transitions, AcceptingOld), nfa(_, TransitionsNew, _)).
+            translate_states(Offset, nfa(InitOld, Transitions, [AcceptingOld]), nfa(_, TransitionsNew, _)).
 
+% Helper functions for finding minima and maxima.
 minState(nfa(_, Transitions, _), S) :- nfa_min(Transitions, S), !.
 maxState(nfa(_, Transitions, _), S) :- nfa_max(Transitions, S), !.
 
