@@ -233,4 +233,12 @@ Return Address (0) \\
 \caption{Variable content for call-by-name}
 \end{figure}
 
+\section*{Exercise 12}
+
+\begin{itemize}
+\item \texttt{x}: Callee saves, the caller knows it needs the value still, but callees may be able to determine they do not need the register.
+\item \texttt{a and c}: Caller saves, the caller knows it needs the value still, but a lot of calls are still happening, so a great chance exists that values will be overwritten.
+\end{itemize}
 \end{document}
+
+
