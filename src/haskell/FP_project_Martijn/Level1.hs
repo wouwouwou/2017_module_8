@@ -42,5 +42,3 @@ evalProp program (q:qs) | res == [] = False
         res = [ True | (c, cs) <- program, {- trace traceLine True, -} c == q, evalProp program (cs ++ qs) ]
         
         {- traceLine = ("query: "++ (show q) ++ " ++ " ++ (show qs) ++ " rule: " ++ (show c) ++ " -> "++ (show cs)) -}
-        
-        

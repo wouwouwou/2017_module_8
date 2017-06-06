@@ -3,30 +3,21 @@ module LPEvaluator where
 import LPTypes
 import Data.Maybe
 import Data.Either
+import Debug.Trace
 
 ------------Level 1------------
--- evalProp
---   evaluates a single proposition atom into a boolean True or False
---   3 possible situations:
---     a.       rhs is empty
---     b :- a.  a is provable
---     c :- n.  n is not provable
---   now we should (recursively) evaluate the right hand side to prove the atom
 evalProp :: Program -> Query -> Bool
-evalProp _    []     = True
-evalProp prog (q:qs) = any (evalProp prog) atms && evalProp prog qs
-                      where
-                        cls = filter (\(a, _) -> a == q) prog
-                        atms = map snd cls
+evalProp [] _           = False
+evalProp _ []           = True
+evalProp program (q:qs) | res == [] = False
+                        | otherwise = True
+    where
+        res = [ True | (c, cs) <- program, {- trace traceLine True, -} c == q, evalProp program (cs ++ qs) ]
 
-
+        {- traceLine = ("query: "++ (show q) ++ " ++ " ++ (show qs) ++ " rule: " ++ (show c) ++ " -> "++ (show cs)) -}
 
 
 ------------Level 2------------
-
--- evalOne
---    evaluates a predicate with a single constant or variable
-
 evalOne :: Program -> Query -> [Either Bool Substitution]
 evalOne [] _           = error "The program is empty!"
 evalOne _ []           = error "The query is empty!"
