@@ -4,6 +4,10 @@ module Case3 where
 
 import Data.Either
 import Debug.Trace
+import Data.List
+import Data.Char
+import Data.List.Split
+import System.IO
 
 --------------------------
 --    import LPTypes    --
@@ -233,3 +237,66 @@ test = do
  print (evalOne program query1)
  print (evalOne program query2)
  print (evalOne program query3)
+ 
+ 
+-- testFile :: String -> Query -> Either Bool [Substitution]
+-- 
+-- This monad allows arbitrary files and querys to be written in prolog-syntax.
+-- 
+-- There are a few restictions, 
+--  - comments MUST have their own line and MUST start with a '%'.
+--  - query's MUST be ended with a '.'.
+--
+-- It does not properly check syntax, so you could for example end a query with
+-- any character you like.
+
+testFile file queryArg = do
+    read <- readFile file 
+    let program = parseProgram read
+        query = parseQuery queryArg
+        temp = evalMulti program query
+    return temp
+
+parseProgram :: String -> Program
+parseProgram string = concat $ map (parseLine) (splitOn "\n" stringPP)
+    where stringPP = filter (/= ' ') string 
+
+parseQuery :: String -> [Atom]
+parseQuery = (map (fst)).parseAtoms
+
+parseLine :: String -> [Clause]
+parseLine [] = []
+parseLine ('%':_) = []
+parseLine string = [(atom,atoms)]
+    where 
+        (atom, atomRest) = parseAtom string
+        atoms :: [Atom]
+        atoms = map fst (parseAtoms (atomRestPP atomRest))
+        (atomsStr, _) = break (== '.') $ atomRestPP atomRest
+        
+        
+        atomRestPP (':':'-':x) = x
+        atomRestPP ('.':_) = []
+        
+parseAtoms :: String -> [(Atom, String)]
+parseAtoms [] = []
+parseAtoms str = (token, str) : (parseAtoms $ trace "a" (tail tokens))
+    where 
+       (token, tokens) = parseAtom str 
+
+parseAtomR :: (Atom, String) -> (Atom, String)
+
+parseAtomR (_, s) = parseAtom s
+
+parseAtom :: String -> (Atom, String)
+parseAtom string = ((mt, map (parseTerm) (splitOn "," ( trace "a" (tail terms)))), tail rest)
+    where
+         (mt,mRest) = break (\x -> x == '(' || x == '.') string
+         (terms, rest) = trace mRest (break (== ')') mRest)
+
+parseTerm :: String -> Term
+parseTerm [] = error "empty string"
+parseTerm s@(l:ls)  | isUpper l = Variable s
+                    | isLower l = Constant s
+                    | otherwise = error ((show s) ++ " is not a string")
+
