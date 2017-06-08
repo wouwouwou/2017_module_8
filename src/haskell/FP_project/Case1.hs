@@ -1,27 +1,34 @@
 module Case1 where
 
---import Data.List
--- import LPTypes
+import Debug.Trace
 
+--------------------------
+--    import LPTypes    --
+--------------------------
 data Term       = Atom String
     deriving (Show, Eq)
-type Clause     = (Term, [Term])
 type Program    = [Clause]
+type Clause     = (Term, [Term])
 type Query      = [Term]
 
-
-
---import LPEvaluator
-
+--------------------------
+--  import LPEvaluator  --
+--------------------------
 evalProp :: Program -> Query -> Bool
 evalProp [] _           = False
 evalProp _ []           = True
-evalProp program (q:qs) | null [ True | (c, cs) <- program, {- trace traceLine True, -} c == q, evalProp program (cs ++ qs) ] 
-                                = False
-                        | otherwise 
-                                = True
+evalProp program (q:qs)
+            | null [ True |
+                     (c, cs) <- program,
+                     {- trace traceLine True, -}
+                     c == q,
+                     evalProp program (cs ++ qs)
+                     ]      = False
+            | otherwise     = True
     {- where         
-         traceLine = ("query: "++ (show q) ++ " ++ " ++ (show qs) ++ " rule: " ++ (show c) ++ " -> "++ (show cs)) -}
+         traceLine = ("query: " ++ (show q) ++ " ++ " ++ (show qs) ++
+                      " rule: " ++ (show c) ++ " -> " ++ (show cs)) -}
+
 
 program :: Program
 program = [(Atom "a0", []),
@@ -36,8 +43,6 @@ program = [(Atom "a0", []),
 
 query0 = [Atom "c0"]
 query1 = [Atom "c1"]
-
-
 
 test = do
   print (evalProp program query0)

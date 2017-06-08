@@ -1,6 +1,6 @@
 {-# LANGUAGE TypeSynonymInstances, FlexibleInstances #-}
 
-module Case2 where
+module Case3 where
 
 import Data.Either
 import Debug.Trace
@@ -11,7 +11,7 @@ import Debug.Trace
 data Term      = Const String
                | Var   String
                   deriving (Show, Eq)
-type Atom      = (String, Term)
+type Atom      = (String, [Term])
 type Program   = [Clause]
 type Clause    = (Atom, [Atom])
 type Query     = [Atom]
@@ -25,6 +25,9 @@ instance Substitute Term where
   (Var _)   <~ (Const _, _)                        = error ""
   (Const a) <~ _                                   = Const a
 
+instance Substitute [Term] where
+    terms <~ subst = map (<~ subst) terms
+
 instance Substitute Atom where
     (pred, term) <~ subst = (pred, term <~ subst)
 
@@ -34,6 +37,10 @@ instance Substitute [Atom] where
 instance Substitute Clause where
     (atom, atoms) <~ subst
         = (atom <~ subst, atoms <~ subst)
+
+instance Substitute Program where
+    program <~ subst = map (<~ subst) program
+
 
 --------------------------
 --  import LPEvaluator  --
@@ -47,10 +54,16 @@ instance Substitute Clause where
 -- -- give the conflicting variables a unique name.                -- --
 ------------------------------------------------------------------------
 rename :: Program -> Query -> Program
-rename program [] = program
-rename program query = init $ foldl renamePerAtom
-                              (program ++ [(("_query", Const "a"), query)])
-                              query
+rename program query = foldl (<~) program (getSubstitutions program query)
+
+-- -- GetSubstitutions -- --
+------------------------------------------------------------------------
+getSubstitutions :: Program -> Query -> [Substitutions]
+getSubstitutions program query = zip (nub $ intersect programvars queryvars) (map (\x -> Var x) newvars)
+    where
+         programvars = [x | ]
+         queryvars   = [x | ]
+         newvars     = generateVars varlist (program ++ [(("_query", Const "a"), query)])
 
 -- -- RenamePerAtom -- --
 -- -- Renames / substitutes the given atom in every clause of the  -- --
@@ -60,24 +73,24 @@ rename program query = init $ foldl renamePerAtom
 ------------------------------------------------------------------------
 renamePerAtom :: Program -> Atom -> Program
 renamePerAtom program (_, oldterm@(Var _)) =
-  map (<~ (oldterm, (Var newvar))) program
+  map (<~ (oldterm, (Var newvars))) program
    where
-     newvar = generateVar varlist program
+     newvars = generateVars varlist program
 
 renamePerAtom program _ = program
 
--- -- Generatevar -- --
--- -- Returns a variable which can be used as a unique new         -- --
--- -- variable in a Program. Parameters:                           -- --
+-- -- Generatevars -- --
+-- -- Returns a list of variables which can be used as unique new  -- --
+-- -- variables in a Program. Parameters:                          -- --
 -- -- (Possible Variable Names, Program)                           -- --
--- -- Example: newvar = generateVar varlist program                -- --
+-- -- Example: newvars = generateVars varlist program              -- --
 ------------------------------------------------------------------------
-generateVar :: [String] -> Program -> String
-generateVar [] program               = error "No free variable found!"
-generateVar (newvar:seed) program    | elem newvar (map getstr vars)
+generateVars :: [String] -> Program -> [String]
+generateVars [] program               = error "No free variable found!"
+generateVars (newvar:seed) program    | elem newvar (map getstr vars)
                                           = generateVar seed program
                                      | otherwise
-                                          = newvar
+                                          = newvar : generateVar seed program
   where
      getstr (Var str)      = str
      getstr (Const str)    = str

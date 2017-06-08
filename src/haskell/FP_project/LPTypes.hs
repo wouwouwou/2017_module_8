@@ -32,8 +32,6 @@ class Expression e where
   (<==) :: e -> Substitution -> e
 
 instance Expression Term where
-  -- (<==) (Const a) (Var b, Const c) = null
-  -- (<==) (Const a) (Var b, Var c) = null
   (Var a)   <== (Var b, Const c) | a == b = Const c | otherwise = Var a
   (Var a)   <== (Var b, Var c)   | a == b = Var c   | otherwise = Var a
   (Var _)   <== (Const _, _)              = error ""
