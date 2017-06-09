@@ -95,53 +95,33 @@ varlist = [prefix ++ [alph] | prefix <- "" : varlist, alph <- ['A'..'Z']]
 
 
 -- -- Unify -- --
--- -- Returns a substitution which can be used to unify two atoms. -- --
--- -- Example: (p, Const a) -> (p, Var X) -> (Var X, Const a)      -- --
+-- -- Returns a substitution if the two atoms are unifiable.       -- --
+-- -- Otherwise returns the boolean False.                         -- --
+-- -- Example:   (p, Const a) -> (p, Var X) ->                     -- --
+-- --            Right (Var X, Const a)                            -- --
+-- -- Example 2: (p, Const a) -> (q, Var X) -> Left False          -- --
 ------------------------------------------------------------------------
-unify :: Atom -> Atom -> Substitution
+unify :: Atom -> Atom -> Either Bool Substitution
 unify (firstpred,  firstconst@(Const _))
       (secondpred, secondconst@(Const _))
-           | firstpred  /= secondpred   = error "Can not unify: predicates not equal!"
-           | firstconst == secondconst  = (firstconst, secondconst)
-           | otherwise                  = error "Can not unify: constants not equal!"
+           | firstpred  /= secondpred   = Left  False
+           | firstconst == secondconst  = Right (firstconst, secondconst)
+           | otherwise                  = Left  False
 
 unify (firstpred,  var@(Var _))
       (secondpred, const@(Const _))
-           | firstpred == secondpred    = (var, const)
-           | otherwise                  = error "Can not unify: predicates not equal!"
+           | firstpred == secondpred    = Right (var, const)
+           | otherwise                  = Left  False
 
 unify (firstpred,  const@(Const _))
       (secondpred, var@(Var _))
-           | firstpred == secondpred    = (var, const)
-           | otherwise                  = error "Can not unify: predicates not equal!"
+           | firstpred == secondpred    = Right (var, const)
+           | otherwise                  = Left  False
 
 unify (firstpred,  firstvar@(Var _))
       (secondpred, secondvar@(Var _))
-           | firstpred == secondpred    = (secondvar, firstvar)
-           | otherwise                  = error "Can not unify: predicates not equal!"
-
-
--- -- Unifyable infix Operator <?> -- --
--- -- Returns True if two atoms can be unified by substitution.    -- --
--- -- Example: (p, Const a) -> (p, Var X) -> True                  -- --
-------------------------------------------------------------------------
-(<?>) :: Atom -> Atom -> Bool
-(firstpred, firstconst@(Const _)) <?> (secondpred, secondconst@(Const _))
-           | firstpred  /= secondpred   = False
-           | firstconst == secondconst  = True
-           | otherwise                  = False
-
-(firstpred, var@(Var _))          <?> (secondpred, const@(Const _))
-           | firstpred == secondpred    = True
-           | otherwise                  = False
-
-(firstpred, const@(Const _))      <?> (secondpred, var@(Var _))
-           | firstpred == secondpred    = True
-           | otherwise                  = False
-
-(firstpred, firstvar@(Var _))     <?> (secondpred, secondvar@(Var _))
-           | firstpred == secondpred    = True
-           | otherwise                  = False
+           | firstpred == secondpred    = Right (secondvar, firstvar)
+           | otherwise                  = Left  False
 
 
 -- -- evalOne -- --
@@ -187,10 +167,11 @@ eval program (qAtom:qAtoms)
         res = [(Right uni, evals) |
              (cAtom, cAtoms) <- program,
 --           trace ("query: "++ (show queryAtomHead) ++ " -> " ++ (show queryAtoms) ++ " rule: " ++ (show clauseAtom) ++ " -> "++ (show clauseAtoms))
-             qAtom <?> cAtom,
-             let uni = unify qAtom cAtom,
-             let evals = eval program ((map (<~ uni) cAtoms) ++ (map (<~ uni) qAtoms)),
-             evals /= [Left False]
+             let unification = unify qAtom cAtom,
+			 isRight unification,
+			 let (Right uni) = unification,
+			 let evals = eval program ((map (<~ uni) cAtoms) ++ (map (<~ uni) qAtoms)),
+			 evals /= [Left False]
              ]
 
         combine :: (Either Bool Substitution, [Either Bool Substitution]) ->

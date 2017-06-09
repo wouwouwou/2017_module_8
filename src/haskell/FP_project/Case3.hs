@@ -60,28 +60,19 @@ instance Substitute Program where
 rename :: Program -> Query -> Program
 rename program query = foldl (<~) program (getSubstitutions program query)
 
+
 -- -- GetSubstitutions -- --
 ------------------------------------------------------------------------
-getSubstitutions :: Program -> Query -> [Substitutions]
+getSubstitutions :: Program -> Query -> [Substitution]
 getSubstitutions program query = zip (nub $ intersect programvars queryvars) (map (\x -> Var x) newvars)
     where
-         programvars = [x | ]
-         queryvars   = [x | ]
-         newvars     = generateVars varlist (program ++ [(("_query", Const "a"), query)])
+         programvars = [x | let z = (map (fst) program) ++ (concat $ map (snd) program),
+                            let y = concat $ map (snd) z,
+                            x@(Var _) <- y ]
+         queryvars   = [x | let y = concat $ map (snd) query,
+                            x@(Var _) <- y ]
+         newvars     = generateVars varlist (program ++ [(("_query", [Const "a"]), query)])
 
--- -- RenamePerAtom -- --
--- -- Renames / substitutes the given atom in every clause of the  -- --
--- -- given program  by a newly generated variable, only if the    -- --
--- -- given atom is a variable. Gets the new variable from the     -- --
--- -- generateVar funtion.                                         -- --
-------------------------------------------------------------------------
-renamePerAtom :: Program -> Atom -> Program
-renamePerAtom program (_, oldterm@(Var _)) =
-  map (<~ (oldterm, (Var newvars))) program
-   where
-     newvars = generateVars varlist program
-
-renamePerAtom program _ = program
 
 -- -- Generatevars -- --
 -- -- Returns a list of variables which can be used as unique new  -- --
@@ -91,10 +82,10 @@ renamePerAtom program _ = program
 ------------------------------------------------------------------------
 generateVars :: [String] -> Program -> [String]
 generateVars [] program               = error "No free variable found!"
-generateVars (newvar:seed) program    | elem newvar (map getstr vars)
-                                          = generateVar seed program
+generateVars (newvar:seed) program    | elem newvar (map getstr $ concat vars)
+                                          = generateVars seed program
                                      | otherwise
-                                          = newvar : generateVar seed program
+                                          = newvar : generateVars seed program
   where
      getstr (Var str)      = str
      getstr (Const str)    = str
@@ -112,89 +103,106 @@ varlist = [prefix ++ [alph] | prefix <- "" : varlist, alph <- ['A'..'Z']]
 
 
 -- -- Unify -- --
--- -- Returns a substitution which can be used to unify two atoms. -- --
--- -- Example: (p, Const a) -> (p, Var X) -> (Var X, Const a)      -- --
+-- -- Returns a substitution if the two atoms are unifiable.       -- --
+-- -- Otherwise returns the boolean False.                         -- --
 ------------------------------------------------------------------------
-unify :: Atom -> Atom -> Substitution
-unify (firstpred,  firstconst@(Const _))
-      (secondpred, secondconst@(Const _))
-           | firstpred  /= secondpred   = error "Can not unify: predicates not equal!"
-           | firstconst == secondconst  = (firstconst, secondconst)
-           | otherwise                  = error "Can not unify: constants not equal!"
-
-unify (firstpred,  var@(Var _))
-      (secondpred, const@(Const _))
-           | firstpred == secondpred    = (var, const)
-           | otherwise                  = error "Can not unify: predicates not equal!"
-
-unify (firstpred,  const@(Const _))
-      (secondpred, var@(Var _))
-           | firstpred == secondpred    = (var, const)
-           | otherwise                  = error "Can not unify: predicates not equal!"
-
-unify (firstpred,  firstvar@(Var _))
-      (secondpred, secondvar@(Var _))
-           | firstpred == secondpred    = (secondvar, firstvar)
-           | otherwise                  = error "Can not unify: predicates not equal!"
+unify :: Atom -> Atom -> Either Bool [Substitution]
+unify (_, []) _     = Left False
+unify _ (_, [])     = Left False
+unify atom1 atom2
+          | length (snd atom1) /= length (snd atom2) = Left False
+          | otherwise                                = unify' atom1 atom2
+          where
+             unify' :: Atom -> Atom -> Either Bool [Substitution]
+             unify' (_, []) (_, []) = Right []
+             unify' (firstpred,  firstterm@(Const _):firstterms)
+                    (secondpred, secondterm@(Const _):secondterms)
+                        | firstpred  /= secondpred   = Left False
+                        | firstterm == secondterm    = Right (uni' ++ (concat $ rights $ [unify' atom1 atom2]))
+                        | otherwise                  = Left False
+                        where
+                          uni                        = (firstterm, secondterm)
+                          atom1                      = (firstpred, firstterms)  <~ uni
+                          atom2                      = (firstpred, secondterms) <~ uni
+                          uni'                       = [uni]
 
 
--- -- Unifyable infix Operator <?> -- --
--- -- Returns True if two atoms can be unified by substitution.    -- --
--- -- Example: (p, Const a) -> (p, Var X) -> True                  -- --
-------------------------------------------------------------------------
-(<?>) :: Atom -> Atom -> Bool
-(firstpred, firstconst@(Const _)) <?> (secondpred, secondconst@(Const _))
-           | firstpred  /= secondpred   = False
-           | firstconst == secondconst  = True
-           | otherwise                  = False
-
-(firstpred, var@(Var _))          <?> (secondpred, const@(Const _))
-           | firstpred == secondpred    = True
-           | otherwise                  = False
-
-(firstpred, const@(Const _))      <?> (secondpred, var@(Var _))
-           | firstpred == secondpred    = True
-           | otherwise                  = False
-
-(firstpred, firstvar@(Var _))     <?> (secondpred, secondvar@(Var _))
-           | firstpred == secondpred    = True
-           | otherwise                  = False
+             unify' (firstpred,  firstterm@(Var _):firstterms)
+                    (secondpred, secondterm@(Const _):secondterms)
+                        | firstpred == secondpred    = Right (uni' ++ (concat $ rights $ [unify' atom1 atom2]))
+                        | otherwise                  = Left False
+                        where
+                         uni                        = (firstterm, secondterm)
+                         atom1                      = (firstpred, firstterms)  <~ uni
+                         atom2                      = (firstpred, secondterms) <~ uni
+                         uni'                       = [uni]
 
 
--- -- evalOne -- --
+             unify' (firstpred,  firstterm@(Const _):firstterms)
+                    (secondpred, secondterm@(Var _):secondterms)
+                        | firstpred == secondpred    = Right (uni' ++ (concat $ rights $ [unify' atom1 atom2]))
+                        | otherwise                  = Left False
+                        where
+                          uni                        = (firstterm, secondterm)
+                          atom1                      = (firstpred, firstterms)  <~ uni
+                          atom2                      = (firstpred, secondterms) <~ uni
+                          uni'                       = [uni]
+
+             unify' (firstpred,  firstterm@(Var _):firstterms)
+                    (secondpred, secondterm@(Var _):secondterms)
+                        | firstpred == secondpred    = Right (uni' ++ (concat $ rights $ [unify' atom1 atom2]))
+                        | otherwise                  = Left False
+                        where
+                          uni                        = (firstterm, secondterm)
+                          atom1                      = (firstpred, firstterms)  <~ uni
+                          atom2                      = (firstpred, secondterms) <~ uni
+                          uni'                       = [uni]
+
+
+-- -- evalMulti -- --
 -- -- Evaluates a query for a program after renaming. After        -- --
 -- -- evaluating, filters and trims the result to either a list    -- --
 -- -- with a single boolean, or a list of substitutions for which  -- --
 -- -- the query becomes true.                                      -- --
 ------------------------------------------------------------------------
-evalOne :: Program -> Query -> [Either Bool Substitution]
-evalOne [] _           = error "The program is empty!"
-evalOne _ []           = error "The query is empty!"
-evalOne program query  | null $ rightRes    = filter (isLeft) res
-                       | otherwise          = rightRes
+evalMulti :: Program -> Query -> [Either Bool [Substitution]]
+evalMulti [] _           = error "The program is empty!"
+evalMulti _ []           = error "The query is empty!"
+evalMulti program query  | null $ rightRes    = filter (isLeft) res
+                         | otherwise          = rightRes
    where
        rightRes = filter (isRight) noConstants
        noConstants = trim res
        res = eval (rename program query) query
 
-       trim :: [Either Bool Substitution] -> [Either Bool Substitution]
+       trim :: [Either Bool [Substitution]] -> [Either Bool [Substitution]]
        trim [] = []
-       trim (x@(Right (term@(Var _), _)):xs)
-         | elem term vars       = x : (trim xs)
-         | otherwise            = trim xs
-       trim (x:xs)              = trim xs
+       trim ((Right x):xs)
+           | null $ trim' x    = trim xs
+           | otherwise         = Right (trim' x) : trim xs
+       trim (x:xs)             = trim xs
 
-       vars = [x | let y = map (snd) query, x@(Var _) <- y]
+       trim' :: [Substitution] -> [Substitution]
+       trim' [] = []
+       trim' (x@(term1@(Var _), term2@(Var _)):xs)
+           | elem term1 vars && elem term2 vars    = x : (trim' xs)
+           | otherwise                             = trim' xs
+       trim' (x@(term1@(Var _), term2@(Const _)):xs)
+           | elem term1 vars                       = x : (trim' xs)
+           | otherwise                             = trim' xs
+       trim' (_:xs)                                = trim' xs
+
+       vars = [x | let y = concat $ map (snd) query, x@(Var _) <- y]
 
 
 -- -- eval -- --
--- -- The evaluating part of evalOne. Looks if the queried atom is -- --
+-- -- The evaluating part of evalMulti. Looks if the queried atom is -- --
 -- -- unifiable. If so, adds the corresponding substitution to a   -- --
 -- -- list. After that, it a recursive call will be done for the   -- --
 -- -- remaining clause- and query-atoms. In the end, this          -- --
 -- -- function will return a list with booleans and substitutions. -- --
 ------------------------------------------------------------------------
-eval :: Program -> Query -> [Either Bool Substitution]
+eval :: Program -> Query -> [Either Bool [Substitution]]
 eval [] _ = [Left False]
 eval _ [] = [Left True]
 eval program (qAtom:qAtoms)
@@ -204,39 +212,16 @@ eval program (qAtom:qAtoms)
         res = [(Right uni, evals) |
              (cAtom, cAtoms) <- program,
 --           trace ("query: "++ (show queryAtomHead) ++ " -> " ++ (show queryAtoms) ++ " rule: " ++ (show clauseAtom) ++ " -> "++ (show clauseAtoms))
-             qAtom <?> cAtom,
-             let uni = unify qAtom cAtom,
-             let evals = eval program ((map (<~ uni) cAtoms) ++ (map (<~ uni) qAtoms)),
+             let unification = unify qAtom cAtom,
+             isRight unification,
+             let (Right uni) = unification,
+             let evals = eval program ((foldl (<~) cAtoms uni) ++ (foldl (<~) qAtoms uni)),
              evals /= [Left False]
              ]
 
-        combine :: (Either Bool Substitution, [Either Bool Substitution]) ->
-                    [Either Bool Substitution] -> [Either Bool Substitution]
+        combine :: (Either Bool [Substitution], [Either Bool [Substitution]]) ->
+                    [Either Bool [Substitution]] -> [Either Bool [Substitution]]
         combine (uni, evals) a = [uni] ++ evals ++ a
-
-
---------------------------
---     Test Program     --
---------------------------
-program :: Program
-program = [(("p", Const "a"), []),
-           (("p", Const "b"), []),
-           (("p", Const "c"), []),
-           (("q", Const "a"), []),
-           (("q", Const "b"), []),
-           (("r", Var "X"), [("p", Var "X"), ("q", Var "X")])
-           ]
-
-query0 = [("r", Const "a")]
-query1 = [("r", Const "b")]
-query2 = [("r", Const "c")]
-query3 = [("r", Var "X")]
-
-test = do
- print (evalOne program query0)
- print (evalOne program query1)
- print (evalOne program query2)
- print (evalOne program query3)
  
  
 -- testFile :: String -> Query -> Either Bool [Substitution]
@@ -296,7 +281,7 @@ parseAtom string = ((mt, map (parseTerm) (splitOn "," ( trace "a" (tail terms)))
 
 parseTerm :: String -> Term
 parseTerm [] = error "empty string"
-parseTerm s@(l:ls)  | isUpper l = Variable s
-                    | isLower l = Constant s
+parseTerm s@(l:ls)  | isUpper l = Var s
+                    | isLower l = Const s
                     | otherwise = error ((show s) ++ " is not a string")
 
