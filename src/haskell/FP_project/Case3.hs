@@ -3,6 +3,7 @@
 module Case3 where
 
 import Data.Either
+import Data.Either.Unwrap (fromRight)
 import Debug.Trace
 import Data.List
 import Data.Char
@@ -25,9 +26,9 @@ class Substitute a where
     (<~) :: a -> Substitution -> a
 
 instance Substitute Term where
-  (Var a)   <~ (Var b, c) | a == b = c | otherwise = Var a
-  (Var _)   <~ (Const _, _)                        = error ""
-  (Const a) <~ _                                   = Const a
+  (Var a)   <~ (Var b, c)   | a == b = c           | otherwise = Var a
+  (Var a)   <~ (Const b, c) | Const b == c = Var a | otherwise = error "Constants can not be substituted!"
+  (Const a) <~ _                                               = Const a
 
 instance Substitute [Term] where
     terms <~ subst = map (<~ subst) terms
@@ -66,11 +67,8 @@ rename program query = foldl (<~) program (getSubstitutions program query)
 getSubstitutions :: Program -> Query -> [Substitution]
 getSubstitutions program query = zip (nub $ intersect programvars queryvars) (map (\x -> Var x) newvars)
     where
-         programvars = [x | let z = (map (fst) program) ++ (concat $ map (snd) program),
-                            let y = concat $ map (snd) z,
-                            x@(Var _) <- y ]
-         queryvars   = [x | let y = concat $ map (snd) query,
-                            x@(Var _) <- y ]
+         programvars = [x | let z = (map (fst) program) ++ (concat $ map (snd) program), let y = concat $ map (snd) z, x@(Var _) <- y ]
+         queryvars   = [x | let y = concat $ map (snd) query, x@(Var _) <- y ]
          newvars     = generateVars varlist (program ++ [(("_query", [Const "a"]), query)])
 
 
@@ -118,43 +116,51 @@ unify atom1 atom2
              unify' (firstpred,  firstterm@(Const _):firstterms)
                     (secondpred, secondterm@(Const _):secondterms)
                         | firstpred  /= secondpred   = Left False
-                        | firstterm == secondterm    = Right (uni' ++ (concat $ rights $ [unify' atom1 atom2]))
+                        | firstterm == secondterm && cond = Right (uni : moresubsts)
                         | otherwise                  = Left False
                         where
                           uni                        = (firstterm, secondterm)
                           atom1                      = (firstpred, firstterms)  <~ uni
-                          atom2                      = (firstpred, secondterms) <~ uni
-                          uni'                       = [uni]
+                          atom2                      = (secondpred, secondterms) <~ uni
+                          cond                       = unify' atom1 atom2 /= Left False
+                          moresubsts                 = fromRight $ unify' atom1 atom2
+                          -- trace ("cond': " ++ (show cond) ++ " moresubsts: " ++ (show moresubsts)) True
 
              unify' (firstpred,  firstterm@(Var _):firstterms)
                     (secondpred, secondterm@(Const _):secondterms)
-                        | firstpred == secondpred    = Right (uni' ++ (concat $ rights $ [unify' atom1 atom2]))
+                        | firstpred == secondpred && cond = Right (uni : moresubsts)
                         | otherwise                  = Left False
                         where
                          uni                        = (firstterm, secondterm)
                          atom1                      = (firstpred, firstterms)  <~ uni
-                         atom2                      = (firstpred, secondterms) <~ uni
-                         uni'                       = [uni]
+                         atom2                      = (secondpred, secondterms) <~ uni
+                         cond                       = unify' atom1 atom2 /= Left False
+                         moresubsts                 = fromRight $ unify' atom1 atom2
+                         -- trace ("cond': " ++ (show cond) ++ " moresubsts: " ++ (show moresubsts)) True
 
              unify' (firstpred,  firstterm@(Const _):firstterms)
                     (secondpred, secondterm@(Var _):secondterms)
-                        | firstpred == secondpred    = Right (uni' ++ (concat $ rights $ [unify' atom1 atom2]))
+                        | firstpred == secondpred && cond = Right (uni : moresubsts)
                         | otherwise                  = Left False
                         where
-                          uni                        = (firstterm, secondterm)
+                          uni                        = (secondterm, firstterm)
                           atom1                      = (firstpred, firstterms)  <~ uni
-                          atom2                      = (firstpred, secondterms) <~ uni
-                          uni'                       = [uni]
+                          atom2                      = (secondpred, secondterms) <~ uni
+                          cond                       = unify' atom1 atom2 /= Left False
+                          moresubsts                 = fromRight $ unify' atom1 atom2
+                          -- trace ("cond': " ++ (show cond) ++ " moresubsts: " ++ (show moresubsts)) True
 
              unify' (firstpred,  firstterm@(Var _):firstterms)
                     (secondpred, secondterm@(Var _):secondterms)
-                        | firstpred == secondpred    = Right (uni' ++ (concat $ rights $ [unify' atom1 atom2]))
+                        | firstpred == secondpred && cond = Right (uni : moresubsts)
                         | otherwise                  = Left False
                         where
-                          uni                        = (firstterm, secondterm)
+                          uni                        = (secondterm, firstterm)
                           atom1                      = (firstpred, firstterms)  <~ uni
-                          atom2                      = (firstpred, secondterms) <~ uni
-                          uni'                       = [uni]
+                          atom2                      = (secondpred, secondterms) <~ uni
+                          cond                       = unify' atom1 atom2 /= Left False
+                          moresubsts                 = fromRight $ unify' atom1 atom2
+                          -- trace ("cond': " ++ (show cond) ++ " moresubsts: " ++ (show moresubsts)) True
 
 
 -- -- evalMulti -- --
@@ -168,7 +174,7 @@ evalMulti [] _           = error "The program is empty!"
 evalMulti _ []           = error "The query is empty!"
 evalMulti program query  | null $ rightRes    = filter (isLeft) res
                          | otherwise          = rightRes
-   where
+    where
        rightRes = filter (isRight) noConstants
        noConstants = trim res
        res = eval (rename program query) query
@@ -208,11 +214,13 @@ eval program (qAtom:qAtoms)
     | otherwise    = foldr combine [] res
      where
         res = [(Right uni, evals) |
+             -- trace ("renamed program: " ++ (show (program))) True,
              (cAtom, cAtoms) <- program,
---           trace ("query: "++ (show queryAtomHead) ++ " -> " ++ (show queryAtoms) ++ " rule: " ++ (show clauseAtom) ++ " -> "++ (show clauseAtoms))
+             -- trace ("query: "++ (show qAtom) ++ " -> " ++ (show qAtoms) ++ " rule: " ++ (show cAtom) ++ " -> " ++ (show cAtoms)) True,
              let unification = unify qAtom cAtom,
              isRight unification,
              let (Right uni) = unification,
+             -- trace ("unification: " ++ (show (unification))) True,
              let evals = eval program ((foldl (<~) cAtoms uni) ++ (foldl (<~) qAtoms uni)),
              evals /= [Left False]
              ]
@@ -220,22 +228,58 @@ eval program (qAtom:qAtoms)
         combine :: (Either Bool [Substitution], [Either Bool [Substitution]]) ->
                     [Either Bool [Substitution]] -> [Either Bool [Substitution]]
         combine (uni, evals) a = [uni] ++ evals ++ a
- 
- 
+
+
+--------------------------
+--     Test Program     --
+--------------------------
+program :: Program
+program = [(("t", [Const "b"]), []),
+           (("t", [Const "d"]), []),
+           (("r", [Const "a"]), []),
+           (("r", [Const "b"]), []),
+           (("r", [Const "c"]), []),
+           (("s", [Const "d"]), []),
+           (("s", [Var "Z"]), [("r", [Var "Z"])]),
+           (("q", [Var "Y", Var "Z"]),
+                     [("r", [Const "b"]), ("s", [Var "Y"]),
+                      ("t", [Var "Z"])]),
+           (("p", [Var "X", Var "Y"]),
+                     [("t", [Var "Y"]), ("p", [Var "Z", Var "Y"])])
+           ]
+
+query1 = [("t", [Const "b"])]
+query2 = [("r", [Const "c"])]
+query3 = [("s", [Var "Z"])]
+query4 = [("q", [Var "Y", Var "Z"])]
+
+test = do
+    print (evalMulti program query1)
+    print (evalMulti program query2)
+    print (evalMulti program query3)
+    print (evalMulti program query4)
+
+
+--------------------------
+--    Prolog Parser     --
+--------------------------
 -- testFile :: String -> Query -> Either Bool [Substitution]
--- 
+--
 -- This monad allows arbitrary files and querys to be written in prolog-syntax.
--- 
--- There are a few restictions, 
+--
+-- There are a few restictions,
 --  - comments MUST have their own line and MUST start with a '%'.
 --  - query's MUST be ended with a '.'.
 --
 -- It does not properly check syntax, so you could for example end a query with
 -- any character you like.
+--
+-- Only to be used with case 2 and 3 because of the parentheses.
+--
 
 testFile :: FilePath -> String -> IO [Either Bool [Substitution]]
 testFile file queryArg = do
-    read <- readFile file 
+    read <- readFile file
     let program = parseProgram read
         query = parseQuery queryArg
         temp = evalMulti program query
@@ -243,7 +287,7 @@ testFile file queryArg = do
 
 parseProgram :: String -> Program
 parseProgram string = concat $ map (parseLine) (splitOn "\n" stringPP)
-    where stringPP = filter (/= ' ') string 
+    where stringPP = filter (/= ' ') string
 
 parseQuery :: String -> [Atom]
 parseQuery = (map (fst)).parseAtoms
@@ -252,21 +296,21 @@ parseLine :: String -> [Clause]
 parseLine [] = []
 parseLine ('%':_) = []
 parseLine string = [(atom,atoms)]
-    where 
+    where
         (atom, atomRest) = parseAtom string
         atoms :: [Atom]
         atoms = map fst (parseAtoms (atomRestPP atomRest))
         (atomsStr, _) = break (== '.') $ atomRestPP atomRest
-        
-        
+
+
         atomRestPP (':':'-':x) = x
         atomRestPP ('.':_) = []
-        
+
 parseAtoms :: String -> [(Atom, String)]
 parseAtoms [] = []
 parseAtoms str = (token, str) : (parseAtoms $ trace "a" (tail tokens))
-    where 
-       (token, tokens) = parseAtom str 
+    where
+       (token, tokens) = parseAtom str
 
 parseAtomR :: (Atom, String) -> (Atom, String)
 
