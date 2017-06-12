@@ -84,7 +84,7 @@ generateVars :: [String] -> Program -> [String]
 generateVars [] program               = error "No free variable found!"
 generateVars (newvar:seed) program    | elem newvar (map getstr $ concat vars)
                                           = generateVars seed program
-                                     | otherwise
+                                      | otherwise
                                           = newvar : generateVars seed program
   where
      getstr (Var str)      = str
@@ -126,7 +126,6 @@ unify atom1 atom2
                           atom2                      = (firstpred, secondterms) <~ uni
                           uni'                       = [uni]
 
-
              unify' (firstpred,  firstterm@(Var _):firstterms)
                     (secondpred, secondterm@(Const _):secondterms)
                         | firstpred == secondpred    = Right (uni' ++ (concat $ rights $ [unify' atom1 atom2]))
@@ -136,7 +135,6 @@ unify atom1 atom2
                          atom1                      = (firstpred, firstterms)  <~ uni
                          atom2                      = (firstpred, secondterms) <~ uni
                          uni'                       = [uni]
-
 
              unify' (firstpred,  firstterm@(Const _):firstterms)
                     (secondpred, secondterm@(Var _):secondterms)
@@ -161,7 +159,7 @@ unify atom1 atom2
 
 -- -- evalMulti -- --
 -- -- Evaluates a query for a program after renaming. After        -- --
--- -- evaluating, filters and trims the result to either a list    -- --
+-- -- evaluating, filters and trims the result is either a list    -- --
 -- -- with a single boolean, or a list of substitutions for which  -- --
 -- -- the query becomes true.                                      -- --
 ------------------------------------------------------------------------
@@ -235,6 +233,7 @@ eval program (qAtom:qAtoms)
 -- It does not properly check syntax, so you could for example end a query with
 -- any character you like.
 
+testFile :: FilePath -> String -> IO [Either Bool [Substitution]]
 testFile file queryArg = do
     read <- readFile file 
     let program = parseProgram read
