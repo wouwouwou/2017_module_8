@@ -1,0 +1,12 @@
+procedure rec(int i) {
+	if ((i < 3)) {
+		print(i);
+		i = (i + 1);
+		rec(i);
+	} else {
+		print(i);
+	}
+}
+
+int i = 0;
+rec(i);

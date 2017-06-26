@@ -1,0 +1,54 @@
+global bool flag_0 = false;
+global bool flag_1 = false;
+global int turn = 0;
+global int i = 0;
+
+procedure p_0() {
+	flag_0 = true;
+	turn = 1;
+	while ((flag_1 && (turn == 1))) {
+		// wait
+	}
+	// begin critical section
+	int j = 5;
+	while ((j > 0)) {
+		i = ++i;
+		j = --j;
+	}
+	// end critical section
+	flag_0 = false;
+}
+
+procedure p_1() {
+	flag_1 = true;
+	turn = 0;
+	while ((flag_0 && (turn == 0))) {
+		// wait
+	}
+	// begin critical section
+	int j = 5;
+	while ((j > 0)) {
+		i = --i;
+		j = --j;
+	}
+	// end critical section
+	flag_1 = false;
+}
+
+procedure test1(int j) {
+	while ((j > 0)) {
+		fork p_0();
+		fork p_1();
+		join;
+		print(i);
+
+		fork p_1();
+		fork p_0();
+		join;
+		print(i);
+
+		j = --j;
+	}
+}
+
+test1(10);
