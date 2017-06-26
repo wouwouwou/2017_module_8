@@ -168,10 +168,10 @@ eval program (qAtom:qAtoms)
              (cAtom, cAtoms) <- program,
 --           trace ("query: "++ (show queryAtomHead) ++ " -> " ++ (show queryAtoms) ++ " rule: " ++ (show clauseAtom) ++ " -> "++ (show clauseAtoms))
              let unification = unify qAtom cAtom,
-			 isRight unification,
-			 let (Right uni) = unification,
-			 let evals = eval program ((map (<~ uni) cAtoms) ++ (map (<~ uni) qAtoms)),
-			 evals /= [Left False]
+             isRight unification,
+             let (Right uni) = unification,
+             let evals = eval program ((map (<~ uni) cAtoms) ++ (map (<~ uni) qAtoms)),
+             evals /= [Left False]
              ]
 
         combine :: (Either Bool Substitution, [Either Bool Substitution]) ->
