@@ -1,0 +1,16 @@
+procedure fib(int i, int res) {
+    if ((i < (3))) {
+        res = 1;
+    } else {
+        int a;
+        int b;
+        fib((i-1), a);
+        fib((i-2), b);
+        res = (a + b);
+        
+    }
+}
+
+int a = 0;
+fib(8, a);
+print(a);
