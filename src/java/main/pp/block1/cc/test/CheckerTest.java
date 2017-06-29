@@ -9,7 +9,7 @@ import pp.block1.cc.dfa.State;
 
 /** Test class for Checker implementation. */
 public class CheckerTest {
-	private Checker myChecker = new MyChecker(); // TODO instantiate your Checker implementation
+	private Checker myChecker = new MyChecker();
 
 	private State dfa;
 

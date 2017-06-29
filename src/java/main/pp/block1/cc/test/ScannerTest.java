@@ -14,7 +14,7 @@ import pp.block1.cc.dfa.State;
 
 /** Test class for Scanner implementation. */
 public class ScannerTest {
-	private Scanner myGen = new MyScanner(); // TODO instantiate your Scanner implementation
+	private Scanner myGen = new MyScanner();
 
 	@Test
 	public void testID6() {

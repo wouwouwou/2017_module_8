@@ -12,7 +12,6 @@ import pp.block6.cp.Message;
 public class RequestDatabase {
 
     public boolean verifyResponse(Message response) {
-        // TODO Auto-generated method stub
         return true;
     }
 
