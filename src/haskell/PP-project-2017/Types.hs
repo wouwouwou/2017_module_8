@@ -32,18 +32,18 @@ data Alphabet = Terminal String               -- Terminal symbol: WILL be includ
               | Type                          -- Type
               
               
-              -- punctuation
+              -- Punctuation
               | Op                            -- Infix operator
               | Unary                         -- Unary (for now prefix) operator
               | Par                           -- Parentheses
               | Brace                         -- Braces
               | Comma                         -- Comma
               | Semi                          -- Semicolon
-              
-              -- expressions
+
               | Expr                          -- Expression 
               
               | Ass                           -- Assignment espression
+
               -- Statements
               | Stat                          -- Statement
               
@@ -57,7 +57,7 @@ data Alphabet = Terminal String               -- Terminal symbol: WILL be includ
               | Fork                          -- Fork statement
               | Join                          -- Join statement
               | Global                        -- Global keyword
-              | Print
+              | Print                         -- Print statement
               
               | Program                       -- Program
               | Proc                          -- Procedure

@@ -6,86 +6,76 @@ import Data.Maybe
 
 pTreeToAst :: ParseTree -> AST
 pTreeToAst (PNode Program l)
-    = ASTProgram (map pTreeToAst l) ([],[],[])
-        where
-            procAsts = map pTreeToAst l
-            --(procs,stats) = span $ isProcedure l
-            isProcedure (PNode Proc _) = True
-            isProcedure _ = False
-            --getPRecord = (\(x,y) -> (ASTProc x y _ _)) 
-
+        = ASTProgram (map pTreeToAst l) ([],[],[])
 pTreeToAst (PNode Global (typ:var:[]))
-    = ASTGlobal (getAlphabet (getStr typ)) (pTreeToAst var) Nothing ([],[],[])
+        = ASTGlobal (getAlphabet (getStr typ)) (pTreeToAst var) Nothing ([],[],[])
 pTreeToAst (PNode Global (typ:var:(PLeaf (Ass,_,_)):expr:[]))
-    = ASTGlobal (getAlphabet (getStr typ)) (pTreeToAst var) (Just (pTreeToAst expr)) ([],[],[])
+        = ASTGlobal (getAlphabet (getStr typ)) (pTreeToAst var) (Just (pTreeToAst expr)) ([],[],[])
 pTreeToAst (PNode Proc (pid:args_expr))
-    = ASTProc (getStr pid) (makeAstArg $ init args_expr) expr ([],[],[])
-        where
-            expr = pTreeToAst $ last args_expr
-            makeAstArg [] = []
-            makeAstArg [x] = error "This Proc is incorrectly parsed"
-            makeAstArg (x:y:xs) = (ASTArg (pTreeToAst x) (pTreeToAst y) ([],[],[])) : (makeAstArg xs)
-
+        = ASTProc (getStr pid) (makeAstArg $ init args_expr) expr ([],[],[])
+            where
+                expr = pTreeToAst $ last args_expr
+                makeAstArg [] = []
+                makeAstArg [x] = error "This Proc is incorrectly parsed"
+                makeAstArg (x:y:xs) = (ASTArg (pTreeToAst x) (pTreeToAst y) ([],[],[])) : (makeAstArg xs)
 pTreeToAst node@(PNode Type _)
-    = ASTType (getStr node) ([],[],[])
-
+        = ASTType (getStr node) ([],[],[])
 pTreeToAst node@(PNode Var _)
-    = ASTVar (getStr node) ([],[],[])
-
+        = ASTVar (getStr node) ([],[],[])
 -- DeclStat (no assign) 
 pTreeToAst (PNode Stat (typ@(PNode Type _):var:[]))
-    = ASTDecl (getAlphabet (getStr typ)) (pTreeToAst var) Nothing ([],[],[])
+        = ASTDecl (getAlphabet (getStr typ)) (pTreeToAst var) Nothing ([],[],[])
 -- DeclStat (assign)
 pTreeToAst (PNode Stat (typ@(PNode Type _):var:(PLeaf (Ass,_,_)):expr:[]))
-    = ASTDecl (getAlphabet (getStr typ)) (pTreeToAst var) (Just $ pTreeToAst expr) ([],[],[])
+        = ASTDecl (getAlphabet (getStr typ)) (pTreeToAst var) (Just $ pTreeToAst expr) ([],[],[])
 -- If statement
 pTreeToAst (PNode Stat ((PLeaf (If,_,_)):expr:stat1:[]))
-    = ASTIf (pTreeToAst expr) (pTreeToAst stat1) Nothing ([],[],[])
+        = ASTIf (pTreeToAst expr) (pTreeToAst stat1) Nothing ([],[],[])
 -- If statment with else
 pTreeToAst (PNode Stat ((PLeaf (If,_,_)):expr:stat1:_:stat2:[]))
-    = ASTIf (pTreeToAst expr) (pTreeToAst stat1) (Just $ pTreeToAst stat2) ([],[],[])
+        = ASTIf (pTreeToAst expr) (pTreeToAst stat1) (Just $ pTreeToAst stat2) ([],[],[])
 -- While statement
 pTreeToAst (PNode Stat ((PLeaf (While,_,_)):expr:stat:[]))
-    = ASTWhile (pTreeToAst expr) (pTreeToAst stat) ([],[],[])
+        = ASTWhile (pTreeToAst expr) (pTreeToAst stat) ([],[],[])
 -- Fork statement
 pTreeToAst (PNode Stat ((PLeaf (Fork,_,_)):pid:args_expr))
-    = ASTFork (getStr pid) (map pTreeToAst args_expr) ([],[],[])
+        = ASTFork (getStr pid) (map pTreeToAst args_expr) ([],[],[])
 -- Join statement
 pTreeToAst (PNode Stat ((PLeaf (Join,_,_)):[]))
-    = ASTJoin ([],[],[])
+        = ASTJoin ([],[],[])
 -- Call statement
 pTreeToAst (PNode Stat (pid@(PNode Pid _):args_expr))
-    = ASTCall (getStr pid) (map pTreeToAst args_expr) ([],[],[])
+        = ASTCall (getStr pid) (map pTreeToAst args_expr) ([],[],[])
 -- Expression statement
 pTreeToAst (PNode Stat (expr@(PNode Expr _):[]))
-    = ASTExpr (pTreeToAst expr) Nothing ([],[],[])
+        = ASTExpr (pTreeToAst expr) Nothing ([],[],[])
 -- Block statement
 pTreeToAst (PNode Stat ((PLeaf (Brace,_,_)):stats))
-    = ASTBlock (map pTreeToAst stats) ([],[],[])
+        = ASTBlock (map pTreeToAst stats) ([],[],[])
 -- Print statement
 pTreeToAst (PNode Stat ((PLeaf (Print,_,_)):exprs))
-    = ASTPrint (map pTreeToAst exprs) ([],[],[])
+        = ASTPrint (map pTreeToAst exprs) ([],[],[])
 -- Parentheses expression
 pTreeToAst (PNode Expr (expr@(PNode Expr _):[]))
-    = pTreeToAst expr
+        = pTreeToAst expr
 -- Assignment expression
 pTreeToAst (PNode Expr (var:(PLeaf (Ass,_,_)):expr:[]))
-    = ASTAss (pTreeToAst var) (pTreeToAst expr) Nothing ([],[],[])
+        = ASTAss (pTreeToAst var) (pTreeToAst expr) Nothing ([],[],[])
 -- Variable expression
 pTreeToAst (PNode Expr (var@(PNode Var _):[]))
-    = ASTVar (getStr var) ([],[],[])
+        = ASTVar (getStr var) ([],[],[])
 -- IntType expression
 pTreeToAst (PNode Expr (intType@(PNode IntType _):[]))
-    = ASTInt (getStr intType) ([],[],[])
+        = ASTInt (getStr intType) ([],[],[])
 -- BoolType expression
 pTreeToAst (PNode Expr (boolType@(PNode BoolType _):[]))
-    = ASTBool (getStr boolType) ([],[],[])
+        = ASTBool (getStr boolType) ([],[],[])
 -- Operation expression
 pTreeToAst (PNode Expr (expr1:op@(PNode Op _):expr2:[]))
-    = ASTOp (pTreeToAst expr1) (getStr op) (pTreeToAst expr2) Nothing ([],[],[])
+        = ASTOp (pTreeToAst expr1) (getStr op) (pTreeToAst expr2) Nothing ([],[],[])
 -- Unary operation expression
 pTreeToAst (PNode Expr (op@(PNode Unary _):expr:[]))
-    = ASTUnary (getStr op) (pTreeToAst expr) Nothing ([],[],[])
+        = ASTUnary (getStr op) (pTreeToAst expr) Nothing ([],[],[])
 
 
 astToRoseDebug :: AST -> RoseTree
