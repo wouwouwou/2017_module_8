@@ -83,58 +83,95 @@ grammar nt = case nt of
                 ,[ Pid, lPar, (?:) [Expr, (*:) [comma, Expr]], rPar, eol ]          -- call
                 ,[ Expr, eol ]                                                      -- expression
                 ,[ lBrace, (*:) [Stat], rBrace ]                                    -- block
-                ,[ printStr, lPar, Expr, (*:) [comma, Expr], rPar, eol ]]           -- print
+                ,[ printStr, lPar, Expr, (*:) [comma, Expr], rPar, eol ]
+                ,[ Var, ass, Expr, eol ]]
 
-    -- Expressions
-    Expr    ->  [[ lPar, Expr, rPar ]               -- parentheses
-                ,[ Var, ass, Expr ]                 -- assignment
-                ,[ Var ]                            -- variable
-                ,[ IntType ]                        -- integer
-                ,[ BoolType ]                       -- boolean
-                ,[ lPar, Expr, Op, Expr, rPar ]     -- operation
-                ,[ Unary, Expr ]]                   -- unary operation
+    -- Expressions. Already implements the fact that some operations are bound tighter than
+    -- other operations. The order from tightest to loosest: MultDiv, PlusMin, Ord, Equal, And,
+    -- XOR, Or.
+    Expr      ->  [[ OR, (?:) [Expr'] ]]                   -- Expr -> Or (?:) Expr'
+
+    Expr'     ->  [[ opOr, OR, (?:) [Expr'] ]]             -- opOr, Or (?:) Expr'
+
+    OR        ->  [[ XOr, (?:) [OR'] ]]                    -- Xor, (?:) Or'
+
+    OR'       ->  [[ opXor, XOr, (?:) [OR'] ]]
+
+    XOr       ->  [[ AND, (?:) [XOr'] ]]
+
+    XOr'      ->  [[ opAnd, AND, (?:) [XOr'] ]]
+
+    AND       ->  [[ EQUAL, (?:) [AND'] ]]                    -- Expr -> And (?:) Expr'
+
+    AND'      ->  [[ opEqual, EQUAL, (?:) [AND'] ]]             -- Expr -> And (?:) Expr'
+
+    EQUAL     ->  [[ Ord, (?:) [EQUAL'] ]]
+
+    EQUAL'    ->  [[ opOrd, Ord, (?:) [EQUAL'] ]]
+
+    Ord       ->  [[ Term, (?:) [Ord'] ]]
+
+    Ord'      ->  [[ opPlusMin, Term, (?:) [Ord'] ]]
+
+    Term      ->  [[ Factor, (?:) [Term'] ]]                    -- Factor (?:) Term'
+
+    Term'     ->  [[ opMulDiv, Factor, (?:) [Term'] ]]          -- OpMulDiv Factor (?:) Term'
+
+    Factor    ->  [[ lPar, Expr, rPar]                       -- (Expr)
+                  ,[ PreUnary, Expr ]                          -- Prefix
+                  ,[ Var ]                                   -- Var
+                  ,[ IntType ]
+                  ,[ BoolType ]]                              -- Bool
 
     -- Other
-    Type    ->  [[ typeStr ]]   -- type
+    PreUnary  ->  [[ opPlusMin ]
+                  ,[ opIncDec ]
+                  ,[ opNot ]]
 
-    Var     ->  [[ var ]]       -- variable
+    Type      ->  [[ typeStr ]]   -- type
 
-    Pid     ->  [[ Var ]]       -- procedure identifier
+    Var       ->  [[ var ]]       -- variable
 
-    IntType ->  [[ intType ]]   -- number
+    Pid       ->  [[ Var ]]       -- procedure identifier
 
-    BoolType->  [[ boolType ]]  -- boolean
+    IntType   ->  [[ intType ]]   -- number
 
-    Op      ->  [[ op ]]        -- operator
-
-    Unary   ->  [[ Op ]]        -- unary operator
+    BoolType  ->  [[ boolType ]]  -- boolean
 
 
 -- shorthand names can be handy, such as:
-lPar        = Symbol "("            -- Terminals WILL be shown in the parse tree
-rPar        = Symbol ")"            -- Symbols WILL NOT be shown in the parse tree
+lPar        = Terminal "("            -- Terminals WILL be shown in the parse tree
+rPar        = Terminal ")"            -- Symbols WILL NOT be shown in the parse tree
 lBrace      = Terminal "{"
-rBrace      = Symbol "}"
-procedure   = Symbol "procedure"
+rBrace      = Terminal "}"
+procedure   = Terminal "procedure"
 ifStr       = Terminal "if"
 elseStr     = Terminal "else"
 while       = Terminal "while"
 ass         = Terminal "="
 fork        = Terminal "fork"
 join        = Terminal "join"
-global      = Symbol "global"
+global      = Terminal "global"
 printStr    = Terminal "print"
 
 
 eol         = Symbol ";"
-comma       = Symbol ","
+comma       = Terminal ","
 
 var         = SyntCat Var
 intType     = SyntCat IntType
 boolType    = SyntCat BoolType
-op          = SyntCat Op
-unary       = SyntCat Unary
 typeStr     = SyntCat Type
+
+opMulDiv    = SyntCat OpMulDiv
+opPlusMin   = SyntCat OpPlusMin
+opIncDec    = SyntCat OpIncDec
+opOrd       = SyntCat OpOrd
+opEqual     = SyntCat OpEqual
+opNot       = SyntCat OpNot
+opAnd       = SyntCat OpAnd
+opOr        = SyntCat OpOr
+opXor       = SyntCat OpXor
 
 
 

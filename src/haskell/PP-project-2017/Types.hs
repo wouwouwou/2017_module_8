@@ -30,18 +30,45 @@ data Alphabet = Terminal String               -- Terminal symbol: WILL be includ
               | Var                           -- Variable name
               | Pid                           -- Procedure name
               | Type                          -- Type
-              
-              
+
+              -- Operators
+              | OpOrd
+              | OpEqual
+              | OpPower
+              | OpMulDiv
+              | OpPlusMin
+              | OpAnd
+              | OpOr
+              | OpXor
+              | OpNot
+              | OpIncDec
+
               -- Punctuation
-              | Op                            -- Infix operator
+              | PreUnary
+              | Op
               | Unary                         -- Unary (for now prefix) operator
               | Par                           -- Parentheses
               | Brace                         -- Braces
               | Comma                         -- Comma
               | Semi                          -- Semicolon
 
-              | Expr                          -- Expression 
-              
+              -- Classic Expressions
+              | Expr                          -- Expression
+              | Expr'
+              | AND
+              | AND'
+              | XOr
+              | XOr'
+              | OR
+              | OR'
+              | EQUAL
+              | EQUAL'
+              | Ord
+              | Ord'
+              | Term
+              | Term'
+              | Factor
+
               | Ass                           -- Assignment espression
 
               -- Statements
@@ -88,15 +115,22 @@ data AST = ASTProgram [AST] CheckType
     | ASTJoin CheckType
     | ASTCall String [AST] CheckType
     | ASTPrint [AST] CheckType
-    -- Expressions
-    | ASTExpr AST (Maybe Alphabet) CheckType
     | ASTAss AST AST (Maybe Alphabet) CheckType
+    -- Expressions
+    | ASTExpr AST (Maybe AST) CheckType
+    | ASTExpr' String AST (Maybe AST) CheckType
+    | ASTTerm AST (Maybe AST) CheckType
+    | ASTTerm' String AST (Maybe AST) CheckType
+    | ASTFactor AST CheckType
+
     | ASTVar String CheckType
     | ASTInt String CheckType
     | ASTBool String CheckType
     | ASTType String CheckType
+
     | ASTOp AST String AST (Maybe Alphabet) CheckType
     | ASTUnary String AST (Maybe Alphabet) CheckType
+
     deriving Show
 
 

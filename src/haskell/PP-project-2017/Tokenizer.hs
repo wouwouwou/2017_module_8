@@ -12,48 +12,55 @@ import Debug.Trace
 tokenizer :: String -> [(Alphabet,String)]
 tokenizer [] = []
 
-tokenizer (';':xs)  = (Semi, ";") : tokenizer xs
-tokenizer (',':xs)  = (Comma, ",") : tokenizer xs
+tokenizer (';':xs)          = (Semi, ";")         : tokenizer xs
+tokenizer (',':xs)          = (Comma, ",")        : tokenizer xs
 
 tokenizer input@(x:xs) 
     | isSpace x             = tokenizer xs
-    | elem x "()"           = (Par, [x])        : (tokenizer xs)
-    | elem x "{}"           = (Brace, [x])      : (tokenizer xs)
-    | word == "procedure"   = (Proc, word)      : (tokenizer wordRest)
-    | word == "if"          = (If, word)        : (tokenizer wordRest)
-    | word == "else"        = (Else, word)      : (tokenizer wordRest)
-    | word == "while"       = (While, word)     : (tokenizer wordRest)
-    | word == "fork"        = (Fork, word)      : (tokenizer wordRest)
-    | word == "join"        = (Join, word)      : (tokenizer wordRest)
-    | word == "global"      = (Global, word)    : (tokenizer wordRest)
-    | word == "print"       = (Print, word)     : (tokenizer wordRest)
-    | word == "true"        = (BoolType, word)  : (tokenizer wordRest)
-    | word == "false"       = (BoolType, word)  : (tokenizer wordRest)
-    | word == "blackjack"   = (BoolType, "true"): (tokenizer wordRest)
-    | word == "hookers"     = (BoolType,"false"): (tokenizer wordRest)
-    | word == "int"         = (Type, word)      : (tokenizer wordRest)
-    | word == "bool"        = (Type, word)      : (tokenizer wordRest)
-    
-    | isPrefixOf "--" input = (Op, "--") : tokenizer (input \\ "--")
-    | isPrefixOf "++" input = (Op, "++") : tokenizer (input \\ "++")
-    | isPrefixOf "==" input = (Op, "==") : tokenizer (input \\ "==")
-    | isPrefixOf "!=" input = (Op, "!=") : tokenizer (input \\ "!=")
-    | isPrefixOf "&&" input = (Op, "&&") : tokenizer (input \\ "&&")
-    | isPrefixOf "||" input = (Op, "||") : tokenizer (input \\ "||")
-    | isPrefixOf "<>" input = (Op, "<>") : tokenizer (input \\ "<>")
-    | isPrefixOf "<=" input = (Op, "<=") : tokenizer (input \\ "<=")
-    | isPrefixOf ">=" input = (Op, ">=") : tokenizer (input \\ ">=")
 
     | isPrefixOf "//" input = tokenizer $ endOfLine (input \\ "//")
     | isPrefixOf "/*" input = tokenizer $ endOfBlock (input \\ "/*")
+
+    | elem x "()"           = (Par, [x])          : (tokenizer xs)
+    | elem x "{}"           = (Brace, [x])        : (tokenizer xs)
+    | word == "procedure"   = (Proc, word)        : (tokenizer wordRest)
+    | word == "if"          = (If, word)          : (tokenizer wordRest)
+    | word == "else"        = (Else, word)        : (tokenizer wordRest)
+    | word == "while"       = (While, word)       : (tokenizer wordRest)
+    | word == "fork"        = (Fork, word)        : (tokenizer wordRest)
+    | word == "join"        = (Join, word)        : (tokenizer wordRest)
+    | word == "global"      = (Global, word)      : (tokenizer wordRest)
+    | word == "print"       = (Print, word)       : (tokenizer wordRest)
+    | word == "true"        = (BoolType, word)    : (tokenizer wordRest)
+    | word == "false"       = (BoolType, word)    : (tokenizer wordRest)
+    | word == "blackjack"   = (BoolType, "true")  : (tokenizer wordRest)
+    | word == "hookers"     = (BoolType, "false") : (tokenizer wordRest)
+    | word == "int"         = (Type, word)        : (tokenizer wordRest)
+    | word == "bool"        = (Type, word)        : (tokenizer wordRest)
+
+    | isPrefixOf "++" input = (OpIncDec, "++")         : tokenizer (input \\ "++")
+    | isPrefixOf "--" input = (OpIncDec, "--")         : tokenizer (input \\ "--")
+    | isPrefixOf "==" input = (OpEqual, "==")          : tokenizer (input \\ "==")
+    | isPrefixOf "!=" input = (OpEqual, "!=")         : tokenizer (input \\ "!=")
+    | isPrefixOf "&&" input = (OpAnd, "&&")         : tokenizer (input \\ "&&")
+    | isPrefixOf "||" input = (OpOr, "||")          : tokenizer (input \\ "||")
+    | isPrefixOf "<>" input = (OpXor, "<>")         : tokenizer (input \\ "<>")
+    | isPrefixOf "<=" input = (OpOrd, "<=")         : tokenizer (input \\ "<=")
+    | isPrefixOf ">=" input = (OpOrd, ">=")         : tokenizer (input \\ ">=")
+
+    | x ==  '*'             = (OpMulDiv, [x])         : tokenizer xs
+    | x ==  '/'             = (OpMulDiv,  [x])         : tokenizer xs
+    | x ==  '+'             = (OpPlusMin, [x])         : tokenizer xs
+    | x ==  '-'             = (OpPlusMin,  [x])         : tokenizer xs
+    | x ==  '!'             = (OpNot,  [x])         : tokenizer xs
+    | x ==  '<'             = (OpOrd,   [x])         : tokenizer xs
+    | x ==  '>'             = (OpOrd,   [x])         : tokenizer xs
     
-    | elem x "!+-*<>"       = (Op, [x]) : tokenizer xs
-    
-    | x ==  '='             = (Ass, [x]) : tokenizer xs
+    | x ==  '='             = (Ass, [x])          : tokenizer xs
     
     
-    | int /= ""             = (IntType, int) : tokenizer intRest
-    | word /= ""            = (Var, word) : tokenizer wordRest
+    | int /= ""             = (IntType, int)      : tokenizer intRest
+    | word /= ""            = (Var, word)         : tokenizer wordRest
     | otherwise             = error ("Lexical error at character \"" ++ [x] ++ 
                                   "\", left to scan: \"" ++ xs ++ "\"" )
         where 
@@ -70,7 +77,7 @@ tokenizer input@(x:xs)
             endOfBlock (x:y:xs) | [x,y] == "*/"     = xs
                                 | otherwise         = endOfBlock (y:xs)
 
--- From series6a. Numbers each token with a unique number.
+-- From series6. Numbers each token with a unique number.
 toTokenList :: [(Alphabet, String)] -> [Token]
 toTokenList tl = zipWith (\ (x,y) z -> (x,y,z) ) tl [0..]
 

@@ -43,10 +43,12 @@ checker2 (ASTProgram asts check) _
     where
         prePart                         = map (\x -> checker2 x check) preStats
         (preStats, stats)               = span isPreStat asts
+
         isPreStat :: AST -> Bool
         isPreStat (ASTGlobal _ _ _ _)   = True
         isPreStat (ASTProc _ _ _ _)     = True
         isPreStat _                     = False
+
         function :: AST -> AST -> AST
         function (ASTProgram asts check) ast
             = ASTProgram (asts ++ [astCheck]) (getCheck astCheck)
@@ -142,11 +144,16 @@ checker2 self@(ASTCall pid args _) check
 -- Check expressions
 checker2 (ASTPrint exprs _) check
     = ASTPrint (map (\x -> checker2 x check) exprs) check
--- Checks: 
+{-
+-- TODO: Fix error.
+-- Checks:
 checker2 (ASTExpr expr _ _) check
     = ASTExpr exprCheck (Just (getExprType exprCheck)) check
     where
         exprCheck = checker2 expr check
+
+        -}
+
 -- Check types
 checker2 (ASTAss var expr _ _) check
     | (getExprType varCheck) == (getExprType exprCheck)  = ASTAss varCheck exprCheck (Just (getExprType varCheck)) check
@@ -257,7 +264,10 @@ getExprType (ASTOp _ _ _ (Just typeStr) _)  = typeStr
 getExprType (ASTUnary _ _ (Just typeStr) _) = typeStr
 getExprType (ASTInt _ _)                    = IntType
 getExprType (ASTBool _ _)                   = BoolType
+{-
+-- TODO: Fix error
 getExprType (ASTExpr _ (Just typeStr) _)    = typeStr
+-}
 getExprType (ASTVar varName (_,g,v))
     | Map.member varName (Map.fromList g)   = (Map.fromList g)Map.!varName
     | otherwise                             = iterVar varName v

@@ -15,13 +15,19 @@ pTreeToAst (PNode Proc (pid:args_expr))
         = ASTProc (getStr pid) (makeAstArg $ init args_expr) expr ([],[],[])
             where
                 expr = pTreeToAst $ last args_expr
+
+                makeAstArg :: [ParseTree] -> [AST]
                 makeAstArg [] = []
                 makeAstArg [x] = error "This Proc is incorrectly parsed"
                 makeAstArg (x:y:xs) = (ASTArg (pTreeToAst x) (pTreeToAst y) ([],[],[])) : (makeAstArg xs)
+
+-- Basic Parse Nodes
 pTreeToAst node@(PNode Type _)
         = ASTType (getStr node) ([],[],[])
 pTreeToAst node@(PNode Var _)
         = ASTVar (getStr node) ([],[],[])
+
+---- STATEMENTS ----
 -- DeclStat (no assign) 
 pTreeToAst (PNode Stat (typ@(PNode Type _):var:[]))
         = ASTDecl (getAlphabet (getStr typ)) (pTreeToAst var) Nothing ([],[],[])
@@ -46,6 +52,10 @@ pTreeToAst (PNode Stat ((PLeaf (Join,_,_)):[]))
 -- Call statement
 pTreeToAst (PNode Stat (pid@(PNode Pid _):args_expr))
         = ASTCall (getStr pid) (map pTreeToAst args_expr) ([],[],[])
+-- Assign statement
+pTreeToAst (PNode Stat (var:(PLeaf (Ass,_,_)):expr:[]))
+        = ASTAss (pTreeToAst var) (pTreeToAst expr) Nothing ([],[],[])
+
 -- Expression statement
 pTreeToAst (PNode Stat (expr@(PNode Expr _):[]))
         = ASTExpr (pTreeToAst expr) Nothing ([],[],[])
@@ -58,9 +68,7 @@ pTreeToAst (PNode Stat ((PLeaf (Print,_,_)):exprs))
 -- Parentheses expression
 pTreeToAst (PNode Expr (expr@(PNode Expr _):[]))
         = pTreeToAst expr
--- Assignment expression
-pTreeToAst (PNode Expr (var:(PLeaf (Ass,_,_)):expr:[]))
-        = ASTAss (pTreeToAst var) (pTreeToAst expr) Nothing ([],[],[])
+
 -- Variable expression
 pTreeToAst (PNode Expr (var@(PNode Var _):[]))
         = ASTVar (getStr var) ([],[],[])
@@ -187,7 +195,7 @@ getStr (PLeaf (_,str,_))    = str
 getStr (PNode Var [x])      = getStr x
 getStr (PNode Pid [x])      = getStr x
 getStr (PNode BoolType [x]) = getStr x
-getStr (PNode IntType [x])  = getStr x 
+getStr (PNode IntType [x])  = getStr x
 getStr (PNode Op [x])       = getStr x
 getStr (PNode Unary [x])    = getStr x
 getStr (PNode Type [x])     = getStr x
