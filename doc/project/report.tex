@@ -51,6 +51,9 @@
 \usepackage{array}
 \newcolumntype{C}[1]{>{\centering\arraybackslash}p{#1}}
 
+% hypperref
+\usepackage{hyperref}
+
 % Indentation of list
 \usepackage{changepage}
 \newenvironment{mycompactdesc}{\begin{adjustwidth}{0.53cm}{}\begin{compactdesc}}{\end{compactdesc}\end{adjustwidth}}
@@ -882,7 +885,7 @@ I finish this up, I enjoyed this module, with the exception of CP. There were a 
 \chapter{Grammar Specification}
 \label{grammar_specification}
 \begin{landscape}
-\inputminted[firstline=66, lastline=138, tabsize=4]{haskell}{../Grammar.hs}
+\inputminted[firstline=66, lastline=138, tabsize=4]{haskell}{../../src/haskell/PP-project-2016/Grammar.hs}
 \end{landscape}
 
 
@@ -892,10 +895,10 @@ I finish this up, I enjoyed this module, with the exception of CP. There were a 
 The extended test program shown here is Peterson's algorithm. It shows how, using the available methods for concurrency, two thread using the same variable have mutually exclusive access to it.
 
 \section{Peterson's Algorithm Test}
-\inputminted[tabsize=4,linenos,firstnumber=1]{text}{../test/peterson.shl}
+\inputminted[tabsize=4,linenos,firstnumber=1]{text}{../../src/haskell/PP-project-2016/test/peterson.shl}
 
 \section{Generated Code}
-\inputminted[tabsize=4,linenos,firstnumber=0]{text}{../test/peterson_gen.txt}
+\inputminted[tabsize=4,linenos,firstnumber=0]{text}{../../src/haskell/PP-project-2016/test/peterson_gen.txt}
 
 \section{Correct Executions}
 Every time a value is printed in Peterson's algorithm test, it should be zero:
