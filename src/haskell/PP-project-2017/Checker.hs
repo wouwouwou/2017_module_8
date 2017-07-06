@@ -4,12 +4,73 @@ import FPPrac.Trees
 import Types
 import Data.List
 import Data.Char
+import Data.Maybe
 import qualified Data.Map.Strict as Map
 import Debug.Trace
 
 -- Wrapper
 checker :: AST -> AST
-checker ast = checker2 (checker1 ast) ([],[],[[]])
+checker ast = checker2 (checker1 (rebalanceOperators ast)) ([],[],[[]])
+
+-- Rebalancing of operators because of right-associativity when there are repetitive
+-- operators. Needs to rotate the AST if the operator class equals the operator class
+-- of the right sub-tree. The real magic happens in the last pattern match. :-D
+rebalanceOperators :: AST -> AST
+rebalanceOperators (ASTProgram a b)                = ASTProgram (map rebalanceOperators a) b
+rebalanceOperators ast@(ASTGlobal a b c d)         | isJust c  = ASTGlobal a b (Just (rebalanceOperators (fromJust c))) d
+                                                   | otherwise = ast
+rebalanceOperators (ASTProc a b c d)               = ASTProc a b (rebalanceOperators c) d
+rebalanceOperators ast@(ASTArg _ _ _)              = ast
+rebalanceOperators (ASTBlock a b)                  = ASTBlock (map rebalanceOperators a) b
+rebalanceOperators ast@(ASTDecl a b c d)           | isJust c  = ASTDecl a b (Just (rebalanceOperators (fromJust c))) d
+                                                   | otherwise = ast
+rebalanceOperators (ASTIf a b c d)                 | isJust c  = ASTIf (rebalanceOperators a) (rebalanceOperators b) (Just (rebalanceOperators (fromJust c))) d
+                                                   | otherwise = ASTIf (rebalanceOperators a) (rebalanceOperators b) Nothing d
+rebalanceOperators (ASTWhile a b c)                = ASTWhile (rebalanceOperators a) (rebalanceOperators b) c
+rebalanceOperators (ASTFork a b c)                 = ASTFork a (map rebalanceOperators b) c
+rebalanceOperators ast@(ASTJoin _)                 = ast
+rebalanceOperators (ASTCall a b c)                 = ASTCall a (map rebalanceOperators b) c
+rebalanceOperators (ASTPrint a b)                  = ASTPrint (map rebalanceOperators a) b
+rebalanceOperators (ASTAss a b c d)                = ASTAss (rebalanceOperators a) (rebalanceOperators b) c d
+rebalanceOperators (ASTExpr a b c)                 = ASTExpr (rebalanceOperators a) b c
+rebalanceOperators ast@(ASTVar _ _)                = ast
+rebalanceOperators ast@(ASTInt _ _)                = ast
+rebalanceOperators ast@(ASTBool _ _)               = ast
+rebalanceOperators ast@(ASTType _ _)               = ast
+rebalanceOperators (ASTPreUnary a b c d)           = ASTPreUnary a (rebalanceOperators b) c d
+rebalanceOperators (ASTUnary a b c d)              = ASTUnary a (rebalanceOperators b) c d
+
+rebalanceOperators ast1@(ASTOp ast2 op ast3 c d)
+            | isASTOp ast3 && sameOpClass op ast3   = rebalanceOperators (rotate ast1)
+            | otherwise                             = ASTOp (rebalanceOperators ast2) op (rebalanceOperators ast3) c d
+
+rotate :: AST -> AST
+rotate (ASTOp ast0 op2 (ASTOp ast3 op3 ast4 _ _) c d)
+            = ASTOp (ASTOp ast0 op2 ast3 c d) op3 ast4 c d
+
+sameOpClass :: String -> AST -> Bool
+sameOpClass op1 (ASTOp _ op2 _ _ _)
+            | (op1 == op2) || (opClass op1 == opClass op2) = True
+            | otherwise                                    = False
+
+isASTOp :: AST -> Bool
+isASTOp (ASTOp _ _ _ _ _)    = True
+isASTOp _                    = False
+
+opClass :: String -> Alphabet
+opClass op
+    | op ==  "*"             = OpMulDiv
+    | op ==  "/"             = OpMulDiv
+    | op ==  "+"             = OpPlusMin
+    | op ==  "-"             = OpPlusMin
+    | op ==  "<"             = OpOrd
+    | op ==  ">"             = OpOrd
+    | op == "=="             = OpEqual
+    | op == "!="             = OpEqual
+    | op == "<="             = OpOrd
+    | op == ">="             = OpOrd
+
+
 
 -- First pass
 -- Checks declarations
@@ -144,15 +205,12 @@ checker2 self@(ASTCall pid args _) check
 -- Check expressions
 checker2 (ASTPrint exprs _) check
     = ASTPrint (map (\x -> checker2 x check) exprs) check
-{-
--- TODO: Fix error.
+
 -- Checks:
 checker2 (ASTExpr expr _ _) check
     = ASTExpr exprCheck (Just (getExprType exprCheck)) check
     where
         exprCheck = checker2 expr check
-
-        -}
 
 -- Check types
 checker2 (ASTAss var expr _ _) check
@@ -264,10 +322,7 @@ getExprType (ASTOp _ _ _ (Just typeStr) _)  = typeStr
 getExprType (ASTUnary _ _ (Just typeStr) _) = typeStr
 getExprType (ASTInt _ _)                    = IntType
 getExprType (ASTBool _ _)                   = BoolType
-{-
--- TODO: Fix error
 getExprType (ASTExpr _ (Just typeStr) _)    = typeStr
--}
 getExprType (ASTVar varName (_,g,v))
     | Map.member varName (Map.fromList g)   = (Map.fromList g)Map.!varName
     | otherwise                             = iterVar varName v

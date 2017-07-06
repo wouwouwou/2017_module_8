@@ -89,39 +89,39 @@ grammar nt = case nt of
     -- Expressions. Already implements the fact that some operations are bound tighter than
     -- other operations. The order from tightest to loosest: MultDiv, PlusMin, Ord, Equal, And,
     -- XOR, Or.
-    Expr      ->  [[ OR, (?:) [Expr'] ]]                   -- Expr -> Or (?:) Expr'
+    Expr      ->  [[ OR, (?:) [Expr'] ]]                   -- Expr -> OR (?:) Expr'
 
-    Expr'     ->  [[ opOr, OR, (?:) [Expr'] ]]             -- opOr, Or (?:) Expr'
+    Expr'     ->  [[ opOr, OR, (?:) [Expr'] ]]             -- opOr, OR (?:) Expr'
 
-    OR        ->  [[ XOr, (?:) [OR'] ]]                    -- Xor, (?:) Or'
+    OR        ->  [[ XOr, (?:) [OR'] ]]                    -- XOr, (?:) Or'
 
-    OR'       ->  [[ opXor, XOr, (?:) [OR'] ]]
+    OR'       ->  [[ opXor, XOr, (?:) [OR'] ]]             -- opXor, XOr, (?:) OR'
 
-    XOr       ->  [[ AND, (?:) [XOr'] ]]
+    XOr       ->  [[ AND, (?:) [XOr'] ]]                   -- AND, (?:) XOr'
 
-    XOr'      ->  [[ opAnd, AND, (?:) [XOr'] ]]
+    XOr'      ->  [[ opAnd, AND, (?:) [XOr'] ]]            -- opAnd, AND, (?:) XOr'
 
-    AND       ->  [[ EQUAL, (?:) [AND'] ]]                    -- Expr -> And (?:) Expr'
+    AND       ->  [[ EQUAL, (?:) [AND'] ]]                 -- opAnd, AND, (?:) XOr'
 
-    AND'      ->  [[ opEqual, EQUAL, (?:) [AND'] ]]             -- Expr -> And (?:) Expr'
+    AND'      ->  [[ opEqual, EQUAL, (?:) [AND'] ]]        -- opAnd, AND, (?:) XOr'
 
-    EQUAL     ->  [[ Ord, (?:) [EQUAL'] ]]
+    EQUAL     ->  [[ Ord, (?:) [EQUAL'] ]]                 -- opAnd, AND, (?:) XOr'
 
-    EQUAL'    ->  [[ opOrd, Ord, (?:) [EQUAL'] ]]
+    EQUAL'    ->  [[ opOrd, Ord, (?:) [EQUAL'] ]]          -- opAnd, AND, (?:) XOr'
 
-    Ord       ->  [[ Term, (?:) [Ord'] ]]
+    Ord       ->  [[ Term, (?:) [Ord'] ]]                  -- opAnd, AND, (?:) XOr'
 
-    Ord'      ->  [[ opPlusMin, Term, (?:) [Ord'] ]]
+    Ord'      ->  [[ opPlusMin, Term, (?:) [Ord'] ]]       -- opAnd, AND, (?:) XOr'
 
-    Term      ->  [[ Factor, (?:) [Term'] ]]                    -- Factor (?:) Term'
+    Term      ->  [[ Factor, (?:) [Term'] ]]               -- Factor (?:) Term'
 
-    Term'     ->  [[ opMulDiv, Factor, (?:) [Term'] ]]          -- OpMulDiv Factor (?:) Term'
+    Term'     ->  [[ opMulDiv, Factor, (?:) [Term'] ]]      -- OpMulDiv Factor (?:) Term'
 
-    Factor    ->  [[ lPar, Expr, rPar]                       -- (Expr)
-                  ,[ PreUnary, Expr ]                          -- Prefix
-                  ,[ Var ]                                   -- Var
-                  ,[ IntType ]
-                  ,[ BoolType ]]                              -- Bool
+    Factor    ->  [[ lPar, Expr, rPar]                     -- (Expr)
+                  ,[ PreUnary, Expr ]                      -- Prefix
+                  ,[ Var ]                                 -- Var
+                  ,[ IntType ]                             -- Int
+                  ,[ BoolType ]]                           -- Bool
 
     -- Other
     PreUnary  ->  [[ opPlusMin ]

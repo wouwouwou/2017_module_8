@@ -117,11 +117,7 @@ data AST = ASTProgram [AST] CheckType
     | ASTPrint [AST] CheckType
     | ASTAss AST AST (Maybe Alphabet) CheckType
     -- Expressions
-    | ASTExpr AST (Maybe AST) CheckType
-    | ASTExpr' String AST (Maybe AST) CheckType
-    | ASTTerm AST (Maybe AST) CheckType
-    | ASTTerm' String AST (Maybe AST) CheckType
-    | ASTFactor AST CheckType
+    | ASTExpr AST (Maybe Alphabet) CheckType
 
     | ASTVar String CheckType
     | ASTInt String CheckType
@@ -129,6 +125,7 @@ data AST = ASTProgram [AST] CheckType
     | ASTType String CheckType
 
     | ASTOp AST String AST (Maybe Alphabet) CheckType
+    | ASTPreUnary String AST (Maybe Alphabet) CheckType
     | ASTUnary String AST (Maybe Alphabet) CheckType
 
     deriving Show
