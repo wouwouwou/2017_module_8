@@ -62,7 +62,6 @@ instance Substitute Clause where
 rename :: Program -> Query -> Program
 rename program []       = program
 rename program query    = init $ foldl renameByAtom (program ++ [(("_query", Constant "a"), query)]) query
--- TODO: include query as new clause to program and feed to renamebyatom, and use it to fold over program. Afterwards, do not forget to move 
 
 -- |renameByAtom: Renames the Program to fix any collision with the Atom.
 renameByAtom :: Program -> Atom -> Program
