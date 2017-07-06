@@ -26,6 +26,7 @@ data Alphabet = Terminal String               -- Terminal symbol: WILL be includ
               -- Types
               | IntType                       -- Integer value
               | BoolType                      -- Boolean value
+              | EnumType                      -- EnumType
               
               | Var                           -- Variable name
               | Pid                           -- Procedure name
@@ -57,6 +58,7 @@ data Alphabet = Terminal String               -- Terminal symbol: WILL be includ
               | Fork                          -- Fork statement
               | Join                          -- Join statement
               | Global                        -- Global keyword
+              | Enum                          -- enum keyword
               | Print
               
               | Program                       -- Program
@@ -66,16 +68,18 @@ data Alphabet = Terminal String               -- Terminal symbol: WILL be includ
 --type TypeTable = [(String, [AST{-Var-}])]
 type VariableType = (String, Alphabet{- Must be of either IntType or BoolType -})
 type FunctionType = (String, [(String, Alphabet{- Must be of either IntType or BoolType -})])
+type EnumCheckerType = (String, [String])
 
-
--- CheckType [Functions] [Globals] [Scopes[Variables]]
+-- CheckType [Functions] [Globals] [Scopes[Variables]] [Enumerations]
 -- Scopes are defined in the following manner: [deepest scope,...,shallowest scope]
-type CheckType = ([FunctionType], [VariableType], [[VariableType]])
+type CheckType = ([FunctionType], [VariableType], [[VariableType]], [EnumCheckerType])
 
 -- An Alphabet, in this context, is equivalent to a type
 data AST = ASTProgram [AST] CheckType
     -- Globals
     | ASTGlobal Alphabet AST (Maybe AST) CheckType
+    -- Enumerations
+    | ASTEnum String [AST] CheckType
     -- Procedures and arguments
     | ASTProc String [AST] AST CheckType
     | ASTArg AST AST CheckType
