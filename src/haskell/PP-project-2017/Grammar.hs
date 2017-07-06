@@ -70,7 +70,7 @@ grammar nt = case nt of
 
     -- Globals
     Global  ->  [[ global, Type, Var, (?:) [ass, Expr], eol ]]
-    
+
     -- Enumerations
     Enum    ->  [[ enum, Var, ass, lBrace, Var, (*:) [comma, Var], rBrace, eol ]]
 
@@ -86,31 +86,60 @@ grammar nt = case nt of
                 ,[ Pid, lPar, (?:) [Expr, (*:) [comma, Expr]], rPar, eol ]          -- call
                 ,[ Expr, eol ]                                                      -- expression
                 ,[ lBrace, (*:) [Stat], rBrace ]                                    -- block
-                ,[ printStr, lPar, Expr, (*:) [comma, Expr], rPar, eol ]]           -- print
+                ,[ printStr, lPar, Expr, (*:) [comma, Expr], rPar, eol ]
+                ,[ Var, ass, Expr, eol ]]
 
-    -- Expressions
-    Expr    ->  [[ lPar, Expr, rPar ]               -- parentheses
-                ,[ Var, ass, Expr ]                 -- assignment
-                ,[ Var ]                            -- variable
-                ,[ IntType ]                        -- integer
-                ,[ BoolType ]                       -- boolean
-                ,[ lPar, Expr, Op, Expr, rPar ]     -- operation
-                ,[ Unary, Expr ]]                   -- unary operation
+    -- Expressions. Already implements the fact that some operations are bound tighter than
+    -- other operations. The order from tightest to loosest: MultDiv, PlusMin, Ord, Equal, And,
+    -- XOR, Or.
+    Expr      ->  [[ OR, (?:) [Expr'] ]]                   -- Expr -> OR (?:) Expr'
+
+    Expr'     ->  [[ opOr, OR, (?:) [Expr'] ]]             -- opOr, OR (?:) Expr'
+
+    OR        ->  [[ XOr, (?:) [OR'] ]]                    -- XOr, (?:) Or'
+
+    OR'       ->  [[ opXor, XOr, (?:) [OR'] ]]             -- opXor, XOr, (?:) OR'
+
+    XOr       ->  [[ AND, (?:) [XOr'] ]]                   -- AND, (?:) XOr'
+
+    XOr'      ->  [[ opAnd, AND, (?:) [XOr'] ]]            -- opAnd, AND, (?:) XOr'
+
+    AND       ->  [[ EQUAL, (?:) [AND'] ]]                 -- opAnd, AND, (?:) XOr'
+
+    AND'      ->  [[ opEqual, EQUAL, (?:) [AND'] ]]        -- opAnd, AND, (?:) XOr'
+
+    EQUAL     ->  [[ Ord, (?:) [EQUAL'] ]]                 -- opAnd, AND, (?:) XOr'
+
+    EQUAL'    ->  [[ opOrd, Ord, (?:) [EQUAL'] ]]          -- opAnd, AND, (?:) XOr'
+
+    Ord       ->  [[ Term, (?:) [Ord'] ]]                  -- opAnd, AND, (?:) XOr'
+
+    Ord'      ->  [[ opPlusMin, Term, (?:) [Ord'] ]]       -- opAnd, AND, (?:) XOr'
+
+    Term      ->  [[ Factor, (?:) [Term'] ]]               -- Factor (?:) Term'
+
+    Term'     ->  [[ opMulDiv, Factor, (?:) [Term'] ]]      -- OpMulDiv Factor (?:) Term'
+
+    Factor    ->  [[ lPar, Expr, rPar]                     -- (Expr)
+                  ,[ PreUnary, Expr ]                      -- Prefix
+                  ,[ Var ]                                 -- Var
+                  ,[ IntType ]                             -- Int
+                  ,[ BoolType ]]                           -- Bool
 
     -- Other
-    Type    ->  [[ typeStr ]]   -- type
+    PreUnary  ->  [[ opPlusMin ]
+                  ,[ opIncDec ]
+                  ,[ opNot ]]
 
-    Var     ->  [[ var ]]       -- variable
+    Type      ->  [[ typeStr ]]   -- type
 
-    Pid     ->  [[ Var ]]       -- procedure identifier
+    Var       ->  [[ var ]]       -- variable
 
-    IntType ->  [[ intType ]]   -- number
+    Pid       ->  [[ Var ]]       -- procedure identifier
 
-    BoolType->  [[ boolType ]]  -- boolean
+    IntType   ->  [[ intType ]]   -- number
 
-    Op      ->  [[ op ]]        -- operator
-
-    Unary   ->  [[ Op ]]        -- unary operator
+    BoolType  ->  [[ boolType ]]  -- boolean
 
 
 -- shorthand names can be handy, such as:
@@ -136,9 +165,17 @@ comma       = Symbol ","
 var         = SyntCat Var
 intType     = SyntCat IntType
 boolType    = SyntCat BoolType
-op          = SyntCat Op
-unary       = SyntCat Unary
 typeStr     = SyntCat Type
+
+opMulDiv    = SyntCat OpMulDiv
+opPlusMin   = SyntCat OpPlusMin
+opIncDec    = SyntCat OpIncDec
+opOrd       = SyntCat OpOrd
+opEqual     = SyntCat OpEqual
+opNot       = SyntCat OpNot
+opAnd       = SyntCat OpAnd
+opOr        = SyntCat OpOr
+opXor       = SyntCat OpXor
 
 
 

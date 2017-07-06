@@ -8,13 +8,6 @@ import Data.List
 pTreeToAst :: ParseTree -> AST
 pTreeToAst (PNode Program l)
     = ASTProgram (map pTreeToAst l) ([],[],[],[])
-        where
-            procAsts = map pTreeToAst l
-            --(procs,stats) = span $ isProcedure l
-            isProcedure (PNode Proc _) = True
-            isProcedure _ = False
-            --getPRecord = (\(x,y) -> (ASTProc x y _ _)) 
-
 pTreeToAst (PNode Global (typ:var:[]))
     = ASTGlobal (getAlphabet (getStr typ)) (pTreeToAst var) Nothing ([],[],[],[])
 pTreeToAst (PNode Global (typ:var:(PLeaf (Ass,_,_)):expr:[]))
@@ -22,19 +15,23 @@ pTreeToAst (PNode Global (typ:var:(PLeaf (Ass,_,_)):expr:[]))
 pTreeToAst (PNode Enum (enum:(PLeaf (Ass,_,_)):(PLeaf (Brace,_,_)):values))
     = ASTEnum (getStr enum) (map pTreeToAst values) ([],[],[],[])
 pTreeToAst (PNode Proc (pid:args_expr))
-    = ASTProc (getStr pid) (makeAstArg $ init args_expr) expr ([],[],[],[])
-        where
-            expr = pTreeToAst $ last args_expr
-            makeAstArg [] = []
-            makeAstArg [x] = error "This Proc is incorrectly parsed"
-            makeAstArg (x:y:xs) = (ASTArg (pTreeToAst x) (pTreeToAst y) ([],[],[],[])) : (makeAstArg xs)
+        = ASTProc (getStr pid) (makeAstArg $ init args_expr) expr ([],[],[], [])
+            where
+                expr = pTreeToAst $ last args_expr
 
+                makeAstArg :: [ParseTree] -> [AST]
+                makeAstArg [] = []
+                makeAstArg [x] = error "This Proc is incorrectly parsed"
+                makeAstArg (x:y:xs) = (ASTArg (pTreeToAst x) (pTreeToAst y) ([],[],[], [])) : (makeAstArg xs)
+
+-- Basic Parse Nodes
 pTreeToAst node@(PNode Type _)
     = ASTType (getStr node) ([],[],[],[])
 
 pTreeToAst node@(PNode Var _)
     = ASTVar (getStr node) ([],[],[],[])
 
+---- STATEMENTS ----
 -- DeclStat (no assign) 
 pTreeToAst (PNode Stat (typ@(PNode Type _):var:[]))
     = ASTDecl (getAlphabet (getStr typ)) (pTreeToAst var) Nothing ([],[],[],[])
@@ -68,31 +65,92 @@ pTreeToAst (PNode Stat ((PLeaf (Brace,_,_)):stats))
 -- Print statement
 pTreeToAst (PNode Stat ((PLeaf (Print,_,_)):exprs))
     = ASTPrint (map pTreeToAst exprs) ([],[],[],[])
--- Parentheses expression
-pTreeToAst (PNode Expr (expr@(PNode Expr _):[]))
-    = pTreeToAst expr
--- Assignment expression
-pTreeToAst (PNode Expr (var:(PLeaf (Ass,_,_)):expr:[]))
-    = ASTAss (pTreeToAst var) (pTreeToAst expr) Nothing ([],[],[],[])
--- Variable expression
-pTreeToAst (PNode Expr (var@(PNode Var _):[]))
-    = ASTVar (getStr var) ([],[],[],[])
--- IntType expression
-pTreeToAst (PNode Expr (intType@(PNode IntType _):[]))
-    = ASTInt (getStr intType) ([],[],[],[])
--- BoolType expression
-pTreeToAst (PNode Expr (boolType@(PNode BoolType _):[]))
-    = ASTBool (getStr boolType) ([],[],[],[])
--- Operation expression
-pTreeToAst (PNode Expr (expr1:op@(PNode Op _):expr2:[]))
-    = ASTOp (pTreeToAst expr1) (getStr op) (pTreeToAst expr2) Nothing ([],[],[],[])
--- Unary operation expression
-pTreeToAst (PNode Expr (op@(PNode Unary _):expr:[]))
-    = ASTUnary (getStr op) (pTreeToAst expr) Nothing ([],[],[],[])
+-- Assign statement
+pTreeToAst (PNode Stat (var:(PLeaf (Ass,_,_)):expr:[]))
+        = ASTAss (pTreeToAst var) (pTreeToAst expr) Nothing ([],[],[],[])
 
+---- EXPRESSIONS ----
+pTreeToAst (PNode Expr (or@(PNode OR _):[]))
+        = pTreeToAst or
+pTreeToAst (PNode Expr (or@(PNode OR _):expr'@(PNode Expr' (op@(PLeaf (OpOr, _, _)):_)):_))
+        = ASTOp (pTreeToAst or) (getStr op) (pTreeToAst expr') Nothing ([],[],[],[])
+pTreeToAst (PNode Expr' (_:or@(PNode OR _):[]))
+        = pTreeToAst or
+pTreeToAst (PNode Expr' (_:or@(PNode OR _):(expr'@(PNode Expr' (op@(PLeaf (OpOr, _, _)):_)):_)))
+        = ASTOp (pTreeToAst or) (getStr op) (pTreeToAst expr') Nothing ([],[],[],[])
+
+pTreeToAst (PNode OR (xor@(PNode XOr _):[]))
+        = pTreeToAst xor
+pTreeToAst (PNode OR (xor@(PNode XOr _):or'@(PNode OR' (op@(PLeaf (OpXor, _, _)):_)):_))
+        = ASTOp (pTreeToAst xor) (getStr op) (pTreeToAst or') Nothing ([],[],[],[])
+pTreeToAst (PNode OR' (_:xor@(PNode XOr _):[]))
+        = pTreeToAst xor
+pTreeToAst (PNode OR' (_:xor@(PNode XOr _):(or'@(PNode OR' (op@(PLeaf (OpXor, _, _)):_)):_)))
+        = ASTOp (pTreeToAst xor) (getStr op) (pTreeToAst or') Nothing ([],[],[],[])
+
+pTreeToAst (PNode XOr (and@(PNode AND _):[]))
+        = pTreeToAst and
+pTreeToAst (PNode XOr (and@(PNode AND _):xor'@(PNode XOr' (op@(PLeaf (OpAnd, _, _)):_)):_))
+        = ASTOp (pTreeToAst and) (getStr op) (pTreeToAst xor') Nothing ([],[],[],[])
+pTreeToAst (PNode XOr' (_:and@(PNode AND _):[]))
+        = pTreeToAst and
+pTreeToAst (PNode XOr' (_:and@(PNode AND _):(xor'@(PNode XOr' (op@(PLeaf (OpAnd, _, _)):_)):_)))
+        = ASTOp (pTreeToAst and) (getStr op) (pTreeToAst xor') Nothing ([],[],[],[])
+
+pTreeToAst (PNode AND (equal@(PNode EQUAL _):[]))
+        = pTreeToAst equal
+pTreeToAst (PNode AND (equal@(PNode EQUAL _):and'@(PNode AND' (op@(PLeaf (OpEqual, _, _)):_)):_))
+        = ASTOp (pTreeToAst equal) (getStr op) (pTreeToAst and') Nothing ([],[],[],[])
+pTreeToAst (PNode AND' (_:equal@(PNode EQUAL _):[]))
+        = pTreeToAst equal
+pTreeToAst (PNode AND' (_:equal@(PNode EQUAL _):(and'@(PNode AND' (op@(PLeaf (OpEqual, _, _)):_)):_)))
+        = ASTOp (pTreeToAst equal) (getStr op) (pTreeToAst and') Nothing ([],[],[],[])
+
+pTreeToAst (PNode EQUAL (ord@(PNode Ord _):[]))
+        = pTreeToAst ord
+pTreeToAst (PNode EQUAL (ord@(PNode Ord _):equal'@(PNode EQUAL' (op@(PLeaf (OpOrd, _, _)):_)):_))
+        = ASTOp (pTreeToAst ord) (getStr op) (pTreeToAst equal') Nothing ([],[],[],[])
+pTreeToAst (PNode EQUAL' (_:ord@(PNode Ord _):[]))
+        = pTreeToAst ord
+pTreeToAst (PNode EQUAL' (_:ord@(PNode Ord _):(equal'@(PNode EQUAL' (op@(PLeaf (OpOrd, _, _)):_)):_)))
+        = ASTOp (pTreeToAst ord) (getStr op) (pTreeToAst equal') Nothing ([],[],[],[])
+
+pTreeToAst (PNode Ord (term@(PNode Term _):[]))
+        = pTreeToAst term
+pTreeToAst (PNode Ord (term@(PNode Term _):ord'@(PNode Ord' (op@(PLeaf (OpPlusMin, _, _)):_)):_))
+        = ASTOp (pTreeToAst term) (getStr op) (pTreeToAst ord') Nothing ([],[],[],[])
+pTreeToAst (PNode Ord' (_:term@(PNode Term _):[]))
+        = pTreeToAst term
+pTreeToAst (PNode Ord' (_:term@(PNode Term _):(ord'@(PNode Ord' (op@(PLeaf (OpPlusMin, _, _)):_)):_)))
+        = ASTOp (pTreeToAst term) (getStr op) (pTreeToAst ord') Nothing ([],[],[],[])
+
+pTreeToAst (PNode Term (fact@(PNode Factor _):[]))
+        = pTreeToAst fact
+pTreeToAst (PNode Term (fact@(PNode Factor _):term'@(PNode Term' (op@(PLeaf (OpMulDiv, _, _)):_)):_))
+        = ASTOp (pTreeToAst fact) (getStr op) (pTreeToAst term') Nothing ([],[],[],[])
+pTreeToAst (PNode Term' (_:fact@(PNode Factor _):[]))
+        = pTreeToAst fact
+pTreeToAst (PNode Term' (_:fact@(PNode Factor _):term'@(PNode Term' (op@(PLeaf (OpMulDiv, _, _)):_)):_))
+        = ASTOp (pTreeToAst fact) (getStr op) (pTreeToAst term') Nothing ([],[],[],[])
+
+-- Parentheses expression
+pTreeToAst (PNode Factor (expr@(PNode Expr _):[]))
+        = pTreeToAst expr
+-- Unary prefix
+pTreeToAst (PNode Factor (op@(PNode PreUnary _):expr:[]))
+        = ASTPreUnary (getStr op) (pTreeToAst expr) Nothing ([],[],[],[])
+-- Variable expression
+pTreeToAst (PNode Factor (var@(PNode Var _):[]))
+        = ASTVar (getStr var) ([],[],[],[])
+-- IntType expression
+pTreeToAst (PNode Factor (intType@(PNode IntType _):[]))
+        = ASTInt (getStr intType) ([],[],[],[])
+-- BoolType expression
+pTreeToAst (PNode Factor (boolType@(PNode BoolType _):[]))
+        = ASTBool (getStr boolType) ([],[],[],[])
 
 astToRoseDebug :: AST -> RoseTree
-astToRoseDebug (ASTProgram asts (f,g,v,_)) 
+astToRoseDebug (ASTProgram asts (f,g,v,_))
     = RoseNode ("program" ++ " -> " ++ (show f) ++ (show g) ++ (show (getDeepestScope v))) (map astToRoseDebug asts)
 astToRoseDebug (ASTGlobal typeStr ast Nothing (f,g,v,_))
     = RoseNode ("global " ++ (getTypeStr typeStr) ++ " -> " {-++ (show f) ++ (show g)-} ++ (show (getDeepestScope v))) [(astToRoseDebug ast)]
@@ -139,6 +197,8 @@ astToRoseDebug (ASTType str (f,g,v,_))
 astToRoseDebug (ASTOp ast1 str ast2 typeStr (f,g,v,_))
     = RoseNode (str ++ " -> " {-++ (show f) ++ (show g)-} ++ (show (getDeepestScope v))) $ map astToRoseDebug [ast1, ast2]
 astToRoseDebug (ASTUnary str ast typeStr (f,g,v,_))
+    = RoseNode (str ++ " -> " {-++ (show f) ++ (show g)-} ++ (show (getDeepestScope v))) [(astToRoseDebug ast)]
+astToRoseDebug (ASTPreUnary str ast typeStr (f,g,v,_))
     = RoseNode (str ++ " -> " {-++ (show f) ++ (show g)-} ++ (show (getDeepestScope v))) [(astToRoseDebug ast)]
 
 getDeepestScope :: [[VariableType]] -> [VariableType]
@@ -196,6 +256,8 @@ astToRose (ASTOp ast1 str ast2 _ _)
     = RoseNode str $ map astToRose [ast1, ast2]
 astToRose (ASTUnary str ast _ _)
     = RoseNode str [(astToRose ast)]
+astToRose (ASTPreUnary str ast _ _)
+    = RoseNode str [(astToRose ast)]
 
 
 
@@ -204,8 +266,9 @@ getStr (PLeaf (_,str,_))    = str
 getStr (PNode Var [x])      = getStr x
 getStr (PNode Pid [x])      = getStr x
 getStr (PNode BoolType [x]) = getStr x
-getStr (PNode IntType [x])  = getStr x 
+getStr (PNode IntType [x])  = getStr x
 getStr (PNode Op [x])       = getStr x
+getStr (PNode PreUnary [x]) = getStr x
 getStr (PNode Unary [x])    = getStr x
 getStr (PNode Type [x])     = getStr x
 getStr (PNode Expr _)       = error "Cannot return the string of an expression this way."

@@ -4,12 +4,73 @@ import FPPrac.Trees
 import Types
 import Data.List
 import Data.Char
+import Data.Maybe
 import qualified Data.Map.Strict as Map
 import Debug.Trace
 
 -- Wrapper
 checker :: AST -> AST
-checker ast = checker2 (checker1 ast) ([],[],[[]],[])
+checker ast = checker2 (checker1 (rebalanceOperators ast)) ([],[],[[]],[])
+
+-- Rebalancing of operators because of right-associativity when there are repetitive
+-- operators. Needs to rotate the AST if the operator class equals the operator class
+-- of the right sub-tree. The real magic happens in the last pattern match. :-D
+rebalanceOperators :: AST -> AST
+rebalanceOperators (ASTProgram a b)                = ASTProgram (map rebalanceOperators a) b
+rebalanceOperators ast@(ASTGlobal a b c d)         | isJust c  = ASTGlobal a b (Just (rebalanceOperators (fromJust c))) d
+                                                   | otherwise = ast
+rebalanceOperators (ASTProc a b c d)               = ASTProc a b (rebalanceOperators c) d
+rebalanceOperators ast@(ASTArg _ _ _)              = ast
+rebalanceOperators (ASTBlock a b)                  = ASTBlock (map rebalanceOperators a) b
+rebalanceOperators ast@(ASTDecl a b c d)           | isJust c  = ASTDecl a b (Just (rebalanceOperators (fromJust c))) d
+                                                   | otherwise = ast
+rebalanceOperators (ASTIf a b c d)                 | isJust c  = ASTIf (rebalanceOperators a) (rebalanceOperators b) (Just (rebalanceOperators (fromJust c))) d
+                                                   | otherwise = ASTIf (rebalanceOperators a) (rebalanceOperators b) Nothing d
+rebalanceOperators (ASTWhile a b c)                = ASTWhile (rebalanceOperators a) (rebalanceOperators b) c
+rebalanceOperators (ASTFork a b c)                 = ASTFork a (map rebalanceOperators b) c
+rebalanceOperators ast@(ASTJoin _)                 = ast
+rebalanceOperators (ASTCall a b c)                 = ASTCall a (map rebalanceOperators b) c
+rebalanceOperators (ASTPrint a b)                  = ASTPrint (map rebalanceOperators a) b
+rebalanceOperators (ASTAss a b c d)                = ASTAss (rebalanceOperators a) (rebalanceOperators b) c d
+rebalanceOperators (ASTExpr a b c)                 = ASTExpr (rebalanceOperators a) b c
+rebalanceOperators ast@(ASTVar _ _)                = ast
+rebalanceOperators ast@(ASTInt _ _)                = ast
+rebalanceOperators ast@(ASTBool _ _)               = ast
+rebalanceOperators ast@(ASTType _ _)               = ast
+rebalanceOperators (ASTPreUnary a b c d)           = ASTPreUnary a (rebalanceOperators b) c d
+rebalanceOperators (ASTUnary a b c d)              = ASTUnary a (rebalanceOperators b) c d
+
+rebalanceOperators ast1@(ASTOp ast2 op ast3 c d)
+            | isASTOp ast3 && sameOpClass op ast3   = rebalanceOperators (rotate ast1)
+            | otherwise                             = ASTOp (rebalanceOperators ast2) op (rebalanceOperators ast3) c d
+
+rotate :: AST -> AST
+rotate (ASTOp ast0 op2 (ASTOp ast3 op3 ast4 _ _) c d)
+            = ASTOp (ASTOp ast0 op2 ast3 c d) op3 ast4 c d
+
+sameOpClass :: String -> AST -> Bool
+sameOpClass op1 (ASTOp _ op2 _ _ _)
+            | (op1 == op2) || (opClass op1 == opClass op2) = True
+            | otherwise                                    = False
+
+isASTOp :: AST -> Bool
+isASTOp (ASTOp _ _ _ _ _)    = True
+isASTOp _                    = False
+
+opClass :: String -> Alphabet
+opClass op
+    | op ==  "*"             = OpMulDiv
+    | op ==  "/"             = OpMulDiv
+    | op ==  "+"             = OpPlusMin
+    | op ==  "-"             = OpPlusMin
+    | op ==  "<"             = OpOrd
+    | op ==  ">"             = OpOrd
+    | op == "=="             = OpEqual
+    | op == "!="             = OpEqual
+    | op == "<="             = OpOrd
+    | op == ">="             = OpOrd
+
+
 
 -- First pass
 -- Checks declarations
@@ -32,7 +93,7 @@ checker1 (ASTProgram asts _)
                 mergedChecks    = mergeFunction (pid, argPairs) checks
                 procedure       = ASTProc pid args stat mergedChecks
         function (ASTProgram asts checks) (ASTEnum varName vars _)
-            = ASTProgram (asts ++ [enum]) mergedEnums 
+            = ASTProgram (asts ++ [enum]) mergedEnums
             where
                 enumStrs        = map getStr vars
                 mergedEnums     = mergeEnum (varName, enumStrs) checks
@@ -49,10 +110,12 @@ checker2 (ASTProgram asts check) _
     where
         prePart                         = map (\x -> checker2 x check) preStats
         (preStats, stats)               = span isPreStat asts
+
         isPreStat :: AST -> Bool
         isPreStat (ASTGlobal _ _ _ _)   = True
         isPreStat (ASTProc _ _ _ _)     = True
         isPreStat _                     = False
+
         function :: AST -> AST -> AST
         function (ASTProgram asts check) ast
             = ASTProgram (asts ++ [astCheck]) (getCheck astCheck)
@@ -157,11 +220,13 @@ checker2 (ASTPrint exprs _) check
     where
         types = map getStr (filter (\x -> getExprType x == EnumType) asts)
         asts = map (\x -> checker2 x check) exprs
+
 -- Checks: 
 checker2 (ASTExpr expr _ _) check
     = ASTExpr exprCheck (Just (getExprType exprCheck)) check
     where
         exprCheck = checker2 expr check
+
 -- Check types
 checker2 (ASTAss var expr _ _) check
     | (getExprType varCheck) == (getExprType exprCheck)  = ASTAss varCheck exprCheck (Just (getExprType varCheck)) check
@@ -236,7 +301,7 @@ closeScope (f,g,(v:vs),e)     = (f,g,vs,e)
 -- Add a variable to the deepest scope
 -- Check whether the name conflicts other declarations, where variable shadowing is allowed for non-global variables
 addToScope :: CheckType -> (String, Alphabet) -> CheckType
-addToScope (f,g,(v:vs),e) pair@(id,_) 
+addToScope (f,g,(v:vs),e) pair@(id,_)
     | Map.member id (Map.fromList g)
         = error $ "A global variable with id " ++ (show id) ++ " has already been declared."
     | Map.member id $ Map.fromList f
@@ -275,7 +340,7 @@ getExprType (ASTBool _ _)                   = BoolType
 getExprType (ASTExpr _ (Just typeStr) _)    = typeStr
 getExprType (ASTVar varName (_,g,v,e))
     | Map.member varName (Map.fromList g)   = (Map.fromList g)Map.!varName
-    | elem varName $ concat $ map (\(x,y) -> (x:y)) e 
+    | elem varName $ concat $ map (\(x,y) -> (x:y)) e
                                             = EnumType
     | otherwise                             = iterVar varName v
     where
@@ -295,7 +360,7 @@ getAlphabet _       = error "Type not recognised in Checker.getAlphabet"
 -- Checks if the name of the function has been declared already
 -- Adds the FunctionType to the CheckType
 mergeFunction :: FunctionType -> CheckType -> CheckType
-mergeFunction f@(pid,_) (fs,gs,vs,es)  
+mergeFunction f@(pid,_) (fs,gs,vs,es)
     | Map.member pid $ Map.fromList fs
         = error $ "A procedure with pid " ++ (show pid) ++ " has already been declared."
     | Map.member pid $ Map.fromList gs 
@@ -304,7 +369,7 @@ mergeFunction f@(pid,_) (fs,gs,vs,es)
         = error $ "A variable with id " ++ (show pid) ++ " has already been declared."
     | elem pid $ concat $ map (\(x,y) -> (x:y)) es
         = error $ "A value of an enumeration with id " ++ (show pid) ++ " has already been declared."
-    | otherwise 
+    | otherwise
         = (fs ++ [f],gs,vs,es)
 
 -- Checks if the name of the global has been declared already
