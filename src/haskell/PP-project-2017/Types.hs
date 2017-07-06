@@ -36,7 +36,7 @@ data Alphabet = Terminal String               -- Terminal symbol: WILL be includ
               | OpOrd
               | OpEqual
               | OpPower
-              | OpMulDiv
+              | OpMul
               | OpPlusMin
               | OpAnd
               | OpOr

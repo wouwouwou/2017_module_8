@@ -30,7 +30,7 @@ tokenizer input@(x:xs)
     | word == "fork"        = (Fork, word)        : (tokenizer wordRest)
     | word == "join"        = (Join, word)        : (tokenizer wordRest)
     | word == "global"      = (Global, word)      : (tokenizer wordRest)
-    | word == "enum"        = (Enum, word)      : (tokenizer wordRest)
+    | word == "enum"        = (Enum, word)        : (tokenizer wordRest)
     | word == "print"       = (Print, word)       : (tokenizer wordRest)
     | word == "true"        = (BoolType, word)    : (tokenizer wordRest)
     | word == "false"       = (BoolType, word)    : (tokenizer wordRest)
@@ -39,18 +39,17 @@ tokenizer input@(x:xs)
     | word == "int"         = (Type, word)        : (tokenizer wordRest)
     | word == "bool"        = (Type, word)        : (tokenizer wordRest)
 
-    | isPrefixOf "++" input = (OpIncDec, "++")         : tokenizer (input \\ "++")
-    | isPrefixOf "--" input = (OpIncDec, "--")         : tokenizer (input \\ "--")
-    | isPrefixOf "==" input = (OpEqual, "==")          : tokenizer (input \\ "==")
-    | isPrefixOf "!=" input = (OpEqual, "!=")         : tokenizer (input \\ "!=")
-    | isPrefixOf "&&" input = (OpAnd, "&&")         : tokenizer (input \\ "&&")
-    | isPrefixOf "||" input = (OpOr, "||")          : tokenizer (input \\ "||")
-    | isPrefixOf "<>" input = (OpXor, "<>")         : tokenizer (input \\ "<>")
-    | isPrefixOf "<=" input = (OpOrd, "<=")         : tokenizer (input \\ "<=")
-    | isPrefixOf ">=" input = (OpOrd, ">=")         : tokenizer (input \\ ">=")
+    | isPrefixOf "++" input = (OpIncDec, "++")    : tokenizer (input \\ "++")
+    | isPrefixOf "--" input = (OpIncDec, "--")    : tokenizer (input \\ "--")
+    | isPrefixOf "==" input = (OpEqual, "==")     : tokenizer (input \\ "==")
+    | isPrefixOf "!=" input = (OpEqual, "!=")     : tokenizer (input \\ "!=")
+    | isPrefixOf "&&" input = (OpAnd, "&&")       : tokenizer (input \\ "&&")
+    | isPrefixOf "||" input = (OpOr, "||")        : tokenizer (input \\ "||")
+    | isPrefixOf "<>" input = (OpXor, "<>")       : tokenizer (input \\ "<>")
+    | isPrefixOf "<=" input = (OpOrd, "<=")       : tokenizer (input \\ "<=")
+    | isPrefixOf ">=" input = (OpOrd, ">=")       : tokenizer (input \\ ">=")
 
-    | x ==  '*'             = (OpMulDiv, [x])         : tokenizer xs
-    | x ==  '/'             = (OpMulDiv,  [x])         : tokenizer xs
+    | x ==  '*'             = (OpMul, [x])         : tokenizer xs
     | x ==  '+'             = (OpPlusMin, [x])         : tokenizer xs
     | x ==  '-'             = (OpPlusMin,  [x])         : tokenizer xs
     | x ==  '!'             = (OpNot,  [x])         : tokenizer xs

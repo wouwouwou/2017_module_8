@@ -126,11 +126,11 @@ pTreeToAst (PNode Ord' (_:term@(PNode Term _):(ord'@(PNode Ord' (op@(PLeaf (OpPl
 
 pTreeToAst (PNode Term (fact@(PNode Factor _):[]))
         = pTreeToAst fact
-pTreeToAst (PNode Term (fact@(PNode Factor _):term'@(PNode Term' (op@(PLeaf (OpMulDiv, _, _)):_)):_))
+pTreeToAst (PNode Term (fact@(PNode Factor _):term'@(PNode Term' (op@(PLeaf (OpMul, _, _)):_)):_))
         = ASTOp (pTreeToAst fact) (getStr op) (pTreeToAst term') Nothing ([],[],[],[])
 pTreeToAst (PNode Term' (_:fact@(PNode Factor _):[]))
         = pTreeToAst fact
-pTreeToAst (PNode Term' (_:fact@(PNode Factor _):term'@(PNode Term' (op@(PLeaf (OpMulDiv, _, _)):_)):_))
+pTreeToAst (PNode Term' (_:fact@(PNode Factor _):term'@(PNode Term' (op@(PLeaf (OpMul, _, _)):_)):_))
         = ASTOp (pTreeToAst fact) (getStr op) (pTreeToAst term') Nothing ([],[],[],[])
 
 -- Parentheses expression
@@ -196,8 +196,6 @@ astToRoseDebug (ASTType str (f,g,v,_))
     = RoseNode (str ++ " -> " {-++ (show f) ++ (show g)-} ++ (show (getDeepestScope v))) []
 astToRoseDebug (ASTOp ast1 str ast2 typeStr (f,g,v,_))
     = RoseNode (str ++ " -> " {-++ (show f) ++ (show g)-} ++ (show (getDeepestScope v))) $ map astToRoseDebug [ast1, ast2]
-astToRoseDebug (ASTUnary str ast typeStr (f,g,v,_))
-    = RoseNode (str ++ " -> " {-++ (show f) ++ (show g)-} ++ (show (getDeepestScope v))) [(astToRoseDebug ast)]
 astToRoseDebug (ASTPreUnary str ast typeStr (f,g,v,_))
     = RoseNode (str ++ " -> " {-++ (show f) ++ (show g)-} ++ (show (getDeepestScope v))) [(astToRoseDebug ast)]
 
@@ -254,8 +252,6 @@ astToRose (ASTType str _)
     = RoseNode str []
 astToRose (ASTOp ast1 str ast2 _ _)
     = RoseNode str $ map astToRose [ast1, ast2]
-astToRose (ASTUnary str ast _ _)
-    = RoseNode str [(astToRose ast)]
 astToRose (ASTPreUnary str ast _ _)
     = RoseNode str [(astToRose ast)]
 
@@ -269,7 +265,6 @@ getStr (PNode BoolType [x]) = getStr x
 getStr (PNode IntType [x])  = getStr x
 getStr (PNode Op [x])       = getStr x
 getStr (PNode PreUnary [x]) = getStr x
-getStr (PNode Unary [x])    = getStr x
 getStr (PNode Type [x])     = getStr x
 getStr (PNode Expr _)       = error "Cannot return the string of an expression this way."
 getStr a                    = error (show a)

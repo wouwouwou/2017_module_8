@@ -21,6 +21,7 @@ rebalanceOperators ast@(ASTGlobal a b c d)         | isJust c  = ASTGlobal a b (
                                                    | otherwise = ast
 rebalanceOperators (ASTProc a b c d)               = ASTProc a b (rebalanceOperators c) d
 rebalanceOperators ast@(ASTArg _ _ _)              = ast
+rebalanceOperators ast@(ASTEnum _ _ _)             = ast
 rebalanceOperators (ASTBlock a b)                  = ASTBlock (map rebalanceOperators a) b
 rebalanceOperators ast@(ASTDecl a b c d)           | isJust c  = ASTDecl a b (Just (rebalanceOperators (fromJust c))) d
                                                    | otherwise = ast
@@ -59,8 +60,7 @@ isASTOp _                    = False
 
 opClass :: String -> Alphabet
 opClass op
-    | op ==  "*"             = OpMulDiv
-    | op ==  "/"             = OpMulDiv
+    | op ==  "*"             = OpMul
     | op ==  "+"             = OpPlusMin
     | op ==  "-"             = OpPlusMin
     | op ==  "<"             = OpOrd
@@ -258,9 +258,9 @@ checker2 (ASTOp expr1 op expr2 _ _) check
         expr2Check  = checker2 expr2 check
 -- Check type
 -- Set operation result type
-checker2 (ASTUnary op expr _ _) check
-    | elem op ["!", "-", "--", "++"] && fst (matchOpType op exprType) 
-        = ASTUnary op exprCheck (Just (snd (matchOpType op exprType))) check
+checker2 (ASTPreUnary op expr _ _) check
+    | elem op ["!", "-", "+", "--", "++"] && fst (matchOpType op exprType)
+        = ASTPreUnary op exprCheck (Just (snd (matchOpType op exprType))) check
     | otherwise     = error $ "Types do not match in unary in Checker.checker2, with " ++ op ++ " on: " ++ (show expr)
     where
         exprType    = getExprType exprCheck
@@ -334,7 +334,7 @@ getStrType str  | length str == 0   = error "Variable length equals zero in Chec
 getExprType :: AST -> Alphabet
 getExprType (ASTAss _ _ (Just typeStr) _)   = typeStr
 getExprType (ASTOp _ _ _ (Just typeStr) _)  = typeStr
-getExprType (ASTUnary _ _ (Just typeStr) _) = typeStr
+getExprType (ASTPreUnary _ _ (Just typeStr) _) = typeStr
 getExprType (ASTInt _ _)                    = IntType
 getExprType (ASTBool _ _)                   = BoolType
 getExprType (ASTExpr _ (Just typeStr) _)    = typeStr
@@ -418,24 +418,24 @@ mergeEnum e@(name,ids) (fs,gs,vs,es)
 
 -- Return the type CheckType from any AST
 getCheck :: AST -> CheckType
-getCheck (ASTArg _ _ mergedChecks)      = mergedChecks
-getCheck (ASTBlock _ mergedChecks)      = closeScope mergedChecks
-getCheck (ASTDecl _ _ _ mergedChecks)   = mergedChecks
-getCheck (ASTIf _ _ _ mergedChecks)     = mergedChecks
-getCheck (ASTWhile _ _ mergedChecks)    = mergedChecks
-getCheck (ASTFork _ _ mergedChecks)     = mergedChecks
-getCheck (ASTJoin mergedChecks)         = mergedChecks
-getCheck (ASTEnum _ _ mergedChecks)     = mergedChecks
-getCheck (ASTCall _ _ mergedChecks)     = mergedChecks
-getCheck (ASTPrint _ mergedChecks)      = mergedChecks
-getCheck (ASTExpr _ _ mergedChecks)     = mergedChecks
-getCheck (ASTAss _ _ _ mergedChecks)    = mergedChecks
-getCheck (ASTVar _ mergedChecks)        = mergedChecks
-getCheck (ASTInt _ mergedChecks)        = mergedChecks
-getCheck (ASTBool _ mergedChecks)       = mergedChecks
-getCheck (ASTType _ mergedChecks)       = mergedChecks
-getCheck (ASTOp _ _ _ _ mergedChecks)   = mergedChecks
-getCheck (ASTUnary _ _ _ mergedChecks)  = mergedChecks
+getCheck (ASTArg _ _ mergedChecks)       = mergedChecks
+getCheck (ASTBlock _ mergedChecks)       = closeScope mergedChecks
+getCheck (ASTDecl _ _ _ mergedChecks)    = mergedChecks
+getCheck (ASTIf _ _ _ mergedChecks)      = mergedChecks
+getCheck (ASTWhile _ _ mergedChecks)     = mergedChecks
+getCheck (ASTFork _ _ mergedChecks)      = mergedChecks
+getCheck (ASTJoin mergedChecks)          = mergedChecks
+getCheck (ASTEnum _ _ mergedChecks)      = mergedChecks
+getCheck (ASTCall _ _ mergedChecks)      = mergedChecks
+getCheck (ASTPrint _ mergedChecks)       = mergedChecks
+getCheck (ASTExpr _ _ mergedChecks)      = mergedChecks
+getCheck (ASTAss _ _ _ mergedChecks)     = mergedChecks
+getCheck (ASTVar _ mergedChecks)         = mergedChecks
+getCheck (ASTInt _ mergedChecks)         = mergedChecks
+getCheck (ASTBool _ mergedChecks)        = mergedChecks
+getCheck (ASTType _ mergedChecks)        = mergedChecks
+getCheck (ASTOp _ _ _ _ mergedChecks)    = mergedChecks
+getCheck (ASTPreUnary _ _ _ mergedChecks)= mergedChecks
 
 -- Check if a variable name is not used in an expression
 nameCheck :: AST -> String -> Bool
@@ -445,7 +445,7 @@ nameCheck (ASTInt _ _) _                = True
 nameCheck (ASTBool _ _) _               = True
 nameCheck (ASTType _ _) _               = True
 nameCheck (ASTOp ast1 _ ast2 _ _) id    = nameCheck ast1 id && (nameCheck ast2 id)
-nameCheck (ASTUnary _ ast _ _) id       = nameCheck ast id
+nameCheck (ASTPreUnary _ ast _ _) id    = nameCheck ast id
 nameCheck (ASTExpr ast _ _) id          = nameCheck ast id
 nameCheck ast id 
     = error $ "Shouldn't be reached in Checker.checker2.nameCheck, with: " ++ id ++ " and: " ++ (show ast)

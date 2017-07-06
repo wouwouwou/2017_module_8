@@ -586,7 +586,7 @@ codeGen (ASTOp astL op astR _
 
 -- Unary Operator. Evaluates the expression, calculates the result and pushes 
 -- the result to the stack.
-codeGen (ASTUnary op astV _
+codeGen (ASTPreUnary op astV _
     checkType@(functions, globals, variables,_)) threads
         | op == "!" = 
             (codeGen astV threads) ++   -- compute argument
@@ -594,6 +594,8 @@ codeGen (ASTUnary op astV _
             , ComputeI Xor regA 1 regC  -- XOR with 1 gives the inverse boolean value
             , Push regC                 -- push result to stack
             ]
+        | op == "+" =
+            (codeGen astV threads)
         | op == "-" = 
             (codeGen astV threads) ++       -- compute argument
             [ Pop regA                      -- pop argument

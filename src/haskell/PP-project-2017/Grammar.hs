@@ -118,7 +118,7 @@ grammar nt = case nt of
 
     Term      ->  [[ Factor, (?:) [Term'] ]]               -- Factor (?:) Term'
 
-    Term'     ->  [[ opMulDiv, Factor, (?:) [Term'] ]]      -- OpMulDiv Factor (?:) Term'
+    Term'     ->  [[ opMul, Factor, (?:) [Term'] ]]        -- OpMulDiv Factor (?:) Term'
 
     Factor    ->  [[ lPar, Expr, rPar]                     -- (Expr)
                   ,[ PreUnary, Expr ]                      -- Prefix
@@ -167,7 +167,7 @@ intType     = SyntCat IntType
 boolType    = SyntCat BoolType
 typeStr     = SyntCat Type
 
-opMulDiv    = SyntCat OpMulDiv
+opMul       = SyntCat OpMul
 opPlusMin   = SyntCat OpPlusMin
 opIncDec    = SyntCat OpIncDec
 opOrd       = SyntCat OpOrd
