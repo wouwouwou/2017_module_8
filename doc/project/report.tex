@@ -147,29 +147,28 @@ During the process of improving the compiler's expression handling, a couple of 
 Secondly, defining the right grammar rules proved to be tricky. 
 Since the compiler supports more operators than only plus, minus and asterisk, a classic LL(1) expression grammar had to be complemented with precedence rules for the other operators.  \\
 
-Thirdly, there was a small problem with the pattern matching when building the AST out of the ParseTree. It took some time to figure out the right typing in the pattern matches and the building of operator nodes had to be though out thoroughly.
+Thirdly, there was a small problem with the pattern matching when building the AST out of the ParseTree. It took some time to figure out the right typing in the pattern matches and the building of operator nodes had to be though out thoroughly. \\
 
 Lastly, after modifying the ASTBuilder there was still a problem with consecutively recurring operator classes being right-associative instead of left-associative. A solution has been found in implementing a rebalancing function just before the checker phase, in which a left-rotation is performed on an AST if such consecutively recurring operator classes are present.
 
+%TODO revise
 \section{Time}
-If only the schedule made at the beginning of every project works out and no unexpected problems arise, this would not be a problem. Reality, unfortunately, has not been that kind. Many unscheduled delays and problems arose to delay the schedule more than expected. The solution for this is working evenings and parts of the night on the final days.
+If only the schedule made at the beginning of every project works out and no unexpected problems arise, this would not be a problem. Reality, unfortunately, has not been that kind. Many unscheduled delays and problems arose to delay the schedule more than expected. The solution for this was working evenings and parts of the night on the final days.
 
-\section{Concurrency}
-The problem with concurrency was mostly that the direction it was being taken changed several times. The addition of explicit locks was discussed and partly executed, then eventually reverted. The way global variables were handled was changed multiple times, as well as some other things. Until time was taken to really think it through, and determine what it should and should not do, and what it could and could not do. 
-
-\section{Call-by-reference}
-Call-by-reference became a bit of a problem because of some design flaws. Because of the way our ARs work and the visibility of certain aspects of variables when passed as arguments, changes had to be made to the old design to what it currently is (see \fullref{def:call-by-reference}). These changes caused quite some work during their implementation.
-
+%TODO revise
 \section{Code Generation}
 During code generation, two big types of problems arose, of which the first one was offset management. SprIL does not know labels as ILOC does, and since our code was generated with a tree, many things as procedure addresses, retrun addresses and the like were not known on the first pass. Furthermore, fixing bugs in logic often messes up offsets in loops, creating their own set of incomprehensible issues.
 
 The second issue was memory management. Not knowing beforehand what you need in an AR does not help when debugging issues with values being read as addresses and the other way around. But by far the most annoying issue I've had was a bug in Sprockell where writes to out-of-bounds addresses to global memory were not protected. Instead, they extended the list, resulting in all variables moving one step. Good luck debugging when one cannot trust the integrity of memory.
 
+%TODO Fill in
+\section{New Sprockell}
+
 
 %------------------------------------------------
 \chapter{Sprockell Extensions}
 \label{sprockell_extensions}
-
+%TODO revise
 \section{ComputeI Instruction}
 \label{computei_instruction}
 A compute with immediate value, \texttt{ComputeI operator reg value reg}. This instruction takes a register and a value to do a computation with the operator, which is then written to the second register. It is mostly used to calculate ARP offsets. 
@@ -194,7 +193,6 @@ This chapter will describe every feature of SHL in detail: providing a basic des
 %\subsubsection*{Usage}
 %\subsubsection*{Semantics}
 %\subsubsection*{Code Generation}
-
 
 \subsection{Program}
 \label{def:program}
@@ -509,11 +507,11 @@ true;
 ++a;
 \end{minted}
 \subsubsection*{Usage}
-Allows expressions to be executed as statements, mostly for the purpose of enabling an assignment (see \fullref{def:assignment}) as a statement, since an assignment is an expression.
+Allows expressions to be executed as statements. The only useful purpose is to increment or decrement a variable with a prefix unary operator.
 \subsubsection*{Semantics}
-Execute the expression, this generally has no effects, except for an assignment.
+Execute the expression, this generally has no effects, except for an increment or a decrement of a variable.
 \subsubsection*{Code Generation}
-As expressions have a result on stack, one must pop this value if the expression is defined as a statement. Otherwise the stack would fill up.
+As expressions have a result on stack, one must pop this value if the expression is defined as a statement. Otherwise the stack would fill up. One special case has been made for increments and decrements.
 
 
 \subsection{Block}
@@ -566,6 +564,27 @@ Evaluates the expressions and prints the values as they appear in memory, meanin
 As SprIL does not have a print instruction, a new one was created and added to the Sprockell source code. See also chapter \ref{sprockell_extensions}. This statement simply evaluates all expressions in its arguments and prints them one per line.
 
 
+\subsection{Assignment}
+\label{def:assignment}
+\subsubsection*{Syntax}
+\texttt{<ID> = <EXPRESSION>}
+\begin{mycompactdesc}
+	\item[ID] A string as defined in \fullref{def:variable}
+	\item[EXPRESSION] An expression as defined in \fullref{def:expressions}
+\end{mycompactdesc}
+\paragraph{Examples}
+\begin{minted}[tabsize=4]{text}
+a = 5;
+b = c <> d && e;
+\end{minted}
+\subsubsection*{Usage}
+Used to assign a value, in the form of an expression, to a variable. The variable must have been declared beforehand, and may be either global or local. The type of the expression must match the type of the variable.
+\subsubsection*{Semantics}
+Assignment evaluates the expression and writes it to the address of the variable.
+\subsubsection*{Code Generation}
+First, the expression will be evaluated. The result is assigned to the variable, may it be in local or global memory. These are resolved by AR traversal and lookup in a static table respectively. The result is pushed to the stack.
+
+
 \section{Expressions}
 \label{def:expressions}
 
@@ -587,28 +606,6 @@ Parentheses are used to enforce which operator is used (see the example above). 
 Everything between the parentheses is evaluated and the value is returned as the result of this expression.
 \subsubsection*{Code Generation}
 Required around any binary expression and optional around unary expressions to, as in the example, differentiate between the negation and decrement operator. The result of the inner expression is pushed to stack.
-
-
-\subsection{Assignment}
-\label{def:assignment}
-\subsubsection*{Syntax}
-\texttt{<ID> = <EXPRESSION>}
-\begin{mycompactdesc}
-	\item[ID] A string as defined in \fullref{def:variable}
-\end{mycompactdesc}
-\paragraph{Examples}
-\begin{minted}[tabsize=4]{text}
-a = 5;
-b = c <> d && e;
-\end{minted}
-\subsubsection*{Usage}
-Used to assign a value, in the form of an expression, to a variable. The variable must have been declared beforehand, and may be either global or local.
-
-The type of the expression must match the type of the variable.
-\subsubsection*{Semantics}
-Assignment evaluates the expression and writes it to the address of the variable.
-\subsubsection*{Code Generation}
-First, the expression will be evaluated. The result is assigned to the variable, may it be in local or global memory. These are resolved by AR traversal and lookup in a static table respectively. The result is pushed to stack.
 
 
 \subsection{Variable}
@@ -695,7 +692,7 @@ Its value is looked up in a generated enum mapping table, and pushes its value t
 \subsection{Operation}
 \label{def:operation}
 \subsubsection*{Syntax}
-\texttt{( <EXPRESSION> <OPERATOR> <EXPRESSION> )}
+\texttt{<EXPRESSION> <OPERATOR> <EXPRESSION>}
 \begin{mycompactdesc}
 	\item[EXPRESSION] An expression as defined in \fullref{def:expressions}
 	\item[OPERATOR] One of the following operators: \texttt{==, !=, \&\&, ||, <>, <=, >=, <, >, +, -, *} (see \fullref{def:operators})
@@ -713,12 +710,12 @@ After both expressions have been evaluated, the operation is evaluated and its r
 It's left- and right hand side are evaluated, and its results are used as arguments to the operation. The result of the operation is pushed to stack.
 
 
-\subsection{Unary Operation}
-\label{def:unary_operation}
+\subsection{Prefix Unary Operation}
+\label{def:prefix_unary_operation}
 \subsubsection*{Syntax}
 \texttt{<OPERATOR> <EXPRESSION>}
 \begin{mycompactdesc}
-	\item[OPERATOR] One of the following operators: \texttt{--, ++, -, !} (see \fullref{def:operators})
+	\item[OPERATOR] One of the following operators: \texttt{---, ++, +, -, !} (see \fullref{def:operators})
 \end{mycompactdesc}
 \paragraph{Examples}
 \begin{minted}[tabsize=4]{text}
@@ -743,7 +740,7 @@ It's right hand side is evaluated, fed to the operator and its result is pushed 
 \subsubsection*{Syntax}
 \texttt{<TYPE>}
 \begin{mycompactdesc}
-	\item[TYPE] Either \texttt{int} or \texttt{bool}
+	\item[TYPE] \texttt{int}, \texttt{bool} or \texttt{enum}
 \end{mycompactdesc}
 
 
@@ -773,7 +770,6 @@ It's right hand side is evaluated, fed to the operator and its result is pushed 
 	\item[++] increment: \texttt{int} $\rightarrow$ \texttt{int}
 	\item[!] not: \texttt{bool} $\rightarrow$ \texttt{bool}
 \end{mycompactdesc}
-Beware that using decrement and increment on a variable does not assign the new value to the variable as some other languages might do.
 
 
 \subsection{Call-by-reference}

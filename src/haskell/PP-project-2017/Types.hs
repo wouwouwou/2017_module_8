@@ -35,7 +35,6 @@ data Alphabet = Terminal String               -- Terminal symbol: WILL be includ
               -- Operators
               | OpOrd
               | OpEqual
-              | OpPower
               | OpMul
               | OpPlusMin
               | OpAnd
