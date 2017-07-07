@@ -1,4 +1,4 @@
-# PP-project-2016
+# PP-project-2017
 
 Implementation the University of Twente Programming Paradigms' final project.
 
