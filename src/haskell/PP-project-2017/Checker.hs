@@ -71,7 +71,7 @@ opClass op
     | op == ">="             = OpOrd
     | op == "&&"             = OpAnd
     | op == "||"             = OpOr
-    | op == "<>"             = OpXOr
+    | op == "<>"             = OpXor
     | otherwise              = error $ "Operator \"" ++ op ++ "\" not recognised" 
 
 

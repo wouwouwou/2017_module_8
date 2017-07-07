@@ -66,12 +66,12 @@
 
 \author{
 \large
-\textsc{Group 26}\\[-0.75mm]
-\textsc{Martijn Verkleij \& Tim Kerkhoven}\\[2mm] % Your name
+\textsc{Group 33}\\[-0.75mm]
+\textsc{Martijn Verkleij \& Wouter Bos}\\[2mm] % Your name
 \normalsize University of Twente \\ % Your institution
 \normalsize \href{mailto:m.f.verkleij@student.utwente.nl}{m.f.verkleij@student.utwente.nl},
-\href{mailto:t.kerkhoven@student.utwente.nl}{t.kerkhoven@student.utwente.nl}\\% Your email addresses
-\normalsize s1466895 s1375253
+\href{mailto:w.f.a.bos@student.utwente.nl}{w.f.a.bos@student.utwente.nl}\\% Your email addresses
+\normalsize s1466895 s1606824
 }
 
 \date{\today}
@@ -97,7 +97,7 @@
 
 \section{Syntax 1}
 \subsection{Source}
-\inputminted[tabsize=4,linenos,firstnumber=1]{text}{../../src/haskell/PP-project-2016/test/syntax1.shl}
+\inputminted[tabsize=4,linenos,firstnumber=1]{text}{../../src/haskell/PP-project-2017/test/syntax1.shl}
 \subsection{Output}
 \begin{minted}[tabsize=4,linenos]{text}
 Main: tokenList not fully parsed
@@ -105,7 +105,7 @@ Main: tokenList not fully parsed
 
 \section{Syntax 2}
 \subsection{Source}
-\inputminted[tabsize=4,linenos,firstnumber=1]{text}{../../src/haskell/PP-project-2016/test/syntax2.shl}
+\inputminted[tabsize=4,linenos,firstnumber=1]{text}{../../src/haskell/PP-project-2017/test/syntax2.shl}
 \subsection{Output}
 \begin{minted}[tabsize=4,linenos]{text}
 Main: tokenList not fully parsed
@@ -113,7 +113,7 @@ Main: tokenList not fully parsed
 
 \section{Syntax 3}
 \subsection{Source}
-\inputminted[tabsize=4,linenos,firstnumber=1]{text}{../../src/haskell/PP-project-2016/test/syntax3.shl}
+\inputminted[tabsize=4,linenos,firstnumber=1]{text}{../../src/haskell/PP-project-2017/test/syntax3.shl}
 \subsection{Output}
 \begin{minted}[tabsize=4,linenos]{text}
 Main: tokenList not fully parsed
@@ -121,7 +121,7 @@ Main: tokenList not fully parsed
 
 \section{Syntax 4}
 \subsection{Source}
-\inputminted[tabsize=4,linenos,firstnumber=1]{text}{../../src/haskell/PP-project-2016/test/syntax4.shl}
+\inputminted[tabsize=4,linenos,firstnumber=1]{text}{../../src/haskell/PP-project-2017/test/syntax4.shl}
 \subsection{Output}
 \begin{minted}[tabsize=4,linenos]{text}
 Main: tokenList not fully parsed
@@ -129,7 +129,7 @@ Main: tokenList not fully parsed
 
 \section{Syntax 5}
 \subsection{Source}
-\inputminted[tabsize=4,linenos,firstnumber=1]{text}{../../src/haskell/PP-project-2016/test/syntax5.shl}
+\inputminted[tabsize=4,linenos,firstnumber=1]{text}{../../src/haskell/PP-project-2017/test/syntax5.shl}
 \subsection{Output}
 \begin{minted}[tabsize=4,linenos]{text}
 Main: tokenList not fully parsed
@@ -140,15 +140,15 @@ Main: tokenList not fully parsed
 
 \section{Wrong Type}
 \subsection{Source}
-\inputminted[tabsize=4,linenos,firstnumber=1]{text}{../../src/haskell/PP-project-2016/test/wrong_type.shl}
+\inputminted[tabsize=4,linenos,firstnumber=1]{text}{../../src/haskell/PP-project-2017/test/wrong_type.shl}
 \subsection{Output}
 \begin{minted}[tabsize=4,linenos]{text}
-Main: Condition in if statement should be of type: bool, but isnt, in: ASTVar "i" ([],[],[])
+Main: Condition in if statement should be of type: bool, but isnt, in: ASTVar "i" ([],[],[],[])
 \end{minted}
 
 \section{Not Declared}
 \subsection{Source}
-\inputminted[tabsize=4,linenos,firstnumber=1]{text}{../../src/haskell/PP-project-2016/test/not_declared.shl}
+\inputminted[tabsize=4,linenos,firstnumber=1]{text}{../../src/haskell/PP-project-2017/test/not_declared.shl}
 \subsection{Output}
 \begin{minted}[tabsize=4,linenos]{text}
 Main: Variable: i not declared in Checker.getExprType.iterVar
@@ -158,529 +158,420 @@ Main: Variable: i not declared in Checker.getExprType.iterVar
 \chapter{Semantic Tests}
 
 \section{Banking}
+This test has been run on 3 Sprockells.
 \subsection{Source}
-\inputminted[tabsize=4,linenos,firstnumber=1]{text}{../../src/haskell/PP-project-2016/test/banking.shl}
-\subsection{Generated SprIL}
-\inputminted[tabsize=4,linenos,firstnumber=0]{text}{../../src/haskell/PP-project-2016/test/banking_gen.txt}
+\inputminted[tabsize=4,linenos,firstnumber=1]{text}{../../src/haskell/PP-project-2017/test/banking.shl}
 \subsection{Results}
 \begin{minted}[tabsize=4,linenos]{text}
->>> 10000
->>> 2000
->>> 99999
->>> 10100
->>> 2100
->>> 100000
->>> 9900
->>> 2300
->>> 102000
->>> 9880
->>> 2290
->>> 102100
->>> 9880
->>> 1990
->>> 102050
->>> 10880
->>> 1955
->>> 101050
->>> 10880
->>> 2055
->>> 100950
+Sprockell 0 says 10000
+Sprockell 0 says 2000
+Sprockell 0 says 99999
+Sprockell 0 says 10100
+Sprockell 0 says 2100
+Sprockell 0 says 100000
+Sprockell 0 says 9900
+Sprockell 0 says 2300
+Sprockell 0 says 102000
+Sprockell 0 says 9880
+Sprockell 0 says 2290
+Sprockell 0 says 102100
+Sprockell 0 says 9880
+Sprockell 0 says 1990
+Sprockell 0 says 102050
+Sprockell 0 says 10880
+Sprockell 0 says 1955
+Sprockell 0 says 101050
+Sprockell 0 says 10880
+Sprockell 0 says 2055
+Sprockell 0 says 100950
 \end{minted}
 
 \section{Blocks}
 \subsection{Source}
-\inputminted[tabsize=4,linenos,firstnumber=1]{text}{../../src/haskell/PP-project-2016/test/blocks.shl}
-\subsection{Generated SprIL}
-\inputminted[tabsize=4,linenos,firstnumber=0]{text}{../../src/haskell/PP-project-2016/test/blocks_gen.txt}
+\inputminted[tabsize=4,linenos,firstnumber=1]{text}{../../src/haskell/PP-project-2017/test/blocks.shl}
 \subsection{Results}
 \begin{minted}[tabsize=4,linenos]{text}
->>> 1
->>> 100
->>> 0
->>> 0
->>> 2
->>> 120
->>> 1
->>> 0
->>> 3
->>> 123
->>> 0
->>> 1
->>> 4
->>> 423
->>> 1
->>> 1
->>> 3
->>> 123
->>> 0
->>> 1
->>> 5
->>> 453
->>> 1
->>> 0
->>> 5
->>> 453
->>> 0
->>> 1
->>> 5
->>> 453
->>> 1
->>> 0
->>> 6
->>> 456
->>> 0
->>> 0
->>> 5
->>> 453
->>> 1
->>> 0
->>> 3
->>> 123
->>> 0
->>> 1
->>> 2
->>> 120
->>> 1
->>> 0
->>> 2
->>> 120
->>> 1
->>> 0
->>> 2
->>> 120
->>> 1
->>> 0
->>> 2
->>> 120
->>> 1
->>> 0
->>> 1
->>> 100
->>> 0
->>> 0
+Sprockell 0 says 1
+Sprockell 0 says 100
+Sprockell 0 says 0
+Sprockell 0 says 0
+Sprockell 0 says 2
+Sprockell 0 says 120
+Sprockell 0 says 1
+Sprockell 0 says 0
+Sprockell 0 says 3
+Sprockell 0 says 123
+Sprockell 0 says 0
+Sprockell 0 says 1
+Sprockell 0 says 4
+Sprockell 0 says 423
+Sprockell 0 says 1
+Sprockell 0 says 1
+Sprockell 0 says 3
+Sprockell 0 says 123
+Sprockell 0 says 0
+Sprockell 0 says 1
+Sprockell 0 says 5
+Sprockell 0 says 453
+Sprockell 0 says 1
+Sprockell 0 says 0
+Sprockell 0 says 5
+Sprockell 0 says 453
+Sprockell 0 says 0
+Sprockell 0 says 1
+Sprockell 0 says 5
+Sprockell 0 says 453
+Sprockell 0 says 1
+Sprockell 0 says 0
+Sprockell 0 says 6
+Sprockell 0 says 456
+Sprockell 0 says 0
+Sprockell 0 says 0
+Sprockell 0 says 5
+Sprockell 0 says 453
+Sprockell 0 says 1
+Sprockell 0 says 0
+Sprockell 0 says 3
+Sprockell 0 says 123
+Sprockell 0 says 0
+Sprockell 0 says 1
+Sprockell 0 says 2
+Sprockell 0 says 120
+Sprockell 0 says 1
+Sprockell 0 says 0
+Sprockell 0 says 2
+Sprockell 0 says 120
+Sprockell 0 says 1
+Sprockell 0 says 0
+Sprockell 0 says 2
+Sprockell 0 says 120
+Sprockell 0 says 1
+Sprockell 0 says 0
+Sprockell 0 says 2
+Sprockell 0 says 120
+Sprockell 0 says 1
+Sprockell 0 says 0
+Sprockell 0 says 1
+Sprockell 0 says 100
+Sprockell 0 says 0
+Sprockell 0 says 0
 \end{minted}
 
 \section{Call-by-reference}
+This test has been run on 3 Sprockells.
 \subsection{Source}
-\inputminted[tabsize=4,linenos,firstnumber=1]{text}{../../src/haskell/PP-project-2016/test/call_by_reference.shl}
-\subsection{Generated SprIL}
-\inputminted[tabsize=4,linenos,firstnumber=0]{text}{../../src/haskell/PP-project-2016/test/call_by_reference_gen.txt}
+\inputminted[tabsize=4,linenos,firstnumber=1]{text}{../../src/haskell/PP-project-2017/test/call_by_reference.shl}
 \subsection{Results}
 \begin{minted}[tabsize=4,linenos]{text}
->>> 42
->>> 1337
+Sprockell 0 says 42
+Sprockell 0 says 1337
 \end{minted}
 
 \section{Cyclic Recursion}
 \subsection{Source}
-\inputminted[tabsize=4,linenos,firstnumber=1]{text}{../../src/haskell/PP-project-2016/test/cyclic_recursion.shl}
-\subsection{Generated SprIL}
-\inputminted[tabsize=4,linenos,firstnumber=0]{text}{../../src/haskell/PP-project-2016/test/cyclic_recursion_gen.txt}
+\inputminted[tabsize=4,linenos,firstnumber=1]{text}{../../src/haskell/PP-project-2017/test/cyclic_recursion.shl}
 \subsection{Results}
 \begin{minted}[tabsize=4,linenos]{text}
->>> 17
->>> 16
->>> 15
->>> 14
->>> 13
->>> 12
->>> 11
->>> 10
->>> 9
->>> 8
->>> 7
->>> 6
->>> 5
->>> 4
->>> 3
->>> 2
->>> 1
->>> 0
->>> 0
+Sprockell 0 says 17
+Sprockell 0 says 16
+Sprockell 0 says 15
+Sprockell 0 says 14
+Sprockell 0 says 13
+Sprockell 0 says 12
+Sprockell 0 says 11
+Sprockell 0 says 10
+Sprockell 0 says 9
+Sprockell 0 says 8
+Sprockell 0 says 7
+Sprockell 0 says 6
+Sprockell 0 says 5
+Sprockell 0 says 4
+Sprockell 0 says 3
+Sprockell 0 says 2
+Sprockell 0 says 1
+Sprockell 0 says 0
+Sprockell 0 says 0
 \end{minted}
 
 \section{Deep Expression}
 \subsection{Source}
-\inputminted[tabsize=4,linenos,firstnumber=1]{text}{../../src/haskell/PP-project-2016/test/deep_expression.shl}
-\subsection{Generated SprIL}
-\inputminted[tabsize=4,linenos,firstnumber=0]{text}{../../src/haskell/PP-project-2016/test/deep_expression_gen.txt}
+\inputminted[tabsize=4,linenos,firstnumber=1]{text}{../../src/haskell/PP-project-2017/test/deep_expression.shl}
 \subsection{Results}
 \begin{minted}[tabsize=4,linenos]{text}
->>> 5024000
+Sprockell 0 says 5024113
+Sprockell 0 says 5024112
+Sprockell 0 says 5024112
 \end{minted}
 
 \section{Fib}
 \subsection{Source}
-\inputminted[tabsize=4,linenos,firstnumber=1]{text}{../../src/haskell/PP-project-2016/test/fib.shl}
-\subsection{Generated SprIL}
-\inputminted[tabsize=4,linenos,firstnumber=0]{text}{../../src/haskell/PP-project-2016/test/fib_gen.txt}
+\inputminted[tabsize=4,linenos,firstnumber=1]{text}{../../src/haskell/PP-project-2017/test/fib.shl}
 \subsection{Results}
 \begin{minted}[tabsize=4,linenos]{text}
->>> 21
+Sprockell 0 says 5024113 21
 \end{minted}
 
 \section{If}
 \subsection{Source}
-\inputminted[tabsize=4,linenos,firstnumber=1]{text}{../../src/haskell/PP-project-2016/test/if.shl}
-\subsection{Generated SprIL}
-\inputminted[tabsize=4,linenos,firstnumber=0]{text}{../../src/haskell/PP-project-2016/test/if_gen.txt}
+\inputminted[tabsize=4,linenos,firstnumber=1]{text}{../../src/haskell/PP-project-2017/test/if.shl}
 \subsection{Results}
 \begin{minted}[tabsize=4,linenos]{text}
->>> 1
+Sprockell 0 says 1
 \end{minted}
 
 \section{If Else}
 \subsection{Source}
-\inputminted[tabsize=4,linenos,firstnumber=1]{text}{../../src/haskell/PP-project-2016/test/ifelse.shl}
-\subsection{Generated SprIL}
-\inputminted[tabsize=4,linenos,firstnumber=0]{text}{../../src/haskell/PP-project-2016/test/ifelse_gen.txt}
+\inputminted[tabsize=4,linenos,firstnumber=1]{text}{../../src/haskell/PP-project-2017/test/ifelse.shl}
 \subsection{Results}
 \begin{minted}[tabsize=4,linenos]{text}
->>> 4
->>> 5
->>> 4
->>> 3
->>> 4
+Sprockell 0 says 4
+Sprockell 0 says 5
+Sprockell 0 says 4
+Sprockell 0 says 3
+Sprockell 0 says 4
 \end{minted}
 
 \section{Infinite Busy Loop}
 \subsection{Source}
-\inputminted[tabsize=4,linenos,firstnumber=1]{text}{../../src/haskell/PP-project-2016/test/infinite_busy_loop.shl}
-\subsection{Generated SprIL}
-\inputminted[tabsize=4,linenos,firstnumber=0]{text}{../../src/haskell/PP-project-2016/test/infinite_busy_loop_gen.txt}
+\inputminted[tabsize=4,linenos,firstnumber=1]{text}{../../src/haskell/PP-project-2017/test/infinite_busy_loop.shl}
 \subsection{Results}
 Gets stuck in an infinite loop, repeating the same output.
 \begin{minted}[tabsize=4,linenos]{text}
->>> 1
->>> 1
->>> 2
->>> 2
->>> 4
->>> 8
->>> 12
->>> 96
->>> 108
->>> 10368
->>> 10476
->>> 108615168
->>> 108625644
->>> 11798392572168192
->>> 11798392680793836
->>> -5570361874949185536
->>> -5558563482268391700
->>> 3671369242980155392
->>> -1887194239288236308
->>> -4483044364780175360
->>> -6370238604068411668
->>> -8730959061097906176
->>> 3345546408543233772
->>> -6745737849034768384
->>> -3400191440491534612
->>> -6096120617457680384
->>> 8950432015760336620
->>> -1019520187243692032
->>> 7930911828516644588
->>> -4809903748681826304
->>> 3121008079834818284
->>> 5865085819223539712
->>> 8986093899058357996
->>> 2740241432517279744
->>> -6720408742133913876
->>> 3246081813541552128
->>> -3474326928592361748
->>> -1859074291971129344
->>> -5333401220563491092
->>> 681350175863603200
->>> -4652051044699887892
->>> -8143132099134619648
->>> 5651560929875044076
->>> 6951259845357993984
->>> -5843923298476513556
->>> 4700992750881865728
->>> -1142930547594647828
->>> -8561800288468467712
->>> 8742013237646436076
->>> 7566188111470788608
->>> -2138542724592326932
->>> -6956372574427152384
->>> -9094915299019479316
->>> -8878846665360932864
->>> 472982109329139436
->>> 1756403854674493440
->>> 2229385964003632876
->>> -5152117973711847424
->>> -2922732009708214548
->>> 1585267068834414592
->>> -1337464940873799956
->>> 5188146770730811392
->>> 3850681829857011436
->>> 6917529027641081856
->>> -7678533216211458324
->>> -9223372036854775808
->>> 1544838820643317484
->>> 0
->>> 1544838820643317484
->>> 0
->>> 1544838820643317484
->>> 0
->>> 1544838820643317484
->>> 0
+Sprockell 0 says 1
+Sprockell 0 says 1
+Sprockell 0 says 2
+Sprockell 0 says 2
+Sprockell 0 says 4
+Sprockell 0 says 8
+Sprockell 0 says 12
+Sprockell 0 says 96
+Sprockell 0 says 108
+Sprockell 0 says 10368
+Sprockell 0 says 10476
+Sprockell 0 says 108615168
+Sprockell 0 says 108625644
+Sprockell 0 says 11798392572168192
+Sprockell 0 says 11798392680793836
+Sprockell 0 says -5570361874949185536
+Sprockell 0 says -5558563482268391700
+Sprockell 0 says 3671369242980155392
+Sprockell 0 says -1887194239288236308
+Sprockell 0 says -4483044364780175360
+Sprockell 0 says -6370238604068411668
+Sprockell 0 says -8730959061097906176
+Sprockell 0 says 3345546408543233772
+Sprockell 0 says -6745737849034768384
+Sprockell 0 says -3400191440491534612
+Sprockell 0 says -6096120617457680384
+Sprockell 0 says 8950432015760336620
+Sprockell 0 says -1019520187243692032
+Sprockell 0 says 7930911828516644588
+Sprockell 0 says -4809903748681826304
+Sprockell 0 says 3121008079834818284
+Sprockell 0 says 5865085819223539712
+Sprockell 0 says 8986093899058357996
+Sprockell 0 says 2740241432517279744
+Sprockell 0 says -6720408742133913876
+Sprockell 0 says 3246081813541552128
+Sprockell 0 says -3474326928592361748
+Sprockell 0 says -1859074291971129344
+Sprockell 0 says -5333401220563491092
+Sprockell 0 says 681350175863603200
+Sprockell 0 says -4652051044699887892
+Sprockell 0 says -8143132099134619648
+Sprockell 0 says 5651560929875044076
+Sprockell 0 says 6951259845357993984
+Sprockell 0 says -5843923298476513556
+Sprockell 0 says 4700992750881865728
+Sprockell 0 says -1142930547594647828
+Sprockell 0 says -8561800288468467712
+Sprockell 0 says 8742013237646436076
+Sprockell 0 says 7566188111470788608
+Sprockell 0 says -2138542724592326932
+Sprockell 0 says -6956372574427152384
+Sprockell 0 says -9094915299019479316
+Sprockell 0 says -8878846665360932864
+Sprockell 0 says 472982109329139436
+Sprockell 0 says 1756403854674493440
+Sprockell 0 says 2229385964003632876
+Sprockell 0 says -5152117973711847424
+Sprockell 0 says -2922732009708214548
+Sprockell 0 says 1585267068834414592
+Sprockell 0 says -1337464940873799956
+Sprockell 0 says 5188146770730811392
+Sprockell 0 says 3850681829857011436
+Sprockell 0 says 6917529027641081856
+Sprockell 0 says -7678533216211458324
+Sprockell 0 says -9223372036854775808
+Sprockell 0 says 1544838820643317484
+Sprockell 0 says 0
+Sprockell 0 says 1544838820643317484
+Sprockell 0 says 0
 \ldots
 \end{minted}
 
 
 \section{Infinite Empty Loop}
 \subsection{Source}
-\inputminted[tabsize=4,linenos,firstnumber=1]{text}{../../src/haskell/PP-project-2016/test/infinite_loop.shl}
-\subsection{Generated SprIL}
-\inputminted[tabsize=4,linenos,firstnumber=0]{text}{../../src/haskell/PP-project-2016/test/infinite_loop_gen.txt}
+\inputminted[tabsize=4,linenos,firstnumber=1]{text}{../../src/haskell/PP-project-2017/test/infinite_loop.shl}
 \subsection{Results}
 No output, gets stuck in an infinite loop.
 
 \section{Join Test}
+This test has been run on 2 Sprockells.
 \subsection{Source}
-\inputminted[tabsize=4,linenos,firstnumber=1]{text}{../../src/haskell/PP-project-2016/test/join_test.shl}
-\subsection{Generated SprIL}
-\inputminted[tabsize=4,linenos,firstnumber=0]{text}{../../src/haskell/PP-project-2016/test/join_test_gen.txt}
+\inputminted[tabsize=4,linenos,firstnumber=1]{text}{../../src/haskell/PP-project-2017/test/join_test.shl}
 \subsection{Results}
-No output, gets stuck in an infinite loop.
+Sprockell 1 says 5000
+Sprockell 0 says 10000
 
 \section{Multiple Globals}
+This test has been run on 3 Sprockells.
 \subsection{Source}
-\inputminted[tabsize=4,linenos,firstnumber=1]{text}{../../src/haskell/PP-project-2016/test/multiple_globals.shl}
-\subsection{Generated SprIL}
-\inputminted[tabsize=4,linenos,firstnumber=0]{text}{../../src/haskell/PP-project-2016/test/multiple_globals_gen.txt}
+\inputminted[tabsize=4,linenos,firstnumber=1]{text}{../../src/haskell/PP-project-2017/test/multiple_globals.shl}
 \subsection{Results}
 \begin{minted}[tabsize=4,linenos]{text}
->>> 8
->>> 9
->>> 10
->>> 11
->>> 12
->>> 13
->>> 13
->>> 12
->>> 11
->>> 10
->>> 9
->>> 8
+Sprockell 1 says 8
+Sprockell 1 says 9
+Sprockell 1 says 10
+Sprockell 1 says 11
+Sprockell 1 says 12
+Sprockell 1 says 13
+Sprockell 2 says 13
+Sprockell 2 says 12
+Sprockell 2 says 11
+Sprockell 2 says 10
+Sprockell 2 says 9
+Sprockell 2 says 8
 \end{minted}
 
 \section{Nested Procedures}
 \subsection{Source}
-\inputminted[tabsize=4,linenos,firstnumber=1]{text}{../../src/haskell/PP-project-2016/test/nested_procedures.shl}
-\subsection{Generated SprIL}
-\inputminted[tabsize=4,linenos,firstnumber=0]{text}{../../src/haskell/PP-project-2016/test/nested_procedures_gen.txt}
+\inputminted[tabsize=4,linenos,firstnumber=1]{text}{../../src/haskell/PP-project-2017/test/nested_procedures.shl}
 \subsection{Results}
 \begin{minted}[tabsize=4,linenos]{text}
->>> 90
->>> 10
->>> 20
->>> 30
->>> 40
->>> 34
->>> 23
->>> 40
->>> 24
->>> 12
->>> 30
->>> 40
->>> 34
->>> 13
->>> 40
->>> 14
->>> 91
->>> 20
->>> 30
->>> 40
->>> 34
->>> 23
->>> 40
->>> 24
->>> 92
->>> 30
->>> 40
->>> 34
->>> 93
->>> 40
->>> 94
+Sprockell 0 says 90
+Sprockell 0 says 10
+Sprockell 0 says 20
+Sprockell 0 says 30
+Sprockell 0 says 40
+Sprockell 0 says 34
+Sprockell 0 says 23
+Sprockell 0 says 40
+Sprockell 0 says 24
+Sprockell 0 says 12
+Sprockell 0 says 30
+Sprockell 0 says 40
+Sprockell 0 says 34
+Sprockell 0 says 13
+Sprockell 0 says 40
+Sprockell 0 says 14
+Sprockell 0 says 91
+Sprockell 0 says 20
+Sprockell 0 says 30
+Sprockell 0 says 40
+Sprockell 0 says 34
+Sprockell 0 says 23
+Sprockell 0 says 40
+Sprockell 0 says 24
+Sprockell 0 says 92
+Sprockell 0 says 30
+Sprockell 0 says 40
+Sprockell 0 says 34
+Sprockell 0 says 93
+Sprockell 0 says 40
+Sprockell 0 says 94
 \end{minted}
 
 \section{Peterson}
+This test has been run on 3 Sprockells.
 \subsection{Source}
-\inputminted[tabsize=4,linenos,firstnumber=1]{text}{../../src/haskell/PP-project-2016/test/peterson.shl}
-\subsection{Generated SprIL}
-\inputminted[tabsize=4,linenos,firstnumber=0]{text}{../../src/haskell/PP-project-2016/test/peterson_gen.txt}
+\inputminted[tabsize=4,linenos,firstnumber=1]{text}{../../src/haskell/PP-project-2017/test/peterson.shl}
 \subsection{Results}
 \begin{minted}[tabsize=4,linenos]{text}
->>> 0
->>> 0
->>> 0
->>> 0
->>> 0
->>> 0
->>> 0
->>> 0
->>> 0
->>> 0
->>> 0
->>> 0
->>> 0
->>> 0
->>> 0
->>> 0
->>> 0
->>> 0
->>> 0
->>> 0
+Sprockell 0 says 0
+Sprockell 0 says 0
+Sprockell 0 says 0
+Sprockell 0 says 0
+Sprockell 0 says 0
+Sprockell 0 says 0
+Sprockell 0 says 0
+Sprockell 0 says 0
+Sprockell 0 says 0
+Sprockell 0 says 0
+Sprockell 0 says 0
+Sprockell 0 says 0
+Sprockell 0 says 0
+Sprockell 0 says 0
+Sprockell 0 says 0
+Sprockell 0 says 0
+Sprockell 0 says 0
+Sprockell 0 says 0
+Sprockell 0 says 0
+Sprockell 0 says 0
 \end{minted}
 
 \section{Recursion}
 \subsection{Source}
-\inputminted[tabsize=4,linenos,firstnumber=1]{text}{../../src/haskell/PP-project-2016/test/recursion.shl}
-\subsection{Generated SprIL}
-\inputminted[tabsize=4,linenos,firstnumber=0]{text}{../../src/haskell/PP-project-2016/test/recursion_gen.txt}
+\inputminted[tabsize=4,linenos,firstnumber=1]{text}{../../src/haskell/PP-project-2017/test/recursion.shl}
 \subsection{Results}
 \begin{minted}[tabsize=4,linenos]{text}
->>> 0
->>> 1
->>> 2
->>> 3
+Sprockell 0 says 0
+Sprockell 0 says 1
+Sprockell 0 says 2
+Sprockell 0 says 3
 \end{minted}
 
 \section{Simple Concurrency}
+This test has been run on 3 Sprockells.
 \subsection{Source}
-\inputminted[tabsize=4,linenos,firstnumber=1]{text}{../../src/haskell/PP-project-2016/test/simple_concurrency.shl}
-\subsection{Generated SprIL}
-\inputminted[tabsize=4,linenos,firstnumber=0]{text}{../../src/haskell/PP-project-2016/test/simple_concurrency_gen.txt}
+\inputminted[tabsize=4,linenos,firstnumber=1]{text}{../../src/haskell/PP-project-2017/test/simple_concurrency.shl}
 \subsection{Results}
 \begin{minted}[tabsize=4,linenos]{text}
->>> 4
->>> 6
->>> 6
+Sprockell 1 says 4
+Sprockell 2 says 6
+Sprockell 0 says 6
 \end{minted}
 
 \section{Simple Procedures}
 \subsection{Source}
-\inputminted[tabsize=4,linenos,firstnumber=1]{text}{../../src/haskell/PP-project-2016/test/simple_proc.shl}
-\subsection{Generated SprIL}
-\inputminted[tabsize=4,linenos,firstnumber=0]{text}{../../src/haskell/PP-project-2016/test/simple_proc_gen.txt}
+\inputminted[tabsize=4,linenos,firstnumber=1]{text}{../../src/haskell/PP-project-2017/test/simple_proc.shl}
 \subsection{Results}
 \begin{minted}[tabsize=4,linenos]{text}
->>> 2
->>> 4
->>> 0
->>> 2
+Sprockell 0 says 2
+Sprockell 0 says 4
+Sprockell 0 says 0
+Sprockell 0 says 2
 \end{minted}
 
 \section{While}
 \subsection{Source}
-\inputminted[tabsize=4,linenos,firstnumber=1]{text}{../../src/haskell/PP-project-2016/test/while.shl}
-\subsection{Generated SprIL}
-\inputminted[tabsize=4,linenos,firstnumber=0]{text}{../../src/haskell/PP-project-2016/test/while_gen.txt}
+\inputminted[tabsize=4,linenos,firstnumber=1]{text}{../../src/haskell/PP-project-2017/test/while.shl}
 \subsection{Results}
 \begin{minted}[tabsize=4,linenos]{text}
->>> 100
->>> 99
->>> 98
->>> 97
->>> 96
->>> 95
->>> 94
->>> 93
->>> 92
->>> 91
->>> 90
->>> 89
->>> 88
->>> 87
->>> 86
->>> 85
->>> 84
->>> 83
->>> 82
->>> 81
->>> 80
->>> 79
->>> 78
->>> 77
->>> 76
->>> 75
->>> 74
->>> 73
->>> 72
->>> 71
->>> 70
->>> 69
->>> 68
->>> 67
->>> 66
->>> 65
->>> 64
->>> 63
->>> 62
->>> 61
->>> 60
->>> 59
->>> 58
->>> 57
->>> 56
->>> 55
->>> 54
->>> 53
->>> 52
->>> 51
->>> 50
->>> 49
->>> 48
->>> 47
->>> 46
->>> 45
->>> 44
->>> 43
->>> 42
->>> 41
->>> 40
->>> 39
->>> 38
->>> 37
->>> 36
->>> 35
->>> 34
->>> 33
->>> 32
->>> 31
->>> 30
->>> 29
->>> 28
->>> 27
->>> 26
->>> 25
->>> 24
->>> 23
->>> 22
->>> 21
->>> 20
->>> 19
->>> 18
->>> 17
->>> 16
->>> 15
->>> 14
->>> 13
->>> 12
->>> 11
->>> 10
->>> 9
->>> 8
->>> 7
->>> 6
->>> 5
->>> 4
->>> 3
->>> 2
->>> 1
->>> 0
+Sprockell 0 says 100
+Sprockell 0 says 99
+Sprockell 0 says 98
+Sprockell 0 says 97
+Sprockell 0 says 96
+Sprockell 0 says 95
+Sprockell 0 says 94
+Sprockell 0 says 93
+Sprockell 0 says 92
+Sprockell 0 says 91
+Sprockell 0 says 90
+\ldots
+Sprockell 0 says 10
+Sprockell 0 says 9
+Sprockell 0 says 8
+Sprockell 0 says 7
+Sprockell 0 says 6
+Sprockell 0 says 5
+Sprockell 0 says 4
+Sprockell 0 says 3
+Sprockell 0 says 2
+Sprockell 0 says 1
+Sprockell 0 says 0
 \end{minted}
 
 

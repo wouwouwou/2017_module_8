@@ -912,15 +912,9 @@ That's all. As far as I can see we did our best. Let's hope it is enough.
 \label{extended_test_program}
 The extended test program shown here is Peterson's algorithm. It shows how, using the available methods for concurrency, two thread using the same variable have mutually exclusive access to it.
 
-%TODO check code
 \section{Peterson's Algorithm Test}
 \inputminted[tabsize=4,linenos,firstnumber=1]{text}{../../src/haskell/PP-project-2017/test/peterson.shl}
 
-%TODO Generate new code
-\section{Generated Code}
-\inputminted[tabsize=4,linenos,firstnumber=0]{text}{../../src/haskell/PP-project-2017/test/peterson_gen.txt}
-
-%TODO Check whether the output is still the same. This is Main.hs!
 \section{Correct Executions}
 Every time a value is printed in Peterson's algorithm test, it should be zero. The output of a simulation on the Sprockell with our compiler:
 \begin{minted}[tabsize=4]{text}
@@ -930,26 +924,26 @@ How many Sprockells do you want to use to run this file?
 3
 Running: test/peterson.shl
 On 3 Sprockells
->>> 0
->>> 0
->>> 0
->>> 0
->>> 0
->>> 0
->>> 0
->>> 0
->>> 0
->>> 0
->>> 0
->>> 0
->>> 0
->>> 0
->>> 0
->>> 0
->>> 0
->>> 0
->>> 0
->>> 0
+Sprockell 0 says 0
+Sprockell 0 says 0
+Sprockell 0 says 0
+Sprockell 0 says 0
+Sprockell 0 says 0
+Sprockell 0 says 0
+Sprockell 0 says 0
+Sprockell 0 says 0
+Sprockell 0 says 0
+Sprockell 0 says 0
+Sprockell 0 says 0
+Sprockell 0 says 0
+Sprockell 0 says 0
+Sprockell 0 says 0
+Sprockell 0 says 0
+Sprockell 0 says 0
+Sprockell 0 says 0
+Sprockell 0 says 0
+Sprockell 0 says 0
+Sprockell 0 says 0
 \end{minted}
 
 

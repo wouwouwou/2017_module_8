@@ -2,10 +2,7 @@
 
 Implementation the University of Twente Programming Paradigms' final project.
 
-Aim is to provide a simple implementation, using Haskell, from tokenizing to code generation. 
-
-We use Trello to track our progress: 
-https://trello.com/b/2L7Oxxjg/pp-project-2016
+Aim is to provide a simple implementation, using Haskell, from tokenizing to code generation.
 
 ## Running a program
 To run a program, you can use the compiled Main, or you might need to compile main:

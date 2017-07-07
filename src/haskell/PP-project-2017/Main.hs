@@ -7,8 +7,9 @@ import FP_ParserGen         -- Touching this file leaves you at your own devices
 import ASTBuilder
 import Checker
 import CodeGen
---import Simulation
+-- import Simulation
 import System.FilePath
+import Sprockell
 
 main :: IO()
 main = do
@@ -20,7 +21,7 @@ main = do
     putStrLn $ "On " ++ sprockells ++ " Sprockells"
 
     file <- readFile $ fileName ++ ".shl"
-    sysTest $
+    run $
         replicate (read sprockells :: Int) $
         codeGen' (read sprockells :: Int) $
         checker $
