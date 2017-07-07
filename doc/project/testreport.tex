@@ -6,7 +6,7 @@
 
 \usepackage{graphicx}
 
-% \usepackage{minted}
+\usepackage{minted}
 
 \usepackage{amsmath,amssymb,amsthm} % Mathematical Symbols, styles, etc
 
@@ -97,7 +97,7 @@
 
 \section{Syntax 1}
 \subsection{Source}
-\inputminted[tabsize=4,linenos,firstnumber=1]{text}{../test/syntax1.shl}
+\inputminted[tabsize=4,linenos,firstnumber=1]{text}{../../src/haskell/PP-project-2016/test/syntax1.shl}
 \subsection{Output}
 \begin{minted}[tabsize=4,linenos]{text}
 Main: tokenList not fully parsed
@@ -105,7 +105,7 @@ Main: tokenList not fully parsed
 
 \section{Syntax 2}
 \subsection{Source}
-\inputminted[tabsize=4,linenos,firstnumber=1]{text}{../test/syntax2.shl}
+\inputminted[tabsize=4,linenos,firstnumber=1]{text}{../../src/haskell/PP-project-2016/test/syntax2.shl}
 \subsection{Output}
 \begin{minted}[tabsize=4,linenos]{text}
 Main: tokenList not fully parsed
@@ -113,7 +113,7 @@ Main: tokenList not fully parsed
 
 \section{Syntax 3}
 \subsection{Source}
-\inputminted[tabsize=4,linenos,firstnumber=1]{text}{../test/syntax3.shl}
+\inputminted[tabsize=4,linenos,firstnumber=1]{text}{../../src/haskell/PP-project-2016/test/syntax3.shl}
 \subsection{Output}
 \begin{minted}[tabsize=4,linenos]{text}
 Main: tokenList not fully parsed
@@ -121,7 +121,7 @@ Main: tokenList not fully parsed
 
 \section{Syntax 4}
 \subsection{Source}
-\inputminted[tabsize=4,linenos,firstnumber=1]{text}{../test/syntax4.shl}
+\inputminted[tabsize=4,linenos,firstnumber=1]{text}{../../src/haskell/PP-project-2016/test/syntax4.shl}
 \subsection{Output}
 \begin{minted}[tabsize=4,linenos]{text}
 Main: tokenList not fully parsed
@@ -129,7 +129,7 @@ Main: tokenList not fully parsed
 
 \section{Syntax 5}
 \subsection{Source}
-\inputminted[tabsize=4,linenos,firstnumber=1]{text}{../test/syntax5.shl}
+\inputminted[tabsize=4,linenos,firstnumber=1]{text}{../../src/haskell/PP-project-2016/test/syntax5.shl}
 \subsection{Output}
 \begin{minted}[tabsize=4,linenos]{text}
 Main: tokenList not fully parsed
@@ -140,7 +140,7 @@ Main: tokenList not fully parsed
 
 \section{Wrong Type}
 \subsection{Source}
-\inputminted[tabsize=4,linenos,firstnumber=1]{text}{../test/wrong_type.shl}
+\inputminted[tabsize=4,linenos,firstnumber=1]{text}{../../src/haskell/PP-project-2016/test/wrong_type.shl}
 \subsection{Output}
 \begin{minted}[tabsize=4,linenos]{text}
 Main: Condition in if statement should be of type: bool, but isnt, in: ASTVar "i" ([],[],[])
@@ -148,7 +148,7 @@ Main: Condition in if statement should be of type: bool, but isnt, in: ASTVar "i
 
 \section{Not Declared}
 \subsection{Source}
-\inputminted[tabsize=4,linenos,firstnumber=1]{text}{../test/not_declared.shl}
+\inputminted[tabsize=4,linenos,firstnumber=1]{text}{../../src/haskell/PP-project-2016/test/not_declared.shl}
 \subsection{Output}
 \begin{minted}[tabsize=4,linenos]{text}
 Main: Variable: i not declared in Checker.getExprType.iterVar
@@ -159,9 +159,9 @@ Main: Variable: i not declared in Checker.getExprType.iterVar
 
 \section{Banking}
 \subsection{Source}
-\inputminted[tabsize=4,linenos,firstnumber=1]{text}{../test/banking.shl}
+\inputminted[tabsize=4,linenos,firstnumber=1]{text}{../../src/haskell/PP-project-2016/test/banking.shl}
 \subsection{Generated SprIL}
-\inputminted[tabsize=4,linenos,firstnumber=0]{text}{../test/banking_gen.txt}
+\inputminted[tabsize=4,linenos,firstnumber=0]{text}{../../src/haskell/PP-project-2016/test/banking_gen.txt}
 \subsection{Results}
 \begin{minted}[tabsize=4,linenos]{text}
 >>> 10000
@@ -189,9 +189,9 @@ Main: Variable: i not declared in Checker.getExprType.iterVar
 
 \section{Blocks}
 \subsection{Source}
-\inputminted[tabsize=4,linenos,firstnumber=1]{text}{../test/blocks.shl}
+\inputminted[tabsize=4,linenos,firstnumber=1]{text}{../../src/haskell/PP-project-2016/test/blocks.shl}
 \subsection{Generated SprIL}
-\inputminted[tabsize=4,linenos,firstnumber=0]{text}{../test/blocks_gen.txt}
+\inputminted[tabsize=4,linenos,firstnumber=0]{text}{../../src/haskell/PP-project-2016/test/blocks_gen.txt}
 \subsection{Results}
 \begin{minted}[tabsize=4,linenos]{text}
 >>> 1
@@ -262,9 +262,9 @@ Main: Variable: i not declared in Checker.getExprType.iterVar
 
 \section{Call-by-reference}
 \subsection{Source}
-\inputminted[tabsize=4,linenos,firstnumber=1]{text}{../test/call_by_reference.shl}
+\inputminted[tabsize=4,linenos,firstnumber=1]{text}{../../src/haskell/PP-project-2016/test/call_by_reference.shl}
 \subsection{Generated SprIL}
-\inputminted[tabsize=4,linenos,firstnumber=0]{text}{../test/call_by_reference_gen.txt}
+\inputminted[tabsize=4,linenos,firstnumber=0]{text}{../../src/haskell/PP-project-2016/test/call_by_reference_gen.txt}
 \subsection{Results}
 \begin{minted}[tabsize=4,linenos]{text}
 >>> 42
@@ -273,9 +273,9 @@ Main: Variable: i not declared in Checker.getExprType.iterVar
 
 \section{Cyclic Recursion}
 \subsection{Source}
-\inputminted[tabsize=4,linenos,firstnumber=1]{text}{../test/cyclic_recursion.shl}
+\inputminted[tabsize=4,linenos,firstnumber=1]{text}{../../src/haskell/PP-project-2016/test/cyclic_recursion.shl}
 \subsection{Generated SprIL}
-\inputminted[tabsize=4,linenos,firstnumber=0]{text}{../test/cyclic_recursion_gen.txt}
+\inputminted[tabsize=4,linenos,firstnumber=0]{text}{../../src/haskell/PP-project-2016/test/cyclic_recursion_gen.txt}
 \subsection{Results}
 \begin{minted}[tabsize=4,linenos]{text}
 >>> 17
@@ -301,9 +301,9 @@ Main: Variable: i not declared in Checker.getExprType.iterVar
 
 \section{Deep Expression}
 \subsection{Source}
-\inputminted[tabsize=4,linenos,firstnumber=1]{text}{../test/deep_expression.shl}
+\inputminted[tabsize=4,linenos,firstnumber=1]{text}{../../src/haskell/PP-project-2016/test/deep_expression.shl}
 \subsection{Generated SprIL}
-\inputminted[tabsize=4,linenos,firstnumber=0]{text}{../test/deep_expression_gen.txt}
+\inputminted[tabsize=4,linenos,firstnumber=0]{text}{../../src/haskell/PP-project-2016/test/deep_expression_gen.txt}
 \subsection{Results}
 \begin{minted}[tabsize=4,linenos]{text}
 >>> 5024000
@@ -311,9 +311,9 @@ Main: Variable: i not declared in Checker.getExprType.iterVar
 
 \section{Fib}
 \subsection{Source}
-\inputminted[tabsize=4,linenos,firstnumber=1]{text}{../test/fib.shl}
+\inputminted[tabsize=4,linenos,firstnumber=1]{text}{../../src/haskell/PP-project-2016/test/fib.shl}
 \subsection{Generated SprIL}
-\inputminted[tabsize=4,linenos,firstnumber=0]{text}{../test/fib_gen.txt}
+\inputminted[tabsize=4,linenos,firstnumber=0]{text}{../../src/haskell/PP-project-2016/test/fib_gen.txt}
 \subsection{Results}
 \begin{minted}[tabsize=4,linenos]{text}
 >>> 21
@@ -321,9 +321,9 @@ Main: Variable: i not declared in Checker.getExprType.iterVar
 
 \section{If}
 \subsection{Source}
-\inputminted[tabsize=4,linenos,firstnumber=1]{text}{../test/if.shl}
+\inputminted[tabsize=4,linenos,firstnumber=1]{text}{../../src/haskell/PP-project-2016/test/if.shl}
 \subsection{Generated SprIL}
-\inputminted[tabsize=4,linenos,firstnumber=0]{text}{../test/if_gen.txt}
+\inputminted[tabsize=4,linenos,firstnumber=0]{text}{../../src/haskell/PP-project-2016/test/if_gen.txt}
 \subsection{Results}
 \begin{minted}[tabsize=4,linenos]{text}
 >>> 1
@@ -331,9 +331,9 @@ Main: Variable: i not declared in Checker.getExprType.iterVar
 
 \section{If Else}
 \subsection{Source}
-\inputminted[tabsize=4,linenos,firstnumber=1]{text}{../test/ifelse.shl}
+\inputminted[tabsize=4,linenos,firstnumber=1]{text}{../../src/haskell/PP-project-2016/test/ifelse.shl}
 \subsection{Generated SprIL}
-\inputminted[tabsize=4,linenos,firstnumber=0]{text}{../test/ifelse_gen.txt}
+\inputminted[tabsize=4,linenos,firstnumber=0]{text}{../../src/haskell/PP-project-2016/test/ifelse_gen.txt}
 \subsection{Results}
 \begin{minted}[tabsize=4,linenos]{text}
 >>> 4
@@ -345,9 +345,9 @@ Main: Variable: i not declared in Checker.getExprType.iterVar
 
 \section{Infinite Busy Loop}
 \subsection{Source}
-\inputminted[tabsize=4,linenos,firstnumber=1]{text}{../test/infinite_busy_loop.shl}
+\inputminted[tabsize=4,linenos,firstnumber=1]{text}{../../src/haskell/PP-project-2016/test/infinite_busy_loop.shl}
 \subsection{Generated SprIL}
-\inputminted[tabsize=4,linenos,firstnumber=0]{text}{../test/infinite_busy_loop_gen.txt}
+\inputminted[tabsize=4,linenos,firstnumber=0]{text}{../../src/haskell/PP-project-2016/test/infinite_busy_loop_gen.txt}
 \subsection{Results}
 Gets stuck in an infinite loop, repeating the same output.
 \begin{minted}[tabsize=4,linenos]{text}
@@ -431,25 +431,25 @@ Gets stuck in an infinite loop, repeating the same output.
 
 \section{Infinite Empty Loop}
 \subsection{Source}
-\inputminted[tabsize=4,linenos,firstnumber=1]{text}{../test/infinite_loop.shl}
+\inputminted[tabsize=4,linenos,firstnumber=1]{text}{../../src/haskell/PP-project-2016/test/infinite_loop.shl}
 \subsection{Generated SprIL}
-\inputminted[tabsize=4,linenos,firstnumber=0]{text}{../test/infinite_loop_gen.txt}
+\inputminted[tabsize=4,linenos,firstnumber=0]{text}{../../src/haskell/PP-project-2016/test/infinite_loop_gen.txt}
 \subsection{Results}
 No output, gets stuck in an infinite loop.
 
 \section{Join Test}
 \subsection{Source}
-\inputminted[tabsize=4,linenos,firstnumber=1]{text}{../test/join_test.shl}
+\inputminted[tabsize=4,linenos,firstnumber=1]{text}{../../src/haskell/PP-project-2016/test/join_test.shl}
 \subsection{Generated SprIL}
-\inputminted[tabsize=4,linenos,firstnumber=0]{text}{../test/join_test_gen.txt}
+\inputminted[tabsize=4,linenos,firstnumber=0]{text}{../../src/haskell/PP-project-2016/test/join_test_gen.txt}
 \subsection{Results}
 No output, gets stuck in an infinite loop.
 
 \section{Multiple Globals}
 \subsection{Source}
-\inputminted[tabsize=4,linenos,firstnumber=1]{text}{../test/multiple_globals.shl}
+\inputminted[tabsize=4,linenos,firstnumber=1]{text}{../../src/haskell/PP-project-2016/test/multiple_globals.shl}
 \subsection{Generated SprIL}
-\inputminted[tabsize=4,linenos,firstnumber=0]{text}{../test/multiple_globals_gen.txt}
+\inputminted[tabsize=4,linenos,firstnumber=0]{text}{../../src/haskell/PP-project-2016/test/multiple_globals_gen.txt}
 \subsection{Results}
 \begin{minted}[tabsize=4,linenos]{text}
 >>> 8
@@ -468,9 +468,9 @@ No output, gets stuck in an infinite loop.
 
 \section{Nested Procedures}
 \subsection{Source}
-\inputminted[tabsize=4,linenos,firstnumber=1]{text}{../test/nested_procedures.shl}
+\inputminted[tabsize=4,linenos,firstnumber=1]{text}{../../src/haskell/PP-project-2016/test/nested_procedures.shl}
 \subsection{Generated SprIL}
-\inputminted[tabsize=4,linenos,firstnumber=0]{text}{../test/nested_procedures_gen.txt}
+\inputminted[tabsize=4,linenos,firstnumber=0]{text}{../../src/haskell/PP-project-2016/test/nested_procedures_gen.txt}
 \subsection{Results}
 \begin{minted}[tabsize=4,linenos]{text}
 >>> 90
@@ -508,9 +508,9 @@ No output, gets stuck in an infinite loop.
 
 \section{Peterson}
 \subsection{Source}
-\inputminted[tabsize=4,linenos,firstnumber=1]{text}{../test/peterson.shl}
+\inputminted[tabsize=4,linenos,firstnumber=1]{text}{../../src/haskell/PP-project-2016/test/peterson.shl}
 \subsection{Generated SprIL}
-\inputminted[tabsize=4,linenos,firstnumber=0]{text}{../test/peterson_gen.txt}
+\inputminted[tabsize=4,linenos,firstnumber=0]{text}{../../src/haskell/PP-project-2016/test/peterson_gen.txt}
 \subsection{Results}
 \begin{minted}[tabsize=4,linenos]{text}
 >>> 0
@@ -537,9 +537,9 @@ No output, gets stuck in an infinite loop.
 
 \section{Recursion}
 \subsection{Source}
-\inputminted[tabsize=4,linenos,firstnumber=1]{text}{../test/recursion.shl}
+\inputminted[tabsize=4,linenos,firstnumber=1]{text}{../../src/haskell/PP-project-2016/test/recursion.shl}
 \subsection{Generated SprIL}
-\inputminted[tabsize=4,linenos,firstnumber=0]{text}{../test/recursion_gen.txt}
+\inputminted[tabsize=4,linenos,firstnumber=0]{text}{../../src/haskell/PP-project-2016/test/recursion_gen.txt}
 \subsection{Results}
 \begin{minted}[tabsize=4,linenos]{text}
 >>> 0
@@ -550,9 +550,9 @@ No output, gets stuck in an infinite loop.
 
 \section{Simple Concurrency}
 \subsection{Source}
-\inputminted[tabsize=4,linenos,firstnumber=1]{text}{../test/simple_concurrency.shl}
+\inputminted[tabsize=4,linenos,firstnumber=1]{text}{../../src/haskell/PP-project-2016/test/simple_concurrency.shl}
 \subsection{Generated SprIL}
-\inputminted[tabsize=4,linenos,firstnumber=0]{text}{../test/simple_concurrency_gen.txt}
+\inputminted[tabsize=4,linenos,firstnumber=0]{text}{../../src/haskell/PP-project-2016/test/simple_concurrency_gen.txt}
 \subsection{Results}
 \begin{minted}[tabsize=4,linenos]{text}
 >>> 4
@@ -562,9 +562,9 @@ No output, gets stuck in an infinite loop.
 
 \section{Simple Procedures}
 \subsection{Source}
-\inputminted[tabsize=4,linenos,firstnumber=1]{text}{../test/simple_proc.shl}
+\inputminted[tabsize=4,linenos,firstnumber=1]{text}{../../src/haskell/PP-project-2016/test/simple_proc.shl}
 \subsection{Generated SprIL}
-\inputminted[tabsize=4,linenos,firstnumber=0]{text}{../test/simple_proc_gen.txt}
+\inputminted[tabsize=4,linenos,firstnumber=0]{text}{../../src/haskell/PP-project-2016/test/simple_proc_gen.txt}
 \subsection{Results}
 \begin{minted}[tabsize=4,linenos]{text}
 >>> 2
@@ -575,9 +575,9 @@ No output, gets stuck in an infinite loop.
 
 \section{While}
 \subsection{Source}
-\inputminted[tabsize=4,linenos,firstnumber=1]{text}{../test/while.shl}
+\inputminted[tabsize=4,linenos,firstnumber=1]{text}{../../src/haskell/PP-project-2016/test/while.shl}
 \subsection{Generated SprIL}
-\inputminted[tabsize=4,linenos,firstnumber=0]{text}{../test/while_gen.txt}
+\inputminted[tabsize=4,linenos,firstnumber=0]{text}{../../src/haskell/PP-project-2016/test/while_gen.txt}
 \subsection{Results}
 \begin{minted}[tabsize=4,linenos]{text}
 >>> 100

@@ -41,7 +41,7 @@
 \pagestyle{fancy} % All pages have headers and footers
 \fancyhead{} % Blank out the default header
 \fancyfoot{} % Blank out the default footer
-\fancyhead[C]{M.F. Verkleij, T. Kerkhoven: \shorttitle} % Custom header text
+\fancyhead[C]{M.F. Verkleij, W.F.A. Bos: \shorttitle} % Custom header text
 \fancyfoot[RO,LE]{\thepage} % Custom footer text
 
 % Appendices
@@ -70,11 +70,11 @@
 \author{
 \large
 \textsc{Group 26}\\[-0.75mm]
-\textsc{Martijn Verkleij \& Tim Kerkhoven}\\[2mm] % Your name
+\textsc{Martijn Verkleij \& Wouter Bos}\\[2mm] % Your name
 \normalsize University of Twente \\ % Your institution
 \normalsize \href{mailto:m.f.verkleij@student.utwente.nl}{m.f.verkleij@student.utwente.nl},
-\href{mailto:t.kerkhoven@student.utwente.nl}{t.kerkhoven@student.utwente.nl}\\% Your email addresses
-\normalsize s1466895 s1375253
+\href{mailto:w.bos@student.utwente.nl}{w.f.a.bos@student.utwente.nl}\\% Your email addresses
+\normalsize s1466895 s1606824
 }
 
 \date{\today}
@@ -98,21 +98,23 @@
 %------------------------------------------------
 \chapter{Introduction}
 \label{introduction}
-In the Programming Paradigms course, the final project is a combination of compiler construction, functional programming, and concurrent programming. It required the participants to build a compiler for a self-defined language to SprIL. The language had to support features, including basic concurrency.
+In the Programming Paradigms course, the final project is a combination of compiler construction, functional programming, and concurrent programming. It requires its participants to build a compiler for a self-defined language, which targets SprIL, an in Haskell defined synthesized processor. The language has to support basic primitives like arithmetic expressions, 3GL control flow logic like if(-else) and while and must perform type checking on all expressions. Finally, basic concurrency must be incorporated in the language.
 
-The language group 26 designed for this project is called Simple Haskell Language (SHL), with file extension \emph{.shl}. It supports all the required features, as well as some additional features. These additional features include: procedures, and call-by-reference. The entire compiler runs on uses Haskell, both the code-generation and front end. The Sprockell was slightly extended as well.
+The language we (group 31) improved upon for this project is called Simple Haskell Language (SHL), with file extension \emph{.shl}. We are both repeat students, and decided upon improving the best of our two languages. The final project (SHL2.0) supports all the required features, as well as some additional features. These additional features include: procedures, call-by-reference and enumerations. The entire compiler runs on Haskell, both the code-generation and front end. The Sprockell was slightly extended as well, for feature parity with last year's implementation and convenience.
 
 
 %------------------------------------------------
 \chapter{Summary}
 \label{summary}
-This chapter will give a summary of the features of SHL. 
-\paragraph{Data types} SHL supports two types: integers and booleans. 
-\paragraph{Simple expressions and variables} SHL supports denotations for primitive values of types as well as operations for (in)equality for values of types. SHL is strongly typed and all variables are initialised upon declaration. It also supports scoping with variable shadowing. The following expressions are supported:
+This chapter will give a summary of the features of SHL2.0. 
+\paragraph{Data types} SHL supports two basic data types: integers and booleans. 
+\paragraph{Simple expressions and variables} SHL supports denotations for primitive values of types as well as operations for (in)equality for values of types. SHL is strongly typed and all variables are initialised upon declaration. It also supports scoping with variable shadowing. Operator precedence is adhered to. If operators of equal precedence occur, the expression is interpreted left-to-right. 
+
+The following expressions are supported:
 \begin{compactitem}
 	\item Parentheses
 	\item Assignment
-	\item Operation (with ==, !=, <>, \&\&, ||, <=, >=, <, >, +, -, *)
+	\item Binary operation (with ==, !=, <>, \&\&, ||, <=, >=, <, >, +, -, *)
 	\item Unary operation (with !, -)
 	\item Variable
 	\item Integer value
@@ -131,7 +133,7 @@ This chapter will give a summary of the features of SHL.
 	\item Expression
 \end{compactitem}
 \paragraph{Concurrency} SHL supports global variables, fork and join statements to implement concurrency.
-\paragraph{Procedures} SHL supports basic procedures with call-by-reference.
+\paragraph{Procedures} SHL supports basic procedures with call-by-reference. Procedures have no return value.
 
 
 %------------------------------------------------
@@ -161,16 +163,6 @@ The second issue was memory management. Not knowing beforehand what you need in 
 \chapter{Sprockell Extensions}
 \label{sprockell_extensions}
 
-\section{Shared Memory Bug}
-\label{shared_memory_bug}
-A bug in shared memory has been resolved. Whenever a value was written to shared memory to an out of bounds index, shared memory would be extended with that value. The list would be longer by one with the new value at either the first or last position in the list, depending on whether the index was too low or too high.
-
-The extension causes an error to be thrown instead. This allows for easier debugging of code generation.
-
-\section{PrintOut Instruction}
-\label{printout_instruction}
-A print instruction, \texttt{PrintOut reg}, was added to print registers to stdout. The instruction uses \texttt{trace} from the package \texttt{Debug.Trace} to do this.
-
 \section{ComputeI Instruction}
 \label{computei_instruction}
 A compute with immediate value, \texttt{ComputeI operator reg value reg}. This instruction takes a register and a value to do a computation with the operator, which is then written to the second register. It is mostly used to calculate ARP offsets. 
@@ -180,6 +172,8 @@ This instruction was inspired by the \emph{iloc} instructions using an immediate
 \section{Incr4 \& Decr4}
 \label{incr4_and_decr4}
 Two \texttt{Operator}s were added to the alu operators: Incr4 and Decr4. They were originally added to more easily do the steps of four to calculate offsets, before \texttt{ComputeI} was added. They are currently unused.
+
+Most of last year's extensions are now implemented in Sprockell itself, so the code generation has been altered to reflect these changes.
 
 
 %------------------------------------------------
@@ -198,9 +192,10 @@ This chapter will describe every feature of SHL in detail: providing a basic des
 \subsection{Program}
 \label{def:program}
 \subsubsection*{Syntax}
-\texttt{[GLOBAL]\ldots [PROCEDURE]\ldots [STATEMENTS]\ldots}\\
+\texttt{[GLOBAL]\ldots [ENUM]\ldots [PROCEDURE]\ldots [STATEMENTS]\ldots}\\
 \begin{mycompactdesc}
 	\item[GLOBAL] Global variable declarations as defined in \fullref{def:global}
+	\item[ENUM] Enumeration declarations as defined in \fullref{def:enum}
 	\item[PROCEDURE] Procedures as defined in \fullref{def:procedure}
 	\item[STATEMENTS] Statements as defined in \fullref{def:statements}
 \end{mycompactdesc}
@@ -208,10 +203,12 @@ This chapter will describe every feature of SHL in detail: providing a basic des
 \begin{minted}[tabsize=4]{text}
 global int number = 5;
 
+enum foo = {bar,baz};
+
 procedure eq(int num1, int num2, bool out) {
-	if ((num1 == num2)) {
+	if (num1 == num2) {
 		out = true;
-	} else {
+	} else if (bar == bar) {
 		out = false;
 	}
 }
