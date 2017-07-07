@@ -72,7 +72,7 @@ grammar nt = case nt of
     Global  ->  [[ global, Type, Var, (?:) [ass, Expr], eol ]]
     
     -- Enumerations
-    Enum    ->  [[ enum, Var, ass, lBrace, Var, (*:) [comma, Var], rBrace, eol ]]
+    Enum    ->  [[ Type, Var, ass, lBrace, Var, (*:) [comma, Var], rBrace, eol ]]
 
     -- Procedures
     Proc    ->  [[ procedure, Pid, lPar, (?:) [Type, Var, (*:) [comma, Type, Var]], rPar, Stat ]]
@@ -126,7 +126,6 @@ ass         = Terminal "="
 fork        = Terminal "fork"
 join        = Terminal "join"
 global      = Symbol "global"
-enum        = Symbol "enum"
 printStr    = Terminal "print"
 
 

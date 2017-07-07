@@ -19,7 +19,7 @@ pTreeToAst (PNode Global (typ:var:[]))
     = ASTGlobal (getAlphabet (getStr typ)) (pTreeToAst var) Nothing ([],[],[],[])
 pTreeToAst (PNode Global (typ:var:(PLeaf (Ass,_,_)):expr:[]))
     = ASTGlobal (getAlphabet (getStr typ)) (pTreeToAst var) (Just (pTreeToAst expr)) ([],[],[],[])
-pTreeToAst (PNode Enum (enum:(PLeaf (Ass,_,_)):(PLeaf (Brace,_,_)):values))
+pTreeToAst (PNode Enum (_:enum:(PLeaf (Ass,_,_)):(PLeaf (Brace,_,_)):values))
     = ASTEnum (getStr enum) (map pTreeToAst values) ([],[],[],[])
 pTreeToAst (PNode Proc (pid:args_expr))
     = ASTProc (getStr pid) (makeAstArg $ init args_expr) expr ([],[],[],[])
@@ -214,9 +214,11 @@ getStr a                    = error (show a)
 getAlphabet :: String -> Alphabet
 getAlphabet "int"   = IntType
 getAlphabet "bool"  = BoolType
+getAlphabet "enum"  = EnumType
 getAlphabet _       = error "Type not recognised."
 
 getTypeStr :: Alphabet -> String
 getTypeStr IntType  = "int"
 getTypeStr BoolType = "bool"
+getTypeStr EnumType = "enum"
 getTypeStr _        = error "Not a valid type in: getStr :: Alphabet -> String"
