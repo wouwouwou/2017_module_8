@@ -143,43 +143,34 @@ This chapter is a short discussion of some of the problems encountered during th
 
 \section{Expressions}
 During the process of improving the compiler's expression handling, a couple of problems arose. Firstly, more types had to be declared in order to implement operator precedence in the tokenizer, grammar and AST-builder. These types included operators and grammar rules. New AST-node types were considered, but not needed. Furthermore, the new types had to be unambiguous, which meant defining other types than the ones used by the Sprockell and Haskell. \\
-
 Secondly, defining the right grammar rules proved to be tricky. 
 Since the compiler supports more operators than only plus, minus and asterisk, a classic LL(1) expression grammar had to be complemented with precedence rules for the other operators.  \\
-
 Thirdly, there was a small problem with the pattern matching when building the AST out of the ParseTree. It took some time to figure out the right typing in the pattern matches and the building of operator nodes had to be though out thoroughly. \\
-
 Lastly, after modifying the ASTBuilder there was still a problem with consecutively recurring operator classes being right-associative instead of left-associative. A solution has been found in implementing a rebalancing function just before the checker phase, in which a left-rotation is performed on an AST if such consecutively recurring operator classes are present.
 
-%TODO revise
-\section{Time}
-If only the schedule made at the beginning of every project works out and no unexpected problems arise, this would not be a problem. Reality, unfortunately, has not been that kind. Many unscheduled delays and problems arose to delay the schedule more than expected. The solution for this was working evenings and parts of the night on the final days.
+\section{Enumerations}
+The second improvement and therefore the second challenge which gave some problems, was implementing Enumerations into the SHL compiler. \\
+Firstly, Enumerations had to be recognised and translated into the AST. This proved to be easier than expected. The real challenge was in type-checking and code-generation. An extra EnumerCheckerType has been added to be able to perform type-checking. This type-checking has then been implemented in the checker. Because of the extra checker-type, the code had to be changed in a lot of places, which was more time-consuming than planned. \\
+Secondly and lastly, the generation of code was implemented. One problem in particular proved to be tricky in this stage, and that was the fact that initially the declared enumeration values were not unique and therefore, the first value of two different enumeration were equal in the perspective of the Sprockell. This has been fixed by giving each enumeration value a unique id. 
 
-%TODO revise
-\section{Code Generation}
-During code generation, two big types of problems arose, of which the first one was offset management. SprIL does not know labels as ILOC does, and since our code was generated with a tree, many things as procedure addresses, retrun addresses and the like were not known on the first pass. Furthermore, fixing bugs in logic often messes up offsets in loops, creating their own set of incomprehensible issues.
-
-The second issue was memory management. Not knowing beforehand what you need in an AR does not help when debugging issues with values being read as addresses and the other way around. But by far the most annoying issue I've had was a bug in Sprockell where writes to out-of-bounds addresses to global memory were not protected. Instead, they extended the list, resulting in all variables moving one step. Good luck debugging when one cannot trust the integrity of memory.
-
-%TODO Fill in
 \section{New Sprockell}
+Luckily we had few problems with the new version of the Sprockell. The most important change was the generated code to output strings out of the Sprockell. After changing one instruction name and after checking that every character was outputted correctly, this problem also has been solved.
+
+\section{Time}
+A big factor in each and every project is time. For this project a very specific time schedule has not been made. A generic planning including a task-list and task-division has been discussed multiple times through the process of improving SHL. Eventually, the amount of improvements are less than hoped for because more time has been spent on the re-take exam for the Concurrent Programming strand of the Programming Paradigms module. 
 
 
 %------------------------------------------------
 \chapter{Sprockell Extensions}
 \label{sprockell_extensions}
-%TODO revise
+All extensions which are mentioned below, are now implemented in Sprockell and are extensions from last year Sprockell's version. No alterations to the code generation were needed to correspond with the extensions discussed in this chapter.
 \section{ComputeI Instruction}
 \label{computei_instruction}
-A compute with immediate value, \texttt{ComputeI operator reg value reg}. This instruction takes a register and a value to do a computation with the operator, which is then written to the second register. It is mostly used to calculate ARP offsets. 
-
-This instruction was inspired by the \emph{iloc} instructions using an immediate value (eg. \texttt{AddI, SubI}.
+A compute with immediate value, \texttt{ComputeI operator reg value reg}. This instruction takes a register and a value to do a computation with the operator, which is then written to the second register. It is mostly used to calculate ARP offsets. This instruction was inspired by the \emph{iloc} instructions using an immediate value (eg. \texttt{AddI, SubI}. 
 
 \section{Incr4 \& Decr4}
 \label{incr4_and_decr4}
 Two \texttt{Operator}s were added to the alu operators: Incr4 and Decr4. They were originally added to more easily do the steps of four to calculate offsets, before \texttt{ComputeI} was added. They are currently unused.
-
-Most of last year's extensions are now implemented in Sprockell itself, so the code generation has been altered to reflect these changes.
 
 
 %------------------------------------------------
@@ -200,7 +191,7 @@ This chapter will describe every feature of SHL in detail: providing a basic des
 \texttt{[GLOBAL]\ldots [ENUM]\ldots [PROCEDURE]\ldots [STATEMENTS]\ldots}\\
 \begin{mycompactdesc}
 	\item[GLOBAL] Global variable declarations as defined in \fullref{def:global}
-	\item[ENUM] Enumeration declarations as defined in \fullref{def:enum}
+	\item[ENUM] Enumeration declarations as defined in \fullref{def:enumeration}
 	\item[PROCEDURE] Procedures as defined in \fullref{def:procedure}
 	\item[STATEMENTS] Statements as defined in \fullref{def:statements}
 \end{mycompactdesc}
@@ -269,7 +260,7 @@ The global variable declaration reserves a space in shared memory and writes a v
 
 Global variables are reachable from anywhere below its declaration in the code, in any thread. Beware, however, that the variable can be written to from any thread as well, and using the shared memory is significantly slower than using the local memory.
 
-Globals that are passed as arguments to a procedure have their own intricacies, see \ref{def:call-by-refence} for more information.
+Globals that are passed as arguments to a procedure have their own intricacies, see \ref{def:call-by-reference} for more information.
 
 \subsubsection*{Code Generation}
 All globals are saved in global memory. Writes and reads to globals are done atomically, but assignments are not. This avoids data races, but to ensure atomicity on the whole assignment, one must implement his own mutual exclusion.
@@ -433,7 +424,7 @@ Writes the argument to shared memory and tells the thread pool to start parallel
 
 Beware, if more procedures are given to the thread pool than there are threads, fork may have to wait for a thread to finish its work before continuing execution. In the case where programs with forks are executed on only one sprockell, it will deadlock.
 \subsubsection*{Code Generation}
-A fork call must start a procedure in another thread. To accomplish this, the first 30 addresses in global memory are reserved for this purpose. A further few addresses, namely as much as there atre threads, are reserved for an occupation bit. In practise this means that procedures with more than 7 arguments cannot be forked without memory corrupting.
+A fork call must start a procedure in another thread. To accomplish this, the first 30 addresses in global memory are reserved for this purpose. A further few addresses, namely as much as there are threads, are reserved for an occupation bit. In practise this means that procedures with more than 7 arguments cannot be forked without memory corrupting.
 
 The addresses are reserved as follows:
 
@@ -669,7 +660,7 @@ Upon evaluation, return the corresponding binary representation of the boolean, 
 Its value is pushed to stack.
 
 \subsection{Enumeration}
-\label{def:enumerationStat}
+\label{def:statenum}
 \subsubsection*{Syntax}
 \texttt{<ENUM>}
 \begin{mycompactdesc}
@@ -799,7 +790,7 @@ During runtime, when a join statement is executed by a thread other than the mai
 %------------------------------------------------
 \chapter{Description of the Software}
 \label{description_of_the_software}
-The compiler consists of a number of haskell files, and some additional files. This chapter will go over the functions of each of those files.
+The compiler consists of a number of Haskell files, and some additional files. This chapter will go over the functions of each of those files. It is assumed that the Sprockell has been installed from the GitHub repository which has been referenced by the teachers.
 
 \section{ASTBuilder.hs}
 The purpose of the ASTBuilder is to build an Abstract Syntax Tree using a parsetree. The ASTBuilder also contains the functions to convert an AST to a RoseTree with or without debug information.
@@ -823,7 +814,7 @@ Grammar contains the grammar used in the compiler.
 Main file, used for compilation and execution of SHL programs. Read the README.md for information on how to use it.
 
 \section{README.md}
-Constains some information about the project in general (eg. the Trello board) and instructions on how to use the compiler.
+Contains some information about the project in general (eg. the Trello board) and instructions on how to use the compiler.
 
 \section{Test.hs}
 Used for internal testing, contains functions to print and write debug information, show ASTs with and without debug information, show the parse tree, and show the token list.
@@ -890,23 +881,15 @@ To run a test, simply follow the \texttt{README.md}, using the following path: \
 \chapter{Personal Evaluation}
 \label{personal_evaluation}
 \section{Martijn}
-The project is actually quite fun to do once you have a better understanding of the time needed to deliver a working product. It helps too that stress factors like an FP-resit or falling behind on excercises are just not there. Even though I had to take the CP resit, most other grades were excellent and help in achieving a good average grade. The module as a whole is a lot of work, but is a lot more doable as a second-timer. Grades are better, workload is better. 
+The project is actually quite fun to do once you have a better understanding of the time needed to deliver a working product. It helps too that stress factors like an FP-resit or falling behind on exercises are just not there. Even though I had to take the CP resit, most other grades were excellent and help in achieving a good average grade. The module as a whole is a lot of work, but is a lot more doable as a second-timer. Grades are better, workload is better. 
 
-I am a great fan of the parser generator functional programming excercises, they were a change in pace for us, but gave us the confidence to do this project fully in Haskell which turned out to be a great choice in terms of motivation and having the overview. With ANTLR I feel like talking to a black box (even though ANTLR is easier to define a language in due to left-recursiveness, LL$_X$ and so on). The new Logic programming excercises and project are a great addition too, as they show more of the power of logic programming than last year's did.
+I am a great fan of the parser generator functional programming exercises, they were a change in pace for us, but gave us the confidence to do this project fully in Haskell which turned out to be a great choice in terms of motivation and having the overview. With ANTLR I feel like talking to a black box (even though ANTLR is easier to define a language in due to left-recursiveness, LL$_X$ and so on). The new Logic programming exercises and project are a great addition too, as they show more of the power of logic programming than last year's did.
 
 That's all. As far as I can see we did our best. Let's hope it is enough.
 
 %TODO Fill in!
 \section{Wouter}
-I personally am quite satisfied with the language and compiler we built. It's a lot better than last year's, and think it should be quite usable this time. We decided to focus mostly on a simple set of things we wanted, and I believe we mostly delivered on those things. I know call-by-reference is somewhat iffy, it uses an internal value and only writes it back to the references variable at the end of the procedure, but that should be fine for sequential programs. For parallel programs, just stick with Peterson's algorithm if you need something to be mutually exclusive, which isn't just a single write.
 
-I quite like the Programming Paradigms module, with the exception of concurrent programming. I find building a compiler quite interesting, and I really like function programming (we actually scored a 10 for the project), yet somehow concurrent programming just isn't really my thing. It just doesn't really capture my attention, and that shows in the results. The first test I just left early because it wasn't going to work out anyway, and I had to miss the second one because I got ill the day before, so I'm currently trying to get a third attempt.
-
-I do have to say the workload of this module is still quite high, but mostly doable. It mostly just requires some good time management and work ethics, in which I occasionally lack a bit. The way the module is structured, mostly the CC exercises, means that occasionally you have to wait quite a bit for a student assistant to be available, but I found this much less of an issue than last year.
-
-I cannot comment on the lectures this year, as I didn't go to most of them, seeing as I had been there last year. In retrospect it would have been a good idea to go to the CP lectures, but I can't do much about that now.
-
-I finish this up, I enjoyed this module, with the exception of CP. There were a few problems along the way, but they quickly dealt with and weren't really an issue for me in the end. Every module can improve in some ways, but I would have to say I'm quite content with this one.
 
 
 %------------------------------------------------
@@ -919,9 +902,8 @@ I finish this up, I enjoyed this module, with the exception of CP. There were a 
 %------------------------------------------------
 \chapter{Grammar Specification}
 \label{grammar_specification}
-%TODO check first and last line
 \begin{landscape}
-\inputminted[firstline=66, lastline=138, tabsize=4]{haskell}{../../src/haskell/PP-project-2016/Grammar.hs}
+\inputminted[firstline=66, lastline=142, tabsize=4]{haskell}{../../src/haskell/PP-project-2017/Grammar.hs}
 \end{landscape}
 
 
@@ -932,15 +914,15 @@ The extended test program shown here is Peterson's algorithm. It shows how, usin
 
 %TODO check code
 \section{Peterson's Algorithm Test}
-\inputminted[tabsize=4,linenos,firstnumber=1]{text}{../../src/haskell/PP-project-2016/test/peterson.shl}
+\inputminted[tabsize=4,linenos,firstnumber=1]{text}{../../src/haskell/PP-project-2017/test/peterson.shl}
 
 %TODO Generate new code
 \section{Generated Code}
-\inputminted[tabsize=4,linenos,firstnumber=0]{text}{../../src/haskell/PP-project-2016/test/peterson_gen.txt}
+\inputminted[tabsize=4,linenos,firstnumber=0]{text}{../../src/haskell/PP-project-2017/test/peterson_gen.txt}
 
 %TODO Check whether the output is still the same. This is Main.hs!
 \section{Correct Executions}
-Every time a value is printed in Peterson's algorithm test, it should be zero:
+Every time a value is printed in Peterson's algorithm test, it should be zero. The output of a simulation on the Sprockell with our compiler:
 \begin{minted}[tabsize=4]{text}
 What file do you want to run? Please provide the relative path excluding the extension.
 test/peterson

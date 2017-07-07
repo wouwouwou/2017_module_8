@@ -86,12 +86,12 @@ grammar nt = case nt of
                 ,[ Pid, lPar, (?:) [Expr, (*:) [comma, Expr]], rPar, eol ]          -- call
                 ,[ Expr, eol ]                                                      -- expression
                 ,[ lBrace, (*:) [Stat], rBrace ]                                    -- block
-                ,[ printStr, lPar, Expr, (*:) [comma, Expr], rPar, eol ]
-                ,[ Var, ass, Expr, eol ]]
+                ,[ printStr, lPar, Expr, (*:) [comma, Expr], rPar, eol ]            -- print
+                ,[ Var, ass, Expr, eol ]]                                           -- assign
 
     -- Expressions. Already implements the fact that some operations are bound tighter than
-    -- other operations. The order from tightest to loosest: MultDiv, PlusMin, Ord, Equal, And,
-    -- XOR, Or.
+    -- other operations (operator precedence). The order from tightest to loosest: Mul, PlusMin,
+    -- Ord, Equal, And, XOR, Or.
     Expr      ->  [[ OR, (?:) [Expr'] ]]                   -- Expr -> OR (?:) Expr'
 
     Expr'     ->  [[ opOr, OR, (?:) [Expr'] ]]             -- opOr, OR (?:) Expr'
@@ -104,17 +104,17 @@ grammar nt = case nt of
 
     XOr'      ->  [[ opAnd, AND, (?:) [XOr'] ]]            -- opAnd, AND, (?:) XOr'
 
-    AND       ->  [[ EQUAL, (?:) [AND'] ]]                 -- opAnd, AND, (?:) XOr'
+    AND       ->  [[ EQUAL, (?:) [AND'] ]]                 -- EQUAL, (?:) AND'
 
-    AND'      ->  [[ opEqual, EQUAL, (?:) [AND'] ]]        -- opAnd, AND, (?:) XOr'
+    AND'      ->  [[ opEqual, EQUAL, (?:) [AND'] ]]        -- opEqual, EQUAL, (?:) AND'
 
-    EQUAL     ->  [[ Ord, (?:) [EQUAL'] ]]                 -- opAnd, AND, (?:) XOr'
+    EQUAL     ->  [[ Ord, (?:) [EQUAL'] ]]                 -- Ord, (?:) EQUAL'
 
-    EQUAL'    ->  [[ opOrd, Ord, (?:) [EQUAL'] ]]          -- opAnd, AND, (?:) XOr'
+    EQUAL'    ->  [[ opOrd, Ord, (?:) [EQUAL'] ]]          -- opOrd, Ord, (?:) EQUAL'
 
-    Ord       ->  [[ Term, (?:) [Ord'] ]]                  -- opAnd, AND, (?:) XOr'
+    Ord       ->  [[ Term, (?:) [Ord'] ]]                  -- Term, (?:) Ord'
 
-    Ord'      ->  [[ opPlusMin, Term, (?:) [Ord'] ]]       -- opAnd, AND, (?:) XOr'
+    Ord'      ->  [[ opPlusMin, Term, (?:) [Ord'] ]]       -- opPlusMin, Term, (?:) Ord'
 
     Term      ->  [[ Factor, (?:) [Term'] ]]               -- Factor (?:) Term'
 
@@ -127,19 +127,19 @@ grammar nt = case nt of
                   ,[ BoolType ]]                           -- Bool
 
     -- Other
-    PreUnary  ->  [[ opPlusMin ]
-                  ,[ opIncDec ]
-                  ,[ opNot ]]
+    PreUnary  ->  [[ opPlusMin ]                           -- Prefix unary + and -
+                  ,[ opIncDec ]                            -- Prefix unary ++ and --
+                  ,[ opNot ]]                              -- Prefix unary !
 
-    Type      ->  [[ typeStr ]]   -- type
+    Type      ->  [[ typeStr ]]                            -- type
 
-    Var       ->  [[ var ]]       -- variable
+    Var       ->  [[ var ]]                                -- variable
 
-    Pid       ->  [[ Var ]]       -- procedure identifier
+    Pid       ->  [[ Var ]]                                -- procedure identifier
 
-    IntType   ->  [[ intType ]]   -- number
+    IntType   ->  [[ intType ]]                            -- number
 
-    BoolType  ->  [[ boolType ]]  -- boolean
+    BoolType  ->  [[ boolType ]]                           -- boolean
 
 
 -- shorthand names can be handy, such as:
