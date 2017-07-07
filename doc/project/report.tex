@@ -107,7 +107,7 @@ The language we (group 33) improved upon for this project is called Simple Haske
 \chapter{Summary}
 \label{summary}
 This chapter will give a summary of the features of SHL2.0.
-\paragraph{Data types} SHL supports two basic data types: integers and booleans.
+\paragraph{Data types} SHL supports three basic data types: integers, booleans and enumerations.
 \paragraph{Simple expressions and variables} SHL supports denotations for primitive values of types as well as operations for (in)equality for values of types. SHL is strongly typed and all variables are initialised upon declaration. It also supports scoping with variable shadowing. Operator precedence is adhered to. If operators of equal precedence occur, the expression is interpreted left-to-right.
 
 The following expressions are supported:
@@ -115,7 +115,7 @@ The following expressions are supported:
 	\item Parentheses
 	\item Assignment
 	\item Binary operation (with ==, !=, <>, \&\&, ||, <=, >=, <, >, +, -, *)
-	\item Unary operation (with !, -)
+	\item Prefix Unary operation (with !, -, +)
 	\item Variable
 	\item Integer value
 	\item Boolean value
@@ -141,8 +141,15 @@ The following expressions are supported:
 \label{problems_and_solutions}
 This chapter is a short discussion of some of the problems encountered during the project and their solutions.
 
-\section{Changing the Types}
-During the process of building the type checker and code generation, which was done in parallel, at certain times a change to the AST or Grammar was required. This resulted in a lot of trying to find every instance which had to be changed, and finding unused code during the final day of the project.
+\section{Expressions}
+During the process of improving the compiler's expression handling, a couple of problems arose. Firstly, more types had to be declared in order to implement operator precedence in the tokenizer, grammar and AST-builder. These types included operators and grammar rules. New AST-node types were considered, but not needed. Furthermore, the new types had to be unambiguous, which meant defining other types than the ones used by the Sprockell and Haskell. \\
+
+Secondly, defining the right grammar rules proved to be tricky. 
+Since the compiler supports more operators than only plus, minus and asterisk, a classic LL(1) expression grammar had to be complemented with precedence rules for the other operators.  \\
+
+Thirdly, there was a small problem with the pattern matching when building the AST out of the ParseTree. It took some time to figure out the right typing in the pattern matches and the building of operator nodes had to be though out thoroughly.
+
+Lastly, after modifying the ASTBuilder there was still a problem with consecutively recurring operator classes being right-associative instead of left-associative. A solution has been found in implementing a rebalancing function just before the checker phase, in which a left-rotation is performed on an AST if such consecutively recurring operator classes are present.
 
 \section{Time}
 If only the schedule made at the beginning of every project works out and no unexpected problems arise, this would not be a problem. Reality, unfortunately, has not been that kind. Many unscheduled delays and problems arose to delay the schedule more than expected. The solution for this is working evenings and parts of the night on the final days.
