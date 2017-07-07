@@ -121,7 +121,8 @@ codeGen (ASTProgram asts
             
             begin_of_code = (lengthNoDebug (threadControl ++ procsCode)) - 2
                 -- Computes line number that regular code starts at.
-            (globalAsts, procexprs) = span isGlobal asts
+            (globalAsts, enumprocexprs) = span isGlobal asts
+            (enumAsts, procexprs) = span isEnum enumprocexprs
             (procs, exprs) = span isProcedure procexprs
             procsCode = (concat $ map (\x -> codeGen x threads) procs) ++ [Nop, Nop]
             globalsCode = concat $ map (\x -> codeGen x threads) globalAsts
@@ -135,6 +136,10 @@ codeGen (ASTProgram asts
             isGlobal :: AST -> Bool
             isGlobal (ASTGlobal _ _ _ _) = True
             isGlobal _ = False
+            
+            isEnum :: AST -> Bool
+            isEnum (ASTEnum _ _ _) = True
+            isEnum _ = False
                      
 -- Declares a global in global memory, with its standard initial value .
 -- Globals are saved from memory address 31 upwards, in pairs with a mutation bit. 
@@ -479,7 +484,6 @@ codeGen (ASTAss astVar astExpr _
             (codeGen astExpr threads) ++ (getMemAddr (getStr astVar) variables) ++
             [ Pop regA -- Expr result
             , Store regA (IndAddr regE)
-            , Push regA
             ]
         | otherwise =
             (codeGen astExpr threads) ++ 
@@ -493,7 +497,6 @@ codeGen (ASTAss astVar astExpr _
             , Pop regE                          -- Pop expression value
             , WriteInstr regE (IndAddr regC)    -- Write value
             , WriteInstr reg0 (IndAddr regA)    -- Unlock value
-            , Push regE                         -- Push to stack, until assignments are not expressions anymore!
             ]
             where
                 name = (getStr astVar)
@@ -608,13 +611,17 @@ codeGen (ASTPreUnary op astV _
             [ Pop regA                      -- pop argument
             , Compute Decr regA reg0 regC   -- Decrement it
             , Push regC                     -- Push result to stack
-            ]
+            , Push regC                     -- Push result to stack
+            ] ++ (codeGen (ASTAss astV (ASTEnum "" [] checkType) Nothing checkType) threads) -- Re-use assignment code, tricking it into not having to evaluate an expression with ASTEnum 
+            
         | op == "++" = 
             (codeGen astV threads) ++       -- Compute argument
             [ Pop regA                      -- pop argument
             , Compute Incr regA reg0 regC   -- increment it
             , Push regC                     -- push result to stack
-            ]
+            , Push regC                     -- push result to stack
+            ] ++ (codeGen (ASTAss astV (ASTEnum "" [] checkType) Nothing checkType) threads) -- Re-use assignment code, tricking it into not having to evaluate an expression with ASTEnum
+            
 
 -- Print statement. Prints its arguments in order, one argument per line. Uses the
 -- self-defined non-standard SprIL instruction PrintOut, that uses trace to print

@@ -1,8 +1,35 @@
+global enum boe = test;
+global enum boe2 = test;
+global enum boe3 = bar;
+
 enum bla = {test, test1, test2};
 enum foo = {bar,baz};
 
+procedure prok() {
+    boe = test2;
+}
+
 bool b = false;
 
-bool a = (test == baz);
+bool a = (true);
+print(a);
+
+a = (test == bar);
 
 print(a);
+a = (test == test);
+print(a);
+
+//test + test;
+//test - test;
+
+//test * test;
+//test < test;
+//test > test;
+
+print(test != test);
+//test && test;
+//test || test;
+//test <> test;
+//test <= test;
+//test >= test;

@@ -55,6 +55,8 @@ tokenizer input@(x:xs)
     
     | x ==  '='             = (Ass, [x])          : tokenizer xs
     
+    | isPrefixOf "//" input = tokenizer $ endOfLine (input \\ "//")
+    | isPrefixOf "/*" input = tokenizer $ endOfBlock (input \\ "/*")
     
     | int /= ""             = (IntType, int)      : tokenizer intRest
     | word /= ""            = (Var, word)         : tokenizer wordRest

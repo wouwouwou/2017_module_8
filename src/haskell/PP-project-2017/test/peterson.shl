@@ -3,6 +3,8 @@ global bool flag_1 = false;
 global int turn = 0;
 global int i = 0;
 
+enum test = {die};
+
 procedure p_0() {
 	flag_0 = true;
 	turn = 1;

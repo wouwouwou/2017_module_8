@@ -153,17 +153,17 @@ astToRoseDebug :: AST -> RoseTree
 astToRoseDebug (ASTProgram asts (f,g,v,_))
     = RoseNode ("program" ++ " -> " ++ (show f) ++ (show g) ++ (show (getDeepestScope v))) (map astToRoseDebug asts)
 astToRoseDebug (ASTGlobal typeStr ast Nothing (f,g,v,_))
-    = RoseNode ("global " ++ (getTypeStr typeStr) ++ " -> " {-++ (show f) ++ (show g)-} ++ (show (getDeepestScope v))) [(astToRoseDebug ast)]
-astToRoseDebug (ASTGlobal typeStr ast1 (Just ast2) (f,g,v,_))
-    = RoseNode ("global " ++ (getTypeStr typeStr) ++ " -> " {-++ (show f) ++ (show g)-} ++ (show (getDeepestScope v))) $ map astToRoseDebug [ast1, ast2]
+    = RoseNode ("global " ++ (getTypeStr typeStr) ++ " -> " ++ (show f) ++ (show g) ++ (show (getDeepestScope v))) [(astToRoseDebug ast)]
+astToRoseDebug (ASTGlobal typeStr ast1 (Just ast2) (f,g,v,_)) 
+    = RoseNode ("global " ++ (getTypeStr typeStr) ++ " -> "++ (show f) ++ (show g) ++ (show (getDeepestScope v))) $ map astToRoseDebug [ast1, ast2]
 astToRoseDebug (ASTEnum enum asts (f,g,v,enums)) -- map (\(e,es) -> "(" ++ (e) ++ "," ++ (intercalate "," es) ++ ")") enums)
-    = RoseNode ("enum " ++ enum ++ " -> " {-++ (show f) ++ (show g)-} ++ (show (getDeepestScope v)) ++ show enums) $ map astToRoseDebug asts
-astToRoseDebug (ASTProc str asts ast (f,g,v,_))
-    = RoseNode ("procedure " ++ str ++ " -> " {-++ (show f) ++ (show g)-} ++ (show (getDeepestScope v))) $ map astToRoseDebug $ asts ++ [ast]
+    = RoseNode ("enum " ++ enum ++ " -> " ++ (show f) ++ (show g) ++ (show (getDeepestScope v)) ++ show enums) $ map astToRoseDebug asts
+astToRoseDebug (ASTProc str asts ast (f,g,v,e))
+    = RoseNode ("procedure " ++ str ++ " -> " ++ (show f) ++ (show g) ++ (show (getDeepestScope v)) ++ show e) $ map astToRoseDebug $ asts ++ [ast]
 astToRoseDebug (ASTArg ast1 ast2 (f,g,v,_))
-    = RoseNode ("arg" ++ " -> " {-++ (show f) ++ (show g)-} ++ (show (getDeepestScope v))) $ map astToRoseDebug [ast1, ast2]
-astToRoseDebug (ASTBlock asts (f,g,v,_))
-    = RoseNode ("block" ++ " -> " {-++ (show f) ++ (show g)-} ++ (show ({-getDeepestScope-} v))) $ map astToRoseDebug asts
+    = RoseNode ("arg" ++ " -> " ++ (show f) ++ (show g) ++ (show (getDeepestScope v))) $ map astToRoseDebug [ast1, ast2]
+astToRoseDebug (ASTBlock asts (f,g,v,e))
+    = RoseNode ("block" ++ " -> " ++ (show f) ++ (show g) ++ (show ({-getDeepestScope-} v)) ++ show e) $ map astToRoseDebug asts
 astToRoseDebug (ASTDecl typeStr ast Nothing (f,g,v,_))
     = RoseNode (getTypeStr typeStr ++ " -> " {-++ (show f) ++ (show g)-} ++ (show (getDeepestScope v))) [(astToRoseDebug ast)]
 astToRoseDebug (ASTDecl typeStr ast1 (Just ast2) (f,g,v,_))
@@ -179,13 +179,13 @@ astToRoseDebug (ASTFork str asts (f,g,v,_))
 astToRoseDebug (ASTJoin (f,g,v,_))
     = RoseNode ("join" ++ " -> " {-++ (show f) ++ (show g)-} ++ (show (getDeepestScope v))) []
 astToRoseDebug (ASTCall str asts (f,g,v,_))
-    = RoseNode ("call " ++ " -> " {-++ (show f) ++ (show g)-} ++ (show (getDeepestScope v))) $ map astToRoseDebug asts
+    = RoseNode ("call " ++ " -> " ++ (show f) ++ (show g) ++ (show (getDeepestScope v))) $ map astToRoseDebug asts
 astToRoseDebug (ASTPrint asts (f,g,v,_))
     = RoseNode ("print " ++ " -> " {-++ (show f) ++ (show g)-} ++ (show (getDeepestScope v))) $ map astToRoseDebug asts
 astToRoseDebug (ASTExpr ast typeStr (f,g,v,_))
     = RoseNode ("expr " ++ " -> " {-++ (show f) ++ (show g)-} ++ (show (getDeepestScope v))) $ [(astToRoseDebug ast)]
 astToRoseDebug (ASTAss ast1 ast2 typeStr (f,g,v,_))
-    = RoseNode ("= -> " {-++ (show f) ++ (show g)-} ++ (show (getDeepestScope v))) $ map astToRoseDebug [ast1, ast2]
+    = RoseNode ("= -> " ++ (show f) ++ (show g) ++ (show (getDeepestScope v))) $ map astToRoseDebug [ast1, ast2]
 astToRoseDebug (ASTVar str (f,g,v,_))
     = RoseNode (str ++ " -> " {-++ (show f) ++ (show g)-} ++ (show (getDeepestScope v))) []
 astToRoseDebug (ASTInt str (f,g,v,_))

@@ -69,6 +69,9 @@ opClass op
     | op == "!="             = OpEqual
     | op == "<="             = OpOrd
     | op == ">="             = OpOrd
+    | op == "&&"             = OpAnd
+    | op == "||"             = OpAnd
+    | otherwise              = error $ "Operator \"" ++ op ++ "\" not recognised" 
 
 
 
@@ -114,6 +117,7 @@ checker2 (ASTProgram asts check) _
         isPreStat :: AST -> Bool
         isPreStat (ASTGlobal _ _ _ _)   = True
         isPreStat (ASTProc _ _ _ _)     = True
+        isPreStat (ASTEnum _ _ _)       = True
         isPreStat _                     = False
 
         function :: AST -> AST -> AST
@@ -138,7 +142,7 @@ checker2 (ASTProc pid args body _) check@(f,_,_,_)
     = ASTProc pid args bodyCheck newCheck
     where
         bodyCheck   = checker2 body newCheck
-        newCheck    = foldl' addToScope (openScope check) ((Map.fromList f)Map.!pid)
+        newCheck    = (foldl' addToScope (openScope check) ((Map.fromList f)Map.!pid))
 -- No checks
 checker2 self@(ASTEnum _ _ _) _
     = self
@@ -225,7 +229,7 @@ checker2 (ASTPrint exprs _) check
 checker2 (ASTExpr expr _ _) check
     = ASTExpr exprCheck (Just (getExprType exprCheck)) check
     where
-        exprCheck = checker2 expr check
+        exprCheck =checker2 expr check
 
 -- Check types
 checker2 (ASTAss var expr _ _) check
@@ -256,15 +260,22 @@ checker2 (ASTOp expr1 op expr2 _ _) check
         expr1Type   = getExprType expr1Check
         expr1Check  = checker2 expr1 check
         expr2Check  = checker2 expr2 check
+
 -- Check type
 -- Set operation result type
 checker2 (ASTPreUnary op expr _ _) check
-    | elem op ["!", "-", "+", "--", "++"] && fst (matchOpType op exprType)
+    | elem op ["!", "-", "+"] && fst (matchOpType op exprType)
+        = ASTPreUnary op exprCheck (Just (snd (matchOpType op exprType))) check
+    | elem op ["--", "++"] && fst (matchOpType op exprType) && isVar expr
         = ASTPreUnary op exprCheck (Just (snd (matchOpType op exprType))) check
     | otherwise     = error $ "Types do not match in unary in Checker.checker2, with " ++ op ++ " on: " ++ (show expr)
     where
         exprType    = getExprType exprCheck
         exprCheck   = checker2 expr check
+        isVar :: AST -> Bool
+        isVar (ASTVar _ _)  = True
+        isVar _             = False
+
 
 -- Take the operator and input type as argument, 
 -- return whether the type matches the operator and the resulting operation type
@@ -435,7 +446,10 @@ getCheck (ASTInt _ mergedChecks)         = mergedChecks
 getCheck (ASTBool _ mergedChecks)        = mergedChecks
 getCheck (ASTType _ mergedChecks)        = mergedChecks
 getCheck (ASTOp _ _ _ _ mergedChecks)    = mergedChecks
+getCheck (ASTUnary _ _ _ mergedChecks)   = mergedChecks
 getCheck (ASTPreUnary _ _ _ mergedChecks)= mergedChecks
+getCheck (ASTProc _ _ _ mergedChecks)    = mergedChecks
+getCheck a                               = error $ (show a)
 
 -- Check if a variable name is not used in an expression
 nameCheck :: AST -> String -> Bool
