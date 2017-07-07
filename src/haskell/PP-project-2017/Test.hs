@@ -125,7 +125,7 @@ check :: String -> IO ()
 check name = do
     a <- readFile $ testConversion name
     showTree $
-        astToRoseDebug $
+        astToRose $
         checker $
         pTreeToAst $
         parse grammar Program $
